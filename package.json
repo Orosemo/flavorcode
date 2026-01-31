@@ -1,7 +1,7 @@
 {
   "name": "flavorcode",
   "displayName": "Flavorcode",
-  "description": "Manage your Flavortown journey strait form VS-Code with this VS-Code extension made for flavortown. ",
+  "description": "Manage your Flavortown journey straight from VS-Code with this VS-Code extension made for flavortown. ",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.108.1"
@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:flavorcode.helloWorld"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
