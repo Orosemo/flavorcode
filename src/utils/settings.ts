@@ -67,7 +67,7 @@ export async function setconfig(config: string, value: string | number) {
   const jsonConfig = JSON.parse(rawConfig);
   if (!jsonConfig[config]) {
     throw new Error(`Unable to set ${config}: not in config`);
-  }
+  } 
   jsonConfig[config] = value;
 
   // write to JSON to file

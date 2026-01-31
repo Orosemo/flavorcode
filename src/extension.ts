@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { setContext } from './context';
-import { initConfigJson } from './utils/settings';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -20,11 +19,6 @@ export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('flavorcode.helloWorld', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		try {
-			await initConfigJson();
-		} catch (error) {
-			console.error('Error in initConfigJson:', error);
-		}
 		vscode.window.showInformationMessage('Hello World from Flavorcode!');
 	});
 

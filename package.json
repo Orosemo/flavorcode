@@ -19,8 +19,25 @@
         "command": "flavorcode.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "configuration":{
+      "title": "Flavorcode",
+      "properties": {
+        "flavorcode.flavortownApiKey": {
+          "type": "string",
+          "default": "none",
+          "description": "Set your flavortown api key to use this extension. (no worries its just saved locally ;) )"
+        },
+        "flavorcode.hackatimeApiKey" : {
+          "type": "string",
+          "default": "none",
+          "description": "not needed rn, maybe in the future"
+        }
+      }
+    }
   },
+
+
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
