@@ -3,10 +3,60 @@ import { getContext } from "./context";
 import { promises } from "dns";
 import { setconfig } from "./utils/settings";
 
+// USERS:
+// get a list of all users
+export async function getAllUsers() {
+  // get api key from the vscode settings
+  const config = vscode.workspace.getConfiguration("flavorcode");
+  const apiKey = config.get<string>("flavortownApiKey");
+
+  if (!apiKey) {
+    throw new Error(
+      "Flavortown api key not set: please set it in the settings",
+    );
+  }
+
+  interface UserResponse {
+    users: User[],
+    pagination: Pagination
+  }
+
+  interface User {
+    id: number;
+    slack_id: string;
+    display_name: string;
+    avatar: string;
+    project_ids: [number];
+    cookies: number | null;
+  }
+
+  interface Pagination {
+    current_page: number;
+    total_pages: number;
+    total_count: number;
+    next_page: number | null;
+  }
+
+  const res = await fetch(`https://flavortown.hackclub.com/api/v1/users`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to get Users: ${res.status} ${await res.text()}`,
+    );
+  }
+
+  return (await res.json()) as UserResponse;
+}
+
+// PROJECTS:
 // get project by id
-export async function getProject(
-  id: number,
-) {
+export async function getProject(id: number) {
   // get api key from the vscode settings
   const config = vscode.workspace.getConfiguration("flavorcode");
   const apiKey = config.get<string>("flavortownApiKey");
@@ -32,23 +82,78 @@ export async function getProject(
   }
 
   const res = await fetch(
-    `https://flavortown.hackclub.com//api/v1/projects/:${id}`,
+    `https://flavortown.hackclub.com/api/v1/projects/:${id}`,
     {
       method: "GET",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/x-www-form-urlencoded",
-      }
+      },
     },
   );
 
   if (!res.ok) {
     throw new Error(
-      `Failed to update Project: ${res.status} ${await res.text()}`,
+      `Failed to get Project: ${res.status} ${await res.text()}`,
     );
   }
 
   return (await res.json()) as getProjectResponse;
+}
+
+// get a list of all Projects
+export async function getAllProjects() {
+  // get api key from the vscode settings
+  const config = vscode.workspace.getConfiguration("flavorcode");
+  const apiKey = config.get<string>("flavortownApiKey");
+
+  if (!apiKey) {
+    throw new Error(
+      "Flavortown api key not set: please set it in the settings",
+    );
+  }
+
+  interface ProjectsResponse {
+    projects: Project[];
+    pagination: Pagination;
+  }
+
+  interface Project {
+    id: number;
+    title: string;
+    description: string;
+    repo_url: string;
+    demo_url: string;
+    readme_url: string;
+    ai_declaration: string;
+    ship_status: string;
+    devlog_ids: number[];
+    created_at: string; // ISO date string
+    updated_at: string; // ISO date string
+  }
+
+  interface Pagination {
+    current_page: number;
+    total_pages: number;
+    total_count: number;
+    next_page: number | null;
+  }
+
+  const res = await fetch(`https://flavortown.hackclub.com/api/v1/projects`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to get Projects: ${res.status} ${await res.text()}`,
+    );
+  }
+
+  return (await res.json()) as ProjectsResponse;
 }
 
 // create new project with passed data
@@ -106,7 +211,7 @@ export async function createProject(
     );
   }
 
-  const newProject = await res.json() as createProjectResponse;
+  const newProject = (await res.json()) as createProjectResponse;
 
   // set project id in the config
   setconfig("flavortownProject", String(newProject.id));
@@ -176,4 +281,7 @@ export async function updateProject(
   return (await res.json()) as updateProjectResponse;
 }
 
+// DEVLOGS:
 
+// create a new devlog of the current project with the passed data
+export async function createDevlog() {}

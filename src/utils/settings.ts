@@ -34,7 +34,7 @@ async function initConfigJson(): Promise<string> {
         "/.vscode/",
         "flavorcode.config.json",
       ),
-      { overwrite: false },
+      { overwrite: true },
     );
     vscode.window.showInformationMessage("settings json created");
     return readFile(
@@ -45,7 +45,7 @@ async function initConfigJson(): Promise<string> {
 }
 
 // gets the value of a specific config
-export async function getconfig(config: string) {
+export async function getconfig(config: string): Promise<string>{
   const rawConfig = await initConfigJson();
   const jsonConfig = JSON.parse(rawConfig);
   if (!jsonConfig[config]) {
