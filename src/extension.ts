@@ -2,8 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { setContext } from "./context";
-import { getAllProjects, getAllUsers } from "./apiCalls";
-import { getconfig } from "./utils/settings";
+import { getAllProjects, getAllUsers, getProject, getUserSelf } from "./apiCalls";
+import { getconfig, setconfig } from "./utils/configs";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -31,43 +31,54 @@ export function activate(context: vscode.ExtensionContext) {
     async () => {
       const config = vscode.workspace.getConfiguration("flavorcode");
 
-	  if ((config.get<string>("flavortownApiKey")) === "none" || (config.get<string>("flavortownApiKey")) === "") {
-		const enteredApiKey = await vscode.window.showInputBox({placeHolder:"your Flavortown api key from the website", prompt:"Go into the Flavortown settings and copy your api key"});
-
-		if (!enteredApiKey) {
-			return;
-		}
-
-		config.update("flavortownApiKey", enteredApiKey);
-	  }
-
-
-      if ((config.get<string>("userName")) === "your username" || (config.get<string>("userName")) === "") {
-        const allUsers = getAllUsers();
-        const userOptions = (await allUsers).users.map((user) => ({
-          label: user.display_name,
-          value: user.id,
-        }));
-
-        const selectUserId = await vscode.window.showQuickPick(userOptions, {
-          placeHolder: "Select your Flavortown username",
+      if (
+        config.get<string>("flavortownApiKey") === "none" ||
+        config.get<string>("flavortownApiKey") === ""
+      ) {
+        const enteredApiKey = await vscode.window.showInputBox({
+          placeHolder: "your Flavortown api key from the website",
+          prompt: "Go into the Flavortown settings and copy your api key",
         });
 
-        if (!selectUserId) {
+        if (!enteredApiKey) {
           return;
         }
-		config.update("userName", selectUserId);
+
+        config.update(
+          "flavortownApiKey",
+          enteredApiKey,
+          vscode.ConfigurationTarget.Global,
+        );
       }
 
-      const allProjects = getAllProjects();
+      const userSelf = await getUserSelf();
 
-      const projectOptions = (await allProjects).projects.map((project) => ({
-        label: project.title,
-        value: project.id,
-      }));
+      if (
+        config.get<string>("userName") === "your username" ||
+        config.get<string>("userName") === ""
+      ) {
+        config.update(
+            "userName",
+            userSelf.id,
+            vscode.ConfigurationTarget.Global,
+        );
+      };
+
+      vscode.window.showInformationMessage(`Fetching projects for ${userSelf.display_name}, this may take a while.`)
+
+      interface ProjectOptions extends vscode.QuickPickItem {
+        value: number
+      }
+
+      const userProjects: ProjectOptions[] = [];
+
+      for (const projectId of userSelf.project_ids) {
+        const project = await getProject(projectId);
+        userProjects.push({label:project.title, value:project.id});
+      }
 
       const selectProjectId = await vscode.window.showQuickPick(
-        projectOptions,
+        userProjects,
         { placeHolder: "Choose Flavortown project" },
       );
 
@@ -75,11 +86,10 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      vscode.window.showInformationMessage(
-        `selected Project id; ${selectProjectId}`,
-      );
+      config.update("projectId", selectProjectId.value);
     },
   );
+
 
   context.subscriptions.push(disposable, setupProject);
 }

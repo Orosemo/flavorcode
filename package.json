@@ -54,17 +54,25 @@
         "flavorcode.flavortownApiKey": {
           "type": "string",
           "default": "none",
-          "description": "Set your flavortown api key to use this extension. (no worries its just saved locally ;) )"
+          "description": "Set your flavortown api key to use this extension. (no worries its just saved locally ;) )",
+          "scope": "application"
         },
         "flavorcode.hackatimeApiKey" : {
           "type": "string",
           "default": "none",
-          "description": "not needed rn, maybe in the future"
+          "description": "not needed rn, maybe in the future",
+          "scope": "application"
         },
         "flavorcode.userName" : {
           "type":"string",
           "default":"your username",
-          "description": "Your Flavortown username used to get user info and projects."
+          "description": "Your Flavortown username used to get user info and projects.",
+          "scope": "application"
+        },
+        "flavorcode.projectId" : {
+          "type":"number",
+          "default":"0",
+          "description": "Your Flavortown project id"
         }
       }
     }

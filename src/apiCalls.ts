@@ -1,9 +1,46 @@
 import * as vscode from "vscode";
 import { getContext } from "./context";
 import { promises } from "dns";
-import { setconfig } from "./utils/settings";
+import { setconfig } from "./utils/configs";
 
 // USERS:
+// get the user the api key belongs to
+export async function getUserSelf() {
+  const config = vscode.workspace.getConfiguration("flavorcode");
+  const apiKey = config.get<string>("flavortownApiKey");
+
+  if (!apiKey) {
+    throw new Error(
+      "Flavortown api key not set: please set it in the settings",
+    );
+  }
+
+  interface UserResponse {
+    id: number;
+    slack_id: string;
+    display_name: string;
+    avatar: string;
+    project_ids: [number];
+    cookies: number | null;
+  }
+
+  const res = await fetch(`https://flavortown.hackclub.com/api/v1/users/me`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to get Users: ${res.status} ${await res.text()}`,
+    );
+  }
+
+  return (await res.json()) as UserResponse;
+}
+
 // get a list of all users
 export async function getAllUsers() {
   // get api key from the vscode settings
@@ -82,7 +119,7 @@ export async function getProject(id: number) {
   }
 
   const res = await fetch(
-    `https://flavortown.hackclub.com/api/v1/projects/:${id}`,
+    `https://flavortown.hackclub.com/api/v1/projects/${id}`,
     {
       method: "GET",
       headers: {
@@ -261,7 +298,7 @@ export async function updateProject(
   });
 
   const res = await fetch(
-    `https://flavortown.hackclub.com/api/v1/projects/:${id}`,
+    `https://flavortown.hackclub.com/api/v1/projects/${id}`,
     {
       method: "PATCH",
       headers: {
