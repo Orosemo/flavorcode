@@ -1,11 +1,9 @@
 import * as vscode from "vscode";
 import { getContext } from "./context";
 import { promises } from "dns";
-import { setconfig } from "./utils/configs";
 
-// USERS:
-// get the user the api key belongs to
-export async function getUserSelf() {
+// gets api key from the vscode settings
+function getApiKey() {
   const config = vscode.workspace.getConfiguration("flavorcode");
   const apiKey = config.get<string>("flavortownApiKey");
 
@@ -13,6 +11,16 @@ export async function getUserSelf() {
     throw new Error(
       "Flavortown api key not set: please set it in the settings",
     );
+  }
+  return apiKey;
+}
+
+// USERS:
+// get the user the api key belongs to
+export async function getUserSelf(givenApiKey: string) {
+  let apiKey = givenApiKey;
+  if (getApiKey()) {
+    apiKey = getApiKey();
   }
 
   interface UserResponse {
@@ -33,29 +41,22 @@ export async function getUserSelf() {
   });
 
   if (!res.ok) {
-    throw new Error(
-      `Failed to get Users: ${res.status} ${await res.text()}`,
-    );
+    throw new Error(`Failed to get Users: ${res.status} ${await res.text()}`);
   }
 
   return (await res.json()) as UserResponse;
 }
 
 // get a list of all users
-export async function getAllUsers() {
-  // get api key from the vscode settings
-  const config = vscode.workspace.getConfiguration("flavorcode");
-  const apiKey = config.get<string>("flavortownApiKey");
-
-  if (!apiKey) {
-    throw new Error(
-      "Flavortown api key not set: please set it in the settings",
-    );
+export async function getAllUsers(givenApiKey: string) {
+  let apiKey = givenApiKey;
+  if (getApiKey()) {
+    apiKey = getApiKey();
   }
 
   interface UserResponse {
-    users: User[],
-    pagination: Pagination
+    users: User[];
+    pagination: Pagination;
   }
 
   interface User {
@@ -83,9 +84,7 @@ export async function getAllUsers() {
   });
 
   if (!res.ok) {
-    throw new Error(
-      `Failed to get Users: ${res.status} ${await res.text()}`,
-    );
+    throw new Error(`Failed to get Users: ${res.status} ${await res.text()}`);
   }
 
   return (await res.json()) as UserResponse;
@@ -93,15 +92,10 @@ export async function getAllUsers() {
 
 // PROJECTS:
 // get project by id
-export async function getProject(id: number) {
-  // get api key from the vscode settings
-  const config = vscode.workspace.getConfiguration("flavorcode");
-  const apiKey = config.get<string>("flavortownApiKey");
-
-  if (!apiKey) {
-    throw new Error(
-      "Flavortown api key not set: please set it in the settings",
-    );
+export async function getProject(givenApiKey: string, id: number) {
+  let apiKey = givenApiKey;
+  if (getApiKey()) {
+    apiKey = getApiKey();
   }
 
   interface getProjectResponse {
@@ -130,24 +124,17 @@ export async function getProject(id: number) {
   );
 
   if (!res.ok) {
-    throw new Error(
-      `Failed to get Project: ${res.status} ${await res.text()}`,
-    );
+    throw new Error(`Failed to get Project: ${res.status} ${await res.text()}`);
   }
 
   return (await res.json()) as getProjectResponse;
 }
 
 // get a list of all Projects
-export async function getAllProjects() {
-  // get api key from the vscode settings
-  const config = vscode.workspace.getConfiguration("flavorcode");
-  const apiKey = config.get<string>("flavortownApiKey");
-
-  if (!apiKey) {
-    throw new Error(
-      "Flavortown api key not set: please set it in the settings",
-    );
+export async function getAllProjects(givenApiKey: string) {
+  let apiKey = givenApiKey;
+  if (getApiKey()) {
+    apiKey = getApiKey();
   }
 
   interface ProjectsResponse {
@@ -195,20 +182,16 @@ export async function getAllProjects() {
 
 // create new project with passed data
 export async function createProject(
+  givenApiKey: string,
   title: string,
   description: string,
   repoUrl: string,
   demo: string,
   aiDeclaration: string,
 ) {
-  // get api key from the vscode settings
-  const config = vscode.workspace.getConfiguration("flavorcode");
-  const apiKey = config.get<string>("flavortownApiKey");
-
-  if (!apiKey) {
-    throw new Error(
-      "Flavortown api key not set: please set it in the settings",
-    );
+  let apiKey = givenApiKey;
+  if (getApiKey()) {
+    apiKey = getApiKey();
   }
 
   interface createProjectResponse {
@@ -258,6 +241,7 @@ export async function createProject(
 
 // update existing project with passed data
 export async function updateProject(
+  givenApiKey: string,
   id: number,
   title: string,
   description: string,
@@ -265,14 +249,9 @@ export async function updateProject(
   demo: string,
   aiDeclaration: string,
 ) {
-  // get api key from the vscode settings
-  const config = vscode.workspace.getConfiguration("flavorcode");
-  const apiKey = config.get<string>("flavortownApiKey");
-
-  if (!apiKey) {
-    throw new Error(
-      "Flavortown api key not set: please set it in the settings",
-    );
+  let apiKey = givenApiKey;
+  if (getApiKey()) {
+    apiKey = getApiKey();
   }
 
   interface updateProjectResponse {

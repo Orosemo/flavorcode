@@ -45,7 +45,7 @@
     "viewsWelcome": [
       {
         "view": "project",
-        "contents": "test Flavorcode"
+        "contents": "Hmm seems Flavorcode isnt setup yet\nIn order to use Flavorcode run the setuo command: \n [setup](command:flavorcode.setupProject)"
       }
     ],
     "configuration":{

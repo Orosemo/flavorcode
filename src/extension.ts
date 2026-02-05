@@ -3,7 +3,6 @@
 import * as vscode from "vscode";
 import { setContext } from "./context";
 import { getAllProjects, getAllUsers, getProject, getUserSelf } from "./apiCalls";
-import { getconfig, setconfig } from "./utils/configs";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -30,15 +29,16 @@ export function activate(context: vscode.ExtensionContext) {
     "flavorcode.setupProject",
     async () => {
       const config = vscode.workspace.getConfiguration("flavorcode");
+      let enteredApiKey = "";
 
       if (
         config.get<string>("flavortownApiKey") === "none" ||
         config.get<string>("flavortownApiKey") === ""
       ) {
-        const enteredApiKey = await vscode.window.showInputBox({
+          enteredApiKey = String(await vscode.window.showInputBox({
           placeHolder: "your Flavortown api key from the website",
           prompt: "Go into the Flavortown settings and copy your api key",
-        });
+        }));
 
         if (!enteredApiKey) {
           return;
@@ -51,7 +51,7 @@ export function activate(context: vscode.ExtensionContext) {
         );
       }
 
-      const userSelf = await getUserSelf();
+      const userSelf = await getUserSelf(enteredApiKey);
 
       if (
         config.get<string>("userName") === "your username" ||
@@ -73,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
       const userProjects: ProjectOptions[] = [];
 
       for (const projectId of userSelf.project_ids) {
-        const project = await getProject(projectId);
+        const project = await getProject(enteredApiKey, projectId);
         userProjects.push({label:project.title, value:project.id});
       }
 
