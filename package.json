@@ -10,8 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:flavorcode.helloWorld",
-    "onView:project-selection"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -28,27 +27,27 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id":"project-selection",
+          "id": "project-selection",
           "title": "Flavorcode",
-          "icon": "resources/test-logo.png"
+          "icon": "resources/image.png"
         }
       ]
     },
     "views": {
-      "project-selection":[
+      "project-selection": [
         {
           "id": "project",
-          "name": "Current project"
+          "name": "project stats"
         }
       ]
     },
     "viewsWelcome": [
       {
         "view": "project",
-        "contents": "Hmm seems Flavorcode isnt setup yet\nIn order to use Flavorcode run the setuo command: \n [setup](command:flavorcode.setupProject)"
+        "contents": "Hmm seems Flavorcode isnt setup yet \n In order to use Flavorcode run the setup command: \n [setup](command:flavorcode.setupProject) \n Visit the [flavortown website](https://flavortown.hackclub.com/kitchen)"
       }
     ],
-    "configuration":{
+    "configuration": {
       "title": "Flavorcode",
       "properties": {
         "flavorcode.flavortownApiKey": {
@@ -57,28 +56,26 @@
           "description": "Set your flavortown api key to use this extension. (no worries its just saved locally ;) )",
           "scope": "application"
         },
-        "flavorcode.hackatimeApiKey" : {
+        "flavorcode.hackatimeApiKey": {
           "type": "string",
           "default": "none",
           "description": "not needed rn, maybe in the future",
           "scope": "application"
         },
-        "flavorcode.userName" : {
-          "type":"string",
-          "default":"your username",
+        "flavorcode.userName": {
+          "type": "string",
+          "default": "your username",
           "description": "Your Flavortown username used to get user info and projects.",
           "scope": "application"
         },
-        "flavorcode.projectId" : {
-          "type":"number",
-          "default":"0",
+        "flavorcode.projectId": {
+          "type": "number",
+          "default": "0",
           "description": "Your Flavortown project id"
         }
       }
     }
   },
-
-
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",

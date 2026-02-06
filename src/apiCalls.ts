@@ -189,6 +189,8 @@ export async function createProject(
   demo: string,
   aiDeclaration: string,
 ) {
+  const config = vscode.workspace.getConfiguration("flavorcode");
+
   let apiKey = givenApiKey;
   if (getApiKey()) {
     apiKey = getApiKey();
@@ -234,7 +236,7 @@ export async function createProject(
   const newProject = (await res.json()) as createProjectResponse;
 
   // set project id in the config
-  setconfig("flavortownProject", String(newProject.id));
+  config.update("projectId", newProject.id);
 
   return newProject;
 }
