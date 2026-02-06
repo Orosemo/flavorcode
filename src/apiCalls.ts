@@ -37,6 +37,7 @@ export async function getUserSelf(givenApiKey: string) {
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/x-www-form-urlencoded",
+      [`X-Flavortown-Ext-${11154}`]: "true",
     },
   });
 
@@ -80,6 +81,7 @@ export async function getAllUsers(givenApiKey: string) {
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/x-www-form-urlencoded",
+      [`X-Flavortown-Ext-${11154}`]: "true",
     },
   });
 
@@ -168,6 +170,7 @@ export async function getAllProjects(givenApiKey: string) {
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/x-www-form-urlencoded",
+      [`X-Flavortown-Ext-${11154}`]: "true",
     },
   });
 
@@ -223,6 +226,7 @@ export async function createProject(
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/x-www-form-urlencoded",
+      [`X-Flavortown-Ext-${11154}`]: "true",
     },
     body,
   });

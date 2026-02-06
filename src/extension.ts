@@ -115,7 +115,7 @@ export function activate(context: vscode.ExtensionContext) {
         // set in vscode settings
         config.update(
           "projectId",
-          selectProjectId.value,
+          selectProjectId.value
         );
 
       // TODO: create a new project (webview)
