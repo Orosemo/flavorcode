@@ -1,0 +1,31 @@
+body {
+  font-family: var(--vscode-font-family);
+  color: var(--vscode-editor-foreground);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+input {
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+input:focus {
+    border-color: var(--vscode-editor-foreground);
+}
+
+button {
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+button:hover {
+  background-color: var(--vscode-editor-foreground);
+  color: var(--vscode-editor-background);
+}
+
+
+a {
+    text-decoration: underline;
+}

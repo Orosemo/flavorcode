@@ -189,8 +189,8 @@ export async function createProject(
   title: string,
   description: string,
   repoUrl: string,
-  demo: string,
-  aiDeclaration: string,
+  demo?: string,
+  aiDeclaration?: string,
 ) {
   const config = vscode.workspace.getConfiguration("flavorcode");
 
@@ -217,9 +217,19 @@ export async function createProject(
     title: title,
     description: description,
     repo_url: repoUrl,
-    demo_url: demo,
-    ai_declaration: aiDeclaration,
   });
+
+  if (demo) {
+    body.set("demo_url", demo);
+  }
+
+  if (aiDeclaration) {
+    body.set("ai_declaration", aiDeclaration);
+  }
+
+  if (repoUrl) {
+    body.set("repo_url", repoUrl);
+  }
 
   const res = await fetch("https://flavortown.hackclub.com/api/v1/projects", {
     method: "POST",
@@ -232,6 +242,9 @@ export async function createProject(
   });
 
   if (!res.ok) {
+    vscode.window.showErrorMessage(
+      `Failed to create Project: ${res.status} ${await res.text()}`,
+    );
     throw new Error(
       `Failed to create Project: ${res.status} ${await res.text()}`,
     );

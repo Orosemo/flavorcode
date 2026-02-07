@@ -21,29 +21,36 @@
       },
       {
         "command": "flavorcode.setupProject",
-        "title": "Setup Flavorcode"
+        "title": "Setup Flavorcode",
+        "category": "Flavorcode"
+        
+      },
+      {
+        "command": "flavorcode.createProject",
+        "category": "Flavorcode",
+        "title": "create new Project"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "project-selection",
+          "id": "projectCreation",
           "title": "Flavorcode",
           "icon": "resources/image.png"
         }
       ]
     },
     "views": {
-      "project-selection": [
+      "projectCreation": [
         {
-          "id": "project",
-          "name": "project stats"
+          "id": "flavorcode.projectCreationView",
+          "name": "create new project"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "project",
+        "view": "flavorcode.projectCreationView",
         "contents": "Hmm seems Flavorcode isnt setup yet \n In order to use Flavorcode run the setup command: \n [setup](command:flavorcode.setupProject) \n Visit the [flavortown website](https://flavortown.hackclub.com/kitchen)"
       }
     ],

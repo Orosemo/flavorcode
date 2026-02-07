@@ -2,7 +2,10 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { setContext } from "./context";
-import { getUserSelf, getProject } from "./apiCalls";
+import { getUserSelf, getProject, createProject } from "./apiCalls";
+import { createProjectHtml } from "./webviews/createProject";
+import { measureMemory } from "vm";
+import { title } from "process";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -38,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
         value: number | string;
       }
 
-      // if there is no api key set ask the user to enter it 
+      // if there is no api key set ask the user to enter it
       if (
         config.get<string>("flavortownApiKey") === "none" ||
         config.get<string>("flavortownApiKey") === ""
@@ -54,7 +57,6 @@ export function activate(context: vscode.ExtensionContext) {
           return;
         }
 
-        
         config.update(
           "flavortownApiKey",
           enteredApiKey,
@@ -91,7 +93,7 @@ export function activate(context: vscode.ExtensionContext) {
       );
 
       // if user wants to choose new one fetch all projects and show them in a selection
-      if (projectCreationChoice?.value !== "existing") {
+      if (projectCreationChoice?.value === "existing") {
         vscode.window.showInformationMessage(
           `Fetching projects for ${userSelf.display_name}, this may take a while.`,
         );
@@ -113,18 +115,62 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         // set in vscode settings
-        config.update(
-          "projectId",
-          selectProjectId.value
-        );
+        config.update("projectId", selectProjectId.value);
 
-      // TODO: create a new project (webview)
+        // TODO: create a new project (treesview)
       } else {
+        vscode.commands.executeCommand("flavorcode.createProject");
       }
     },
   );
 
-  context.subscriptions.push(disposable, setupProject);
+  const createNewProject = vscode.commands.registerCommand(
+    "flavorcode.createProject",
+    async () => {
+      const panel = vscode.window.createWebviewPanel(
+        "createProject",
+        "create new Project",
+        vscode.ViewColumn.One,
+        {
+          enableScripts: true,
+          localResourceRoots: [
+            vscode.Uri.joinPath(context.extensionUri, "media"),
+          ],
+        },
+      );
+
+      panel.webview.html = createProjectHtml(
+        panel.webview,
+        context.extensionUri,
+      );
+
+      panel.webview.onDidReceiveMessage(async (message) => {
+        const messageContent = message.value;
+        switch (message.command) {
+          case "create":
+            const newProject = await createProject(
+              "",
+              messageContent.name,
+              messageContent.description,
+              messageContent.repo,
+              messageContent.demo,
+              messageContent.ai,
+            );
+            panel.dispose();
+            if (newProject instanceof Error) {
+              vscode.window.showErrorMessage(newProject.message);
+            } else {
+              vscode.window.showInformationMessage(
+                `Created new project "${newProject.title}" succesfully`,
+              );
+            }
+            return;
+        }
+      });
+    },
+  );
+
+  context.subscriptions.push(disposable, setupProject, createNewProject);
 }
 
 // This method is called when your extension is deactivated
