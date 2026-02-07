@@ -29,6 +29,11 @@
         "command": "flavorcode.createProject",
         "category": "Flavorcode",
         "title": "create new Project"
+      },
+      {
+        "command": "flavorcode.updateProject",
+        "category": "Flavorcode",
+        "title": "update current Project"
       }
     ],
     "viewsContainers": {

@@ -124,6 +124,7 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
+  // create project Command
   const createNewProject = vscode.commands.registerCommand(
     "flavorcode.createProject",
     async () => {
@@ -132,6 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
         "create new Project",
         vscode.ViewColumn.One,
         {
+          // permissions
           enableScripts: true,
           localResourceRoots: [
             vscode.Uri.joinPath(context.extensionUri, "media"),
@@ -139,11 +141,13 @@ export function activate(context: vscode.ExtensionContext) {
         },
       );
 
+      // create webview
       panel.webview.html = createProjectHtml(
         panel.webview,
         context.extensionUri,
       );
 
+      // handle webview interactions
       panel.webview.onDidReceiveMessage(async (message) => {
         const messageContent = message.value;
         switch (message.command) {
@@ -168,6 +172,12 @@ export function activate(context: vscode.ExtensionContext) {
         }
       });
     },
+  );
+
+  const updateCurrentProject = vscode.commands.registerCommand(
+    "flavorcode.updateProject", async () => {
+      // ToDo: implement project updating webview
+    }
   );
 
   context.subscriptions.push(disposable, setupProject, createNewProject);
