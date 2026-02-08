@@ -6,13 +6,20 @@ body {
   align-items: center;
 }
 
+textarea {
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  overflow: scroll;
+}
+
 input {
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
+  overflow: scroll;
 }
 
 input:focus {
-    border-color: var(--vscode-editor-foreground);
+  border-color: var(--vscode-editor-foreground);
 }
 
 button {
@@ -25,7 +32,18 @@ button:hover {
   color: var(--vscode-editor-background);
 }
 
-
 a {
-    text-decoration: underline;
+  text-decoration: underline;
+}
+
+.cancel {
+  color: #ff0000;
+}
+
+.cancel:hover {
+  color: #a30000;
+}
+
+.button-row {
+  display: flex;
 }

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="">
 </head>
 <body>
-    <h2>Create new Project</h2>
+    <h2>Updated current Project</h2>
     <h3>Name:</h3>
     <input id="name" type="text" placeholder="Give your project a name">
     <h3>Description:</h3>
@@ -19,18 +19,48 @@
     <h4>Ai declaration: (optional)</h4>
     <textarea id="ai" type="text" placeholder="I didn't use ai to generate my code because im cool :D">
     <p>Please set the Hackatime project manually on the a href="https://flavortown.hackclub.com/projects">Flavortown website</a> as the api doesnt support it. :(</p>
-    <button onclick="Create()" >Create</button>
+    <div class="button-row">
+        <button onclick="Update()" >Update</button>
+        <button class="cancel" onclick="Cancel()">Cancel</button>
+    </div>
     <script>
+
         const vscode = acquireVsCodeApi();
-        function Create() {
+
+        // send inputs to extension
+        function Update() {
             const name = document.getElementById("name").value
             const description = document.getElementById("description").value
             const demo = document.getElementById("demo").value
             const repo = document.getElementById("repo").value
             const ai = document.getElementById("ai").value
             const createData = { name: name, description: description, demo: demo, repo: repo, ai:ai }
-            vscode.postMessage({ command: "create", value: createData })
+            vscode.postMessage({ command: "update", value: createData })
         }
+
+        // set default values to current project info
+        function passProjectInfo(projectInfo){
+            document.getElementById("name").value = projectInfo.name
+            document.getElementById("description").value = projectInfo.description
+            document.getElementById("demo").value = projectInfo.demo
+            document.getElementById("repo").value = projectInfo.repo
+            document.getElementById("ai") = projectInfo.ai
+        }
+
+        // cancels the update
+        function Cancel() {
+            vscode.postMessage({command:"cancel"})
+        }
+
+        // listens for messages from the extentsion
+        window.addEventListener("message", event => {
+            const message = event.data
+
+            switch (message.command) {
+                case "project-info":
+                    passProjectInfo(JSON.stringify(message.value))
+            }
+        })
     </script>
 </body>
 </html>

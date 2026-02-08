@@ -18,13 +18,13 @@ export function createProjectHtml (webview: vscode.Webview, extensionUri: vscode
     <h3>Name:</h3>
     <input id="name" type="text" placeholder="Give your project a name">
     <h3>Description:</h3>
-    <input id="description" type="text" placeholder="Share what the project does, who's working on it and what's new.">
+    <textarea id="description" type="text" placeholder="Share what the project does, who's working on it and what's new.">
     <h4>Demo Url(optional) </h4>
     <input id="demo" type="text" placeholder="https://orosemo.de">
     <h4>Repository Url: (optional)</h4>
     <input id="repo" type="text" placeholder="https://github.com/Joko-26/flavorcode">
     <h4>Ai declaration: (optional)</h4>
-    <input id="ai" type="text" placeholder="I didn't use ai to generate my code because im cool :D">
+    <textarea id="ai" type="text" placeholder="I didn't use ai to generate my code because im cool :D">
      <p>Please set the Hackatime project manually on the <a href="https://flavortown.hackclub.com/projects">Flavortown website</a> as the api doesnt support it. :(</p>
     <button onclick="Create()" >Create</button>
     <script>

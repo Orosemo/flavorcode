@@ -2,10 +2,12 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { setContext } from "./context";
-import { getUserSelf, getProject, createProject } from "./apiCalls";
+import { getUserSelf, getProject, createProject, updateProject } from "./apiCalls";
 import { createProjectHtml } from "./webviews/createProject";
 import { measureMemory } from "vm";
 import { title } from "process";
+import { updateProjectHtml } from "./webviews/updateProject";
+import common from "mocha/lib/interfaces/common";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -117,7 +119,6 @@ export function activate(context: vscode.ExtensionContext) {
         // set in vscode settings
         config.update("projectId", selectProjectId.value);
 
-        // TODO: create a new project (treesview)
       } else {
         vscode.commands.executeCommand("flavorcode.createProject");
       }
@@ -176,11 +177,80 @@ export function activate(context: vscode.ExtensionContext) {
 
   const updateCurrentProject = vscode.commands.registerCommand(
     "flavorcode.updateProject", async () => {
-      // ToDo: implement project updating webview
+      const config = vscode.workspace.getConfiguration("flavorcode");
+      const projectId = config.get<number>("projectId");
+      if (!projectId || projectId === 0) {
+        vscode.window.showErrorMessage("No project set: please use the setup command to initialise the exentsion.");
+        return;
+      }
+
+      const panel = vscode.window.createWebviewPanel(
+        "updateProject", 
+        "Modify current Project",
+        vscode.ViewColumn.One,
+        {
+          // permissions
+          enableScripts: true,
+          localResourceRoots: [
+            vscode.Uri.joinPath(context.extensionUri, "media"),
+          ]
+        }
+      );
+
+      panel.webview.html = updateProjectHtml(panel.webview, context.extensionUri);
+
+      // handle project messages from webview
+      panel.webview.onDidReceiveMessage(async (message) => {
+        const messageContent = message.value;
+        switch (message.command) {
+          // update project (get data from webview and make api call)
+          case "update":
+            try {
+              const updatedProject = await updateProject(
+                "",
+                projectId,
+                messageContent.name,
+                messageContent.description,
+                messageContent.repo,
+                messageContent.demo,
+                messageContent.ai,
+              );
+              // message
+              vscode.window.showInformationMessage(
+                `Updated project "${updatedProject.title}" succesfully`,
+              );
+              panel.dispose();
+              // error
+            } catch (error) {
+              const errorMessage =
+                error instanceof Error ? error.message : String(error);
+              vscode.window.showErrorMessage(errorMessage);
+            }
+            return;
+          // cancel
+          case "cancel":
+            panel.dispose();
+            return;
+        }
+      });
+
+      // populate form
+      const projectInfo = await getProject("", projectId);
+
+      const projectInfoData = {
+        name: projectInfo.title,
+        description: projectInfo.description,
+        demo: projectInfo.demo_url,
+        repo: projectInfo.repo_url,
+        ai: projectInfo.ai_declaration,
+      };
+
+      // send date to webview
+      panel.webview.postMessage({ command: "project-info", value: projectInfoData });
     }
   );
 
-  context.subscriptions.push(disposable, setupProject, createNewProject);
+  context.subscriptions.push(disposable, setupProject, createNewProject, updateCurrentProject);
 }
 
 // This method is called when your extension is deactivated

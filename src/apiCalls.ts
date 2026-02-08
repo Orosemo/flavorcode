@@ -258,15 +258,15 @@ export async function createProject(
   return newProject;
 }
 
-// update existing project with passed data
+// update an existing project with passed data
 export async function updateProject(
   givenApiKey: string,
   id: number,
   title: string,
   description: string,
-  repoUrl: string,
-  demo: string,
-  aiDeclaration: string,
+  repoUrl?: string,
+  demo?: string,
+  aiDeclaration?: string,
 ) {
   let apiKey = givenApiKey;
   if (getApiKey()) {
@@ -277,10 +277,10 @@ export async function updateProject(
     id: number;
     title: string;
     description: string;
-    repo_url: string;
-    demo_url: string;
-    readme_url: string;
-    ai_declaration: string;
+    repo_url?: string;
+    demo_url?: string;
+    readme_url?: string;
+    ai_declaration?: string;
     ship_status: string;
     devlog_ids: [number];
     created_at: string;
@@ -290,10 +290,19 @@ export async function updateProject(
   const body = new URLSearchParams({
     title: title,
     description: description,
-    repo_url: repoUrl,
-    demo_url: demo,
-    ai_declaration: aiDeclaration,
   });
+
+  if (repoUrl) {
+    body.set("repo_url", repoUrl);
+  }
+
+  if (demo) {
+    body.set("demo_url", demo);
+  }
+
+  if (aiDeclaration) {
+    body.set("ai_declaration", aiDeclaration);
+  }
 
   const res = await fetch(
     `https://flavortown.hackclub.com/api/v1/projects/${id}`,
@@ -302,6 +311,7 @@ export async function updateProject(
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/x-www-form-urlencoded",
+        [`X-Flavortown-Ext-${11154}`]: "true",
       },
       body,
     },
