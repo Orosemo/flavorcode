@@ -15,7 +15,6 @@ textarea {
 input {
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
-  overflow: scroll;
 }
 
 input:focus {
@@ -52,3 +51,10 @@ a {
   align-items: center;
   gap: 10px;
 }
+
+.checkbox {
+  background-color:blue;
+  color: var(--vscode-editor-foreground);
+}
+
+

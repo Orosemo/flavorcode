@@ -186,6 +186,7 @@ export async function getAllProjects(givenApiKey: string) {
 // create new project with passed data
 export async function createProject(
   givenApiKey: string,
+  setAsCurrent: boolean,
   title: string,
   description: string,
   repoUrl: string,
@@ -253,7 +254,9 @@ export async function createProject(
   const newProject = (await res.json()) as createProjectResponse;
 
   // set project id in the config
-  config.update("projectId", newProject.id);
+  if (setAsCurrent) {
+    config.update("projectId", newProject.id);
+  }
 
   return newProject;
 }

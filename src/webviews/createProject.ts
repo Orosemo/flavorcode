@@ -18,15 +18,21 @@ export function createProjectHtml (webview: vscode.Webview, extensionUri: vscode
     <h3>Name:</h3>
     <input id="name" type="text" placeholder="Give your project a name">
     <h3>Description:</h3>
-    <textarea id="description" type="text" placeholder="Share what the project does, who's working on it and what's new.">
+    <textarea id="description" type="text" placeholder="Share what the project does, who's working on it and what's new."></textarea>
     <h4>Demo Url(optional) </h4>
     <input id="demo" type="text" placeholder="https://orosemo.de">
     <h4>Repository Url: (optional)</h4>
     <input id="repo" type="text" placeholder="https://github.com/Joko-26/flavorcode">
     <h4>Ai declaration: (optional)</h4>
-    <textarea id="ai" type="text" placeholder="I didn't use ai to generate my code because im cool :D">
+    <textarea id="ai" type="text" placeholder="I didn't use ai to generate my code because im cool :D"></textarea>
      <p>Please set the Hackatime project manually on the <a href="https://flavortown.hackclub.com/projects">Flavortown website</a> as the api doesnt support it. :(</p>
-    <button onclick="Create()" >Create</button>
+    <div class="button-row">
+        <button onclick="Create()" >Create</button>
+        <div class="button-row">
+            <input id="currentProject" class="checkbox" type="checkbox" checked>
+            <p>Set Project as workspace Project</p>
+        </div>        
+    </div>
     <script>
         const vscode = acquireVsCodeApi();
         function Create() {
@@ -35,7 +41,8 @@ export function createProjectHtml (webview: vscode.Webview, extensionUri: vscode
             const demo = document.getElementById("demo").value
             const repo = document.getElementById("repo").value
             const ai = document.getElementById("ai").value
-            const createData = { name: name, description: description, demo: demo, repo: repo, ai:ai }
+            const currentProject = document.getElementById("currentProject").checked
+            const createData = { name: name, description: description, demo: demo, repo: repo, ai:ai, currentProject: currentProject }
             vscode.postMessage({ command: "create", value: createData })
         }
     </script>

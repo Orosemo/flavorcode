@@ -155,6 +155,7 @@ export function activate(context: vscode.ExtensionContext) {
           case "create":
             const newProject = await createProject(
               "",
+              messageContent.currenProject,
               messageContent.name,
               messageContent.description,
               messageContent.repo,

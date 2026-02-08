@@ -19,7 +19,13 @@
     <h4>Ai declaration: (optional)</h4>
     <textarea id="ai" type="text" placeholder="I didn't use ai to generate my code because im cool :D">
     <p>Please set the Hackatime project manually on the a href="https://flavortown.hackclub.com/projects">Flavortown website</a> as the api doesnt support it. :(</p>
-    <button onclick="Create()" >Create</button>
+    <div class="button-row">
+        <button onclick="Create()" >Create</button>
+        <div class="button-row">
+            <input id="currentProject" class="checkbox" type="checkbox" checked>
+            <p>Set Project as workspace Project</p>
+        </div>        
+    </div>
     <script>
         const vscode = acquireVsCodeApi();
         function Create() {
@@ -28,7 +34,8 @@
             const demo = document.getElementById("demo").value
             const repo = document.getElementById("repo").value
             const ai = document.getElementById("ai").value
-            const createData = { name: name, description: description, demo: demo, repo: repo, ai:ai }
+            const currenProject = document.getElementById("currentProject").value
+            const createData = { name: name, description: description, demo: demo, repo: repo, ai:ai, currenProject:currenProject}
             vscode.postMessage({ command: "create", value: createData })
         }
     </script>

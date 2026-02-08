@@ -39,17 +39,21 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "projectCreation",
+          "id": "projectInfo",
           "title": "Flavorcode",
           "icon": "resources/image.png"
         }
       ]
     },
     "views": {
-      "projectCreation": [
+      "projectInfo": [
         {
-          "id": "flavorcode.projectCreationView",
-          "name": "create new project"
+          "id": "flavorcode.infoView",
+          "name": "Flavortown project"
+        },
+        {
+          "id": "flavorcode.devlogView",
+          "name": "Devlogs"
         }
       ]
     },
