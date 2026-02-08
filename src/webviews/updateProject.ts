@@ -17,7 +17,7 @@ export function updateProjectHtml(
         <link rel="stylesheet" href="${styleUri}">
 </head>
 <body>
-    <h2>Updated current Project</h2>
+    <h2>Update current Project</h2>
     <h3>Name:</h3>
         <input id="name" type="text" placeholder="Give your project a name"></textarea>
     <h3>Description:</h3>

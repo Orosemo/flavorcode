@@ -41,9 +41,14 @@ a {
 }
 
 .cancel:hover {
-  color: #a30000;
+  color: (--vscode-editor-background);
+  background-color: #a30000;
 }
 
 .button-row {
   display: flex;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
