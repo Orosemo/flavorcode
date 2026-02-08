@@ -1,3 +1,5 @@
+![Flavorcode logo](https://i.ibb.co/bgY49bBM/flavorcode-small.png)
+
 # flavorcode README
 
 ## Table of contents

@@ -59,7 +59,7 @@
     },
     "viewsWelcome": [
       {
-        "view": "flavorcode.projectCreationView",
+        "view": "flavorcode.infoView",
         "contents": "Hmm seems Flavorcode isnt setup yet \n In order to use Flavorcode run the setup command: \n [setup](command:flavorcode.setupProject) \n Visit the [flavortown website](https://flavortown.hackclub.com/kitchen)"
       }
     ],
