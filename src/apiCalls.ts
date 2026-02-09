@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { getContext } from "./context";
 import { promises } from "dns";
 
 // gets api key from the vscode settings
