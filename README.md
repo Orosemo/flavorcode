@@ -50,3 +50,9 @@ Add your Flavortown API key in the settings or with the set command (WIP).
 ## Release Notes
 
 ### coming soon
+
+## Credits
+
+- ### [SabioOfficial](https://github.com/SabioOfficial)
+
+    Thanks for the great Markdown Parser. Definetly go check out [Spicetown](https://flavortown.hackclub.com/projects/140) ^_^
