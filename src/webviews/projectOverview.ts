@@ -13,7 +13,7 @@ export function updateProjectHtml(
     extensionUri,
     "src",
     "webviews",
-    "updateProject.htm",
+    "projectOverview.htm",
   );
   const rawHtml = fs.readFileSync(htmlPath.fsPath, "utf8");
 

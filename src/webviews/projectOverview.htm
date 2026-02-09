@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create new Project</title>
+    <link rel="stylesheet" href="">
+</head>
+<body id="body">
+    <h2>View current Project</h2>
+    <h3 id="name"></h3>
+    <h3 id="description"></h3>
+    <h4 id="ship"></h4>
+    <a id="demo" href="">Demo</a>
+    <a id="repo" href="">Repository</a>
+    <h4 id="ai"></h4>
+    <a href="">View this Project on Flavortown</a>
+    <script>
+        const vscode = acquireVsCodeApi();
+        let projectId = 0
+
+        // set default values to current project info
+        function passProjectInfo(projectInfo){
+            document.getElementById("name").textContent = projectInfo.name
+            document.getElementById("description").textContent = projectInfo.description
+            document.getElementById("ship").textContent = projectInfo.ship
+            document.getElementById("demo").href = projectInfo.demo
+            document.getElementById("repo").href = projectInfo.repo
+            document.getElementById("ai").textContent = projectInfo.ai
+
+            // remove empty elements 
+            if (!projectInfo.demo) {
+                document.getElementById("body").removeChild(document.getElementById("demo"))
+            }
+            if (!projectInfo.repo) {
+                document.getElementById("body").removeChild(document.getElementById("repo"))
+            }
+            if (!projectInfo.ai) {
+                document.getElementById("body").removeChild(document.getElementById("ai"))
+            }
+        }
+
+        function updateProject() {
+            vscode.postMessage({command:"update-Project", value:projectId})
+        }   
+
+        // listens for messages from the extentsion
+        window.addEventListener("message", event => {
+            const message = event.data
+
+            switch (message.command) {
+                case "project-info":
+                    passProjectInfo(JSON.stringify(message.value))
+                    projectId = message.value.projectId
+            }
+        })
+    </script>
+</body>
+</html>

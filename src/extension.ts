@@ -21,6 +21,7 @@ import * as emoji from "node-emoji";
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   let currentDevlogViewPanel: vscode.WebviewPanel | undefined = undefined;
+  let currentProjectViewPanel: vscode.WebviewPanel | undefined = undefined;
 
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
@@ -301,6 +302,7 @@ export function activate(context: vscode.ExtensionContext) {
         demo: projectInfo.demo_url,
         repo: projectInfo.repo_url,
         ai: projectInfo.ai_declaration,
+        ship: projectInfo.ship_status,
       };
 
       // send date to webview
@@ -351,6 +353,24 @@ export function activate(context: vscode.ExtensionContext) {
         command: "devlog-info",
         value: emojifiedRecord,
       });
+    },
+  );
+
+  const columToShowIn = vscode.window.activeTextEditor
+    ? vscode.window.activeTextEditor.viewColumn
+    : undefined;
+
+  const projectSidebarWebview = vscode.window.createWebviewPanel(
+    "flavorcode.infoView",
+    "Project Info",
+    columToShowIn || vscode.ViewColumn.One,
+    {
+      // permissions
+      enableScripts: true,
+      localResourceRoots: [
+        vscode.Uri.joinPath(context.extensionUri, "media"),
+        vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts"),
+      ],
     },
   );
 
