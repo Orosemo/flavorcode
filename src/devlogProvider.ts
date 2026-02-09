@@ -75,7 +75,7 @@ export class devlogProvider implements vscode.TreeDataProvider<devlog> {
   }
 
   private trimHeadline(headline: string): string {
-    const normalized = headline.replace(/[#+]/g, "●");
+    const normalized = headline.replace(/[#]+/g, "●");
 
     if (!normalized) {
       return "";
