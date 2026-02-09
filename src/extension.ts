@@ -23,6 +23,8 @@ import * as emoji from "node-emoji";
 export function activate(context: vscode.ExtensionContext) {
   setContext(context);
 
+  let currentDevlogViewPanel: vscode.WebviewPanel | undefined = undefined;
+
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "flavorcode" is now active!');
@@ -317,27 +319,33 @@ export function activate(context: vscode.ExtensionContext) {
     "flavorcode.openDevlog",
     (record) => {
       let pendingRecord = record;
-      const panel = vscode.window.createWebviewPanel(
-        "ViewDevlog",
-        "view Devlog",
-        vscode.ViewColumn.One,
-        {
-          // permissions
-          enableScripts: true,
-          localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, "media"),
-            vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts")
-          ],
-        },
-      );
-      panel.webview.html = openDevlogHtml(panel.webview, context.extensionUri);
+      const columToShowIn = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+      
+      if (currentDevlogViewPanel) {
+        currentDevlogViewPanel.reveal(columToShowIn)
+      } else {
+        currentDevlogViewPanel = vscode.window.createWebviewPanel(
+          "ViewDevlog",
+          "view Devlog",
+          vscode.ViewColumn.One,
+          {
+            // permissions
+            enableScripts: true,
+            localResourceRoots: [
+              vscode.Uri.joinPath(context.extensionUri, "media"),
+              vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts")
+            ],
+          },
+        );
+        currentDevlogViewPanel.webview.html = openDevlogHtml(currentDevlogViewPanel.webview, context.extensionUri);
+      }
 
       const recordBody = pendingRecord?.body ?? "";
       const emojifiedRecord = pendingRecord
         ? { ...pendingRecord, body: emoji.emojify(String(recordBody)) }
         : pendingRecord;
 
-      panel.webview.postMessage({ command: "devlog-info", value: emojifiedRecord });
+      currentDevlogViewPanel.webview.postMessage({ command: "devlog-info", value: emojifiedRecord });
     },
   );
 
