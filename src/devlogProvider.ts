@@ -33,7 +33,6 @@ export class devlogProvider implements vscode.TreeDataProvider<devlog> {
 
   async getChildren(element?: devlog): Promise<devlog[]> {
     if (element) {
-
       return [];
     }
 
@@ -67,13 +66,12 @@ export class devlogProvider implements vscode.TreeDataProvider<devlog> {
     );
 
     item.command = {
-        command:"flavorcode.openDevlog",
-        title:"Open Devlog",
-        arguments:[record]
-    }
+      command: "flavorcode.openDevlog",
+      title: "Open Devlog",
+      arguments: [record],
+    };
 
-    return (item);
-
+    return item;
   }
 
   private trimHeadline(headline: string): string {

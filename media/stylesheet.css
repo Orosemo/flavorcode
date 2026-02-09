@@ -53,8 +53,6 @@ a {
 }
 
 .checkbox {
-  background-color:blue;
+  background-color: blue;
   color: var(--vscode-editor-foreground);
 }
-
-

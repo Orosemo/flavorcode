@@ -352,50 +352,50 @@ export async function getProjectDevlogs(givenApiKey: string) {
     return;
   }
 
-// reply interface
-interface DevlogsResponse {
-  devlogs: Devlog[];
-  pagination: Pagination;
-}
+  // reply interface
+  interface DevlogsResponse {
+    devlogs: Devlog[];
+    pagination: Pagination;
+  }
 
-interface Devlog {
-  id: number;
-  body: string;
-  comments_count: number;
-  duration_seconds: number;
-  likes_count: number;
-  scrapbook_url: string;
-  created_at: string; 
-  updated_at: string; 
-  media: DevlogMedia[];
-  comments: DevlogComment[];
-}
+  interface Devlog {
+    id: number;
+    body: string;
+    comments_count: number;
+    duration_seconds: number;
+    likes_count: number;
+    scrapbook_url: string;
+    created_at: string;
+    updated_at: string;
+    media: DevlogMedia[];
+    comments: DevlogComment[];
+  }
 
-interface DevlogMedia {
-  url: string;
-  content_type: string;
-}
+  interface DevlogMedia {
+    url: string;
+    content_type: string;
+  }
 
-interface DevlogComment {
-  id: number;
-  author: CommentAuthor;
-  body: string;
-  created_at: string; 
-  updated_at: string; 
-}
+  interface DevlogComment {
+    id: number;
+    author: CommentAuthor;
+    body: string;
+    created_at: string;
+    updated_at: string;
+  }
 
-interface CommentAuthor {
-  id: number;
-  display_name: string;
-  avatar: string;
-}
+  interface CommentAuthor {
+    id: number;
+    display_name: string;
+    avatar: string;
+  }
 
-interface Pagination {
-  current_page: number;
-  total_pages: number;
-  total_count: number;
-  next_page: number | null;
-}
+  interface Pagination {
+    current_page: number;
+    total_pages: number;
+    total_count: number;
+    next_page: number | null;
+  }
 
   const res = await fetch(
     `https://flavortown.hackclub.com/api/v1/projects/${projectId}/devlogs`,

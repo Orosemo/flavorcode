@@ -20,7 +20,6 @@ import * as emoji from "node-emoji";
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
   let currentDevlogViewPanel: vscode.WebviewPanel | undefined = undefined;
 
   // Use the console to output diagnostic information (console.log) and errors (console.error)
@@ -317,10 +316,12 @@ export function activate(context: vscode.ExtensionContext) {
     "flavorcode.openDevlog",
     (record) => {
       let pendingRecord = record;
-      const columToShowIn = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
-      
+      const columToShowIn = vscode.window.activeTextEditor
+        ? vscode.window.activeTextEditor.viewColumn
+        : undefined;
+
       if (currentDevlogViewPanel) {
-        currentDevlogViewPanel.reveal(columToShowIn)
+        currentDevlogViewPanel.reveal(columToShowIn);
       } else {
         currentDevlogViewPanel = vscode.window.createWebviewPanel(
           "ViewDevlog",
@@ -331,11 +332,14 @@ export function activate(context: vscode.ExtensionContext) {
             enableScripts: true,
             localResourceRoots: [
               vscode.Uri.joinPath(context.extensionUri, "media"),
-              vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts")
+              vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts"),
             ],
           },
         );
-        currentDevlogViewPanel.webview.html = openDevlogHtml(currentDevlogViewPanel.webview, context.extensionUri);
+        currentDevlogViewPanel.webview.html = openDevlogHtml(
+          currentDevlogViewPanel.webview,
+          context.extensionUri,
+        );
       }
 
       const recordBody = pendingRecord?.body ?? "";
@@ -343,7 +347,10 @@ export function activate(context: vscode.ExtensionContext) {
         ? { ...pendingRecord, body: emoji.emojify(String(recordBody)) }
         : pendingRecord;
 
-      currentDevlogViewPanel.webview.postMessage({ command: "devlog-info", value: emojifiedRecord });
+      currentDevlogViewPanel.webview.postMessage({
+        command: "devlog-info",
+        value: emojifiedRecord,
+      });
     },
   );
 

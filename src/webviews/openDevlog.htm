@@ -1,150 +1,168 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View Devlog</title>
-    <link rel="stylesheet" href="${styleUri}">
-</head>
-<body>
+    <link rel="stylesheet" href="${styleUri}" />
+  </head>
+  <body>
     <h2>Devlog</h2>
     <h4 id="meta"></h4>
     <h4 id="duration"></h4>
-    <div id="content">
+    <div id="content"></div>
 
-    </div>
-    
     <script>
-        const vscode = acquireVsCodeApi();
+      const vscode = acquireVsCodeApi();
 
-        // set default values to current project info
-        function populateDevlog(record){
-          document.getElementById("content").innerHTML = parser(record.body);
-            document.getElementById("duration").textContent = "Logged: " + formatDuration(record.duration_seconds);
-            document.getElementById("meta").textContent =
-                record.likes_count + "❤️  " + record.comments_count + "🗒️";
-        }
+      // set default values to current project info
+      function populateDevlog(record) {
+        document.getElementById("content").innerHTML = parser(record.body);
+        document.getElementById("duration").textContent =
+          "Logged: " + formatDuration(record.duration_seconds);
+        document.getElementById("meta").textContent =
+          record.likes_count + "❤️  " + record.comments_count + "🗒️";
+      }
 
-    function formatDate(value) {
+      function formatDate(value) {
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) {
-        return value;
+          return value;
         }
 
         return date.toLocaleDateString();
-    }
+      }
 
-    function formatDuration(value) {
+      function formatDuration(value) {
         const secondsIn = value;
         if (secondsIn < 3600) {
-        let minutesOut = Math.floor(secondsIn / 60);
-        let secondsOut = secondsIn % 60;
-        return minutesOut + " min; " + secondsOut + " sec";
+          let minutesOut = Math.floor(secondsIn / 60);
+          let secondsOut = secondsIn % 60;
+          return minutesOut + " min; " + secondsOut + " sec";
         } else {
-        let hoursOut = Math.floor(secondsIn / 3600);
-        let secondsInMin = secondsIn % 3600;
-        let minutesOut = Math.floor(secondsInMin / 60);
-        let secondsOut = secondsInMin % 60;
-        return hoursOut + " h; " + minutesOut + " min; " + secondsOut + " sec";
+          let hoursOut = Math.floor(secondsIn / 3600);
+          let secondsInMin = secondsIn % 3600;
+          let minutesOut = Math.floor(secondsInMin / 60);
+          let secondsOut = secondsInMin % 60;
+          return (
+            hoursOut + " h; " + minutesOut + " min; " + secondsOut + " sec"
+          );
         }
-    }
+      }
 
+      function escapeHtml(value) {
+        if (!value) return "";
 
-  function escapeHtml(value) {
-    if (!value) return "";
+        return value
+          .replace(/&(?!(?:[a-zA-Z]+|#\d+|#x[a-fA-F0-9]+);)/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
 
-    return value
-      .replace(/&(?!(?:[a-zA-Z]+|#\d+|#x[a-fA-F0-9]+);)/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
+      function parser(text) {
+        if (!text) return "";
 
-  function parser(text) {
-    if (!text) return "";
+        let html = escapeHtml(text);
 
-    let html = escapeHtml(text);
+        const codeBlocks = [];
+        html = html.replace(
+          /\`\`\`(\w*)\n([\s\S]*?)\`\`\`/g,
+          function (_, language, code) {
+            const id = "TOKENCODEBLOCK" + codeBlocks.length + "TOKEN";
+            codeBlocks.push(
+              '<pre><code class="' +
+                language +
+                '"><span>' +
+                code.trim() +
+                "</span></code></pre>",
+            );
+            return "\n\n" + id + "\n\n";
+          },
+        );
 
-    const codeBlocks = [];
-    html = html.replace(/\`\`\`(\w*)\n([\s\S]*?)\`\`\`/g, function (_, language, code) {
-      const id = "TOKENCODEBLOCK" + codeBlocks.length + "TOKEN";
-      codeBlocks.push(
-        "<pre><code class=\"" + language + "\"><span>" + code.trim() + "</span></code></pre>"
-      );
-      return "\n\n" + id + "\n\n";
-    });
+        html = html
+          .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+          .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+          .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+          .replace(/^---$/gim, "<hr/>")
+          .replace(/^\s*[-*]\s+(.*)(\n)?/gim, "<ubli>$1</ubli>")
+          .replace(/^\s*\d+\.\s+(.*)(\n)?/gim, "<obli>$1</obli>")
+          .replace(/^&gt;[ ]?(.*)$/gim, "<bq>$1</bq>");
 
-    html = html
-      .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-      .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-      .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-      .replace(/^---$/gim, "<hr/>")
-      .replace(/^\s*[-*]\s+(.*)(\n)?/gim, "<ubli>$1</ubli>")
-      .replace(/^\s*\d+\.\s+(.*)(\n)?/gim, "<obli>$1</obli>")
-      .replace(/^&gt;[ ]?(.*)$/gim, "<bq>$1</bq>");
+        html = html
+          .replace(/(<ubli>.*<\/ubli>\s*)+/g, function (m) {
+            return (
+              "<ul>" + m.replace(/ubli/g, "li").replace(/\n/g, "") + "</ul>"
+            );
+          })
+          .replace(/(<obli>.*<\/obli>\s*)+/g, function (m) {
+            return (
+              "<ol>" + m.replace(/obli/g, "li").replace(/\n/g, "") + "</ol>"
+            );
+          })
+          .replace(/(<bq>.*<\/bq>\s*)+/g, function (m) {
+            const content = m.replace(/<\/?bq>/g, "").trim();
+            return (
+              "<blockquote><p>" +
+              content.split("\n").join("</p><p>") +
+              "</p></blockquote>"
+            );
+          });
 
-    html = html
-      .replace(/(<ubli>.*<\/ubli>\s*)+/g, function (m) {
-        return "<ul>" + m.replace(/ubli/g, "li").replace(/\n/g, "") + "</ul>";
-      })
-      .replace(/(<obli>.*<\/obli>\s*)+/g, function (m) {
-        return "<ol>" + m.replace(/obli/g, "li").replace(/\n/g, "") + "</ol>";
-      })
-      .replace(/(<bq>.*<\/bq>\s*)+/g, function (m) {
-        const content = m.replace(/<\/?bq>/g, "").trim();
-        return "<blockquote><p>" + content.split("\n").join("</p><p>") + "</p></blockquote>";
-      });
-
-    html = html
-      .split(/\n\n+/)
-      .map(function (block) {
-        const trimmed = block.trim();
-        if (
-          /^<(h[1-6]|ul|ol|blockquote|pre|hr)/i.test(trimmed) ||
-          trimmed.startsWith("TOKENCODEBLOCK")
-        ) {
-          return trimmed;
-        }
-        let processedBlock = trimmed.replace(/\n/g, "<br/>");
-        processedBlock = processedBlock.replace(/(<\/h[1-6]>)\s*<br\/>/gi, "$1");
-        return "<p>" + processedBlock + "</p>";
-      })
-      .join("\n");
-
-    html = html
-      .replace(
-        /!\[(.*?)\]\((.*?)\)/g,
-        '<div class="devlog-image-wrapper"><img src="$2" alt="$1" loading="lazy" /></div>'
-      )
-      .replace(
-        /\[(.*?)\]\((.*?)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
-      )
-      .replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>")
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      .replace(/__(.*?)__/g, "<strong>$1</strong>")
-      .replace(/_(.*?)_/g, "<em>$1</em>")
-      .replace(/~~(.*?)~~/g, "<del>$1</del>")
-      .replace(/`([^`]+)`/g, "<code>$1</code>");
-
-    codeBlocks.forEach(function (block, i) {
-      html = html.replace("TOKENCODEBLOCK" + i + "TOKEN", block);
-    });
-
-    return html;
-  }
-
-        // listens for messages from the extentsion
-        window.addEventListener("message", event => {
-            const message = event.data
-
-            switch (message.command) {
-                case "devlog-info":
-                    populateDevlog(message.value)
+        html = html
+          .split(/\n\n+/)
+          .map(function (block) {
+            const trimmed = block.trim();
+            if (
+              /^<(h[1-6]|ul|ol|blockquote|pre|hr)/i.test(trimmed) ||
+              trimmed.startsWith("TOKENCODEBLOCK")
+            ) {
+              return trimmed;
             }
-        })
+            let processedBlock = trimmed.replace(/\n/g, "<br/>");
+            processedBlock = processedBlock.replace(
+              /(<\/h[1-6]>)\s*<br\/>/gi,
+              "$1",
+            );
+            return "<p>" + processedBlock + "</p>";
+          })
+          .join("\n");
+
+        html = html
+          .replace(
+            /!\[(.*?)\]\((.*?)\)/g,
+            '<div class="devlog-image-wrapper"><img src="$2" alt="$1" loading="lazy" /></div>',
+          )
+          .replace(
+            /\[(.*?)\]\((.*?)\)/g,
+            '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+          )
+          .replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>")
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*(.*?)\*/g, "<em>$1</em>")
+          .replace(/__(.*?)__/g, "<strong>$1</strong>")
+          .replace(/_(.*?)_/g, "<em>$1</em>")
+          .replace(/~~(.*?)~~/g, "<del>$1</del>")
+          .replace(/`([^`]+)`/g, "<code>$1</code>");
+
+        codeBlocks.forEach(function (block, i) {
+          html = html.replace("TOKENCODEBLOCK" + i + "TOKEN", block);
+        });
+
+        return html;
+      }
+
+      // listens for messages from the extentsion
+      window.addEventListener("message", (event) => {
+        const message = event.data;
+
+        switch (message.command) {
+          case "devlog-info":
+            populateDevlog(message.value);
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
