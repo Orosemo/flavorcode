@@ -6,6 +6,7 @@
 - [Setup](#setup)
 - [Features](#features)
     - [View Flavortown project stats (WIP)](#view-flavortown-project-stats-wip)
+        - [View Devlogs](#view-devlogs)
     - [Add and Update Flavortown Projects ](#add-and-update-flavortown-projects)
         - [Create new project](#createproject)
         - [Update existing Project](#updateproject)
@@ -22,6 +23,9 @@ To setup the Extension use the `setup` command or open the `Flavorcode` tab on t
 ### View Flavortown project stats (WIP)
 
 View stats like `follower`, `votes` and `tracked time`
+
+- #### view Devlogs
+    You can view an over view by opening the Flavorcode tab in the activity bar on the right and and full devlog details by clicking on them.
 
 ### Add and Update Flavortown Projects 
 
