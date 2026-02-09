@@ -333,3 +333,88 @@ export async function updateProject(
 
 // create a new devlog of the current project with the passed data
 export async function createDevlog() {}
+
+// get all devlogs assouciated with one project
+export async function getProjectDevlogs(givenApiKey: string) {
+  // get api key
+  let apiKey = givenApiKey;
+  if (getApiKey()) {
+    apiKey = getApiKey();
+  }
+
+  // get project id
+  const config = vscode.workspace.getConfiguration("flavorcode");
+  const projectId = config.get<Number>("projectId");
+
+  if (!projectId || projectId === 0) {
+    vscode.window.showErrorMessage(
+      "No project set: please use the setup command to initialise the exentsion.",
+    );
+    return;
+  }
+
+// reply interface
+interface DevlogsResponse {
+  devlogs: Devlog[];
+  pagination: Pagination;
+}
+
+interface Devlog {
+  id: number;
+  body: string;
+  comments_count: number;
+  duration_seconds: number;
+  likes_count: number;
+  scrapbook_url: string;
+  created_at: string; 
+  updated_at: string; 
+  media: DevlogMedia[];
+  comments: DevlogComment[];
+}
+
+interface DevlogMedia {
+  url: string;
+  content_type: string;
+}
+
+interface DevlogComment {
+  id: number;
+  author: CommentAuthor;
+  body: string;
+  created_at: string; 
+  updated_at: string; 
+}
+
+interface CommentAuthor {
+  id: number;
+  display_name: string;
+  avatar: string;
+}
+
+interface Pagination {
+  current_page: number;
+  total_pages: number;
+  total_count: number;
+  next_page: number | null;
+}
+
+  const res = await fetch(
+    `https://flavortown.hackclub.com/api/v1/projects/${projectId}/devlogs`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        [`X-Flavortown-Ext-${11154}`]: "true",
+      },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to update Project: ${res.status} ${await res.text()}`,
+    );
+  }
+
+  return (await res.json()) as DevlogsResponse;
+}

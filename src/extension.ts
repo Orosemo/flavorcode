@@ -14,6 +14,9 @@ import { title } from "process";
 import { updateProjectHtml } from "./webviews/updateProject";
 import common from "mocha/lib/interfaces/common";
 import { cpSync } from "fs";
+import { devlogProvider } from "./devlogProvider";
+import { openDevlogHtml } from "./webviews/openDevlog";
+import * as emoji from "node-emoji";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -309,11 +312,46 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
+  // opens webview with devlog details
+  const openDevlog = vscode.commands.registerCommand(
+    "flavorcode.openDevlog",
+    (record) => {
+      let pendingRecord = record;
+      const panel = vscode.window.createWebviewPanel(
+        "ViewDevlog",
+        "view Devlog",
+        vscode.ViewColumn.One,
+        {
+          // permissions
+          enableScripts: true,
+          localResourceRoots: [
+            vscode.Uri.joinPath(context.extensionUri, "media"),
+            vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts")
+          ],
+        },
+      );
+      panel.webview.html = openDevlogHtml(panel.webview, context.extensionUri);
+
+      const recordBody = pendingRecord?.body ?? "";
+      const emojifiedRecord = pendingRecord
+        ? { ...pendingRecord, body: emoji.emojify(String(recordBody)) }
+        : pendingRecord;
+
+      panel.webview.postMessage({ command: "devlog-info", value: emojifiedRecord });
+    },
+  );
+
+  const devlogTreeView = vscode.window.createTreeView("flavorcode.devlogView", {
+    treeDataProvider: new devlogProvider(),
+  });
+
   context.subscriptions.push(
     disposable,
     setupProject,
     createNewProject,
     updateCurrentProject,
+    openDevlog,
+    devlogTreeView,
   );
 }
 
