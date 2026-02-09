@@ -1,4 +1,4 @@
-![Flavorcode logo](https://i.ibb.co/VsjHvbX/flavorcode-small.png)
+![Flavorcode logo](https://i.ibb.co/QvwWWYCC/flavorcode-small.png)
 
 # flavorcode README
 

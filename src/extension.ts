@@ -2,12 +2,18 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { setContext } from "./context";
-import { getUserSelf, getProject, createProject, updateProject } from "./apiCalls";
+import {
+  getUserSelf,
+  getProject,
+  createProject,
+  updateProject,
+} from "./apiCalls";
 import { createProjectHtml } from "./webviews/createProject";
 import { measureMemory } from "vm";
 import { title } from "process";
 import { updateProjectHtml } from "./webviews/updateProject";
 import common from "mocha/lib/interfaces/common";
+import { cpSync } from "fs";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -118,12 +124,55 @@ export function activate(context: vscode.ExtensionContext) {
 
         // set in vscode settings
         config.update("projectId", selectProjectId.value);
-
       } else {
         vscode.commands.executeCommand("flavorcode.createProject");
       }
     },
   );
+
+  /*
+  // delete current Project
+  const deleteCurrentProject = vscode.commands.registerCommand(
+    "flavorcode.deletCurrentProject",
+    async () => {
+      // get config (vscode settigs)
+      const config = vscode.workspace.getConfiguration("flavorcode");
+
+      // inteface for quickpick choices
+      interface Options extends vscode.QuickPickItem {
+        value: number | string;
+      }
+
+      if (
+        config.get<string>("flavortownApiKey") === "none" ||
+        config.get<string>("flavortownApiKey") === ""
+      ) {
+        vscode.window.showErrorMessage(
+          "Flavortown api key not set properly please  use the setup command to set it or set it in the settings.",
+        );
+      }
+
+      if (
+        config.get<number>("projectId") === 0 ||
+        config.get<number>("projectId") === undefined
+      ) {
+        vscode.window.showErrorMessage(
+          "Flavortown Project not set properly please use the setup command to set it.",
+        );
+      }
+
+      const currentProject = await getProject("", Number(config.get<number>("projectId")));
+
+      const enteredName = await vscode.window.showInputBox({placeHolder:`"${currentProject.title}"`, prompt: `Please enter ${currentProject.title} to confirm`});
+
+      if (currentProject.title === enteredName) {
+        // if there was an endpoint to delete projects that would be its place
+      } else {
+        vscode.window.showErrorMessage(`Project deletion canceled: ${currentProject.title} and ${enteredName} dont match.`)
+      }
+    },
+  );
+  */
 
   // create project Command
   const createNewProject = vscode.commands.registerCommand(
@@ -177,16 +226,19 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   const updateCurrentProject = vscode.commands.registerCommand(
-    "flavorcode.updateProject", async () => {
+    "flavorcode.updateProject",
+    async () => {
       const config = vscode.workspace.getConfiguration("flavorcode");
       const projectId = config.get<number>("projectId");
       if (!projectId || projectId === 0) {
-        vscode.window.showErrorMessage("No project set: please use the setup command to initialise the exentsion.");
+        vscode.window.showErrorMessage(
+          "No project set: please use the setup command to initialise the exentsion.",
+        );
         return;
       }
 
       const panel = vscode.window.createWebviewPanel(
-        "updateProject", 
+        "updateProject",
         "Modify current Project",
         vscode.ViewColumn.One,
         {
@@ -194,11 +246,14 @@ export function activate(context: vscode.ExtensionContext) {
           enableScripts: true,
           localResourceRoots: [
             vscode.Uri.joinPath(context.extensionUri, "media"),
-          ]
-        }
+          ],
+        },
       );
 
-      panel.webview.html = updateProjectHtml(panel.webview, context.extensionUri);
+      panel.webview.html = updateProjectHtml(
+        panel.webview,
+        context.extensionUri,
+      );
 
       // handle project messages from webview
       panel.webview.onDidReceiveMessage(async (message) => {
@@ -247,11 +302,19 @@ export function activate(context: vscode.ExtensionContext) {
       };
 
       // send date to webview
-      panel.webview.postMessage({ command: "project-info", value: projectInfoData });
-    }
+      panel.webview.postMessage({
+        command: "project-info",
+        value: projectInfoData,
+      });
+    },
   );
 
-  context.subscriptions.push(disposable, setupProject, createNewProject, updateCurrentProject);
+  context.subscriptions.push(
+    disposable,
+    setupProject,
+    createNewProject,
+    updateCurrentProject,
+  );
 }
 
 // This method is called when your extension is deactivated

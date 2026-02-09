@@ -34,6 +34,11 @@
         "command": "flavorcode.updateProject",
         "category": "Flavorcode",
         "title": "update current Project"
+      },
+      {
+        "command": "flavorcode.deletCurrentProject",
+        "category": "Flavorcode",
+        "title": "delet current Project"
       }
     ],
     "viewsContainers": {
