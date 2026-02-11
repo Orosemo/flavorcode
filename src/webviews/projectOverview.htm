@@ -4,45 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create new Project</title>
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="${styleUri}">
 </head>
 <body id="body">
-    <h2>View current Project</h2>
-    <h3 id="name"></h3>
-    <h3 id="description"></h3>
-    <h4 id="ship"></h4>
-    <a id="demo" href="">Demo</a>
-    <a id="repo" href="">Repository</a>
-    <h4 id="ai"></h4>
-    <a href="">View this Project on Flavortown</a>
-    <script>
+    <div class="border-div-full">
+        <div id="display" style="display: block;">
+            <div class="options">
+                <button onclick="switchMode('edit')">Edit</button>
+            </div>
+            <div>
+                <h2 id="name"></h2>
+                <div class="text-bodies" id="description"></div>
+                <h4 id="ship"></h4>
+                <div id="links" class="link-row">
+                    <a id="demo" class="link-button" href="#">Demo</a>
+                    <a id="repo" class="link-button" href="#">Repository</a>
+                </div>
+                <div id="ai-div">
+                    <h3 id="aiHeadline">AI Declaration:</h3>
+                    <h4 id="ai"></h4>
+                </div>
+                <a id="flavortown" href="#">View this Project on Flavortown</a>
+            </div>
+        </div>
+
+        
+
+        <div id="edit" style="display: none;">
+            <h2>Update current Project</h2>
+            <h3>Name:</h3>
+            <input id="nameInput" type="text" placeholder="Give your project a name">
+            <h3>Description:</h3>
+            <textarea id="descriptionInput" placeholder="Share what the project does, who's working on it and what's new."></textarea>
+            <h4>Demo Url(optional)</h4>
+            <input id="demoInput" type="text" placeholder="https://orosemo.de">
+            <h4>Repository Url: (optional)</h4>
+            <input id="repoInput" type="text" placeholder="https://github.com/Joko-26/flavorcode">
+            <h4>Ai declaration: (optional)</h4>
+            <textarea id="aiInput" placeholder="I didn't use ai to generate my code because im cool :D"></textarea>
+            <p>Please set the Hackatime project manually on the <a href="https://flavortown.hackclub.com/projects">Flavortown website</a> as the api doesnt support it. :(</p>
+            <div class="button-row">
+                <button onclick="Update()">Update</button>
+                <button class="cancel" onclick="switchMode('display')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
         let projectId = 0
 
         // set default values to current project info
-        function passProjectInfo(projectInfo){
+        function passProjectInfo(projectInfo) {
             document.getElementById("name").textContent = projectInfo.name
-            document.getElementById("description").textContent = projectInfo.description
-            document.getElementById("ship").textContent = projectInfo.ship
+            document.getElementById("ship").textContent = "Status: " + projectInfo.ship
             document.getElementById("demo").href = projectInfo.demo
             document.getElementById("repo").href = projectInfo.repo
+            document.getElementById("flavortown").href = `https://flavortown.hackclub.com/projects/${projectId}`
             document.getElementById("ai").textContent = projectInfo.ai
 
-            // remove empty elements 
+            const desc = document.getElementById("description");
+            desc.textContent = "";
+            (projectInfo.description || "").split("\n").forEach((line) => {
+                desc.innerHTML += `${line}<br>`;
+            });
+
+            // remove empty elements
             if (!projectInfo.demo) {
-                document.getElementById("body").removeChild(document.getElementById("demo"))
+                document.getElementById("links").removeChild(document.getElementById("demo"))
             }
             if (!projectInfo.repo) {
-                document.getElementById("body").removeChild(document.getElementById("repo"))
+                document.getElementById("links").removeChild(document.getElementById("repo"))
             }
             if (!projectInfo.ai) {
-                document.getElementById("body").removeChild(document.getElementById("ai"))
+                document.getElementById("ai-div").removeChild(document.getElementById("ai"))
+                document.getElementById("ai-div").removeChild(document.getElementById("aiHeadline"))
+            }
+
+            document.getElementById("nameInput").value = projectInfo.name
+            document.getElementById("descriptionInput").value = projectInfo.description
+            document.getElementById("demoInput").value = projectInfo.demo
+            document.getElementById("repoInput").value = projectInfo.repo
+            document.getElementById("aiInput").value = projectInfo.ai
+
+        }
+
+        function switchMode(mode) {
+            if (mode === "display") {
+                document.getElementById("display").style = "display: block;"
+                document.getElementById("edit").style = "display: none;"
+            } else {
+                document.getElementById("display").style = "display: none;"
+                document.getElementById("edit").style = "display: block;"
             }
         }
 
-        function updateProject() {
-            vscode.postMessage({command:"update-Project", value:projectId})
-        }   
+        // send inputs to extension
+        function Update() {
+            const name = document.getElementById("nameInput").value
+            const description = document.getElementById("descriptionInput").value
+            const demo = document.getElementById("demoInput").value
+            const repo = document.getElementById("repoInput").value
+            const ai = document.getElementById("aiInput").value
+            const createData = { name: name, description: description, demo: demo, repo: repo, ai:ai }
+            vscode.postMessage({ command: "update", value: createData })
+        }
+
+        
+
+        function refresh() {
+            vscode.postMessage({command:"refresh"})
+        }
 
         // listens for messages from the extentsion
         window.addEventListener("message", event => {
@@ -50,8 +122,14 @@
 
             switch (message.command) {
                 case "project-info":
-                    passProjectInfo(JSON.stringify(message.value))
                     projectId = message.value.projectId
+                    passProjectInfo(message.value)
+                    break
+                case "updated-project-info":
+                    projectId = message.value.projectId
+                    switchMode("display")
+                    passProjectInfo(message.value)
+                    break
             }
         })
     </script>

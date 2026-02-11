@@ -4,28 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create new Project</title>
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="${styleUri}">
 </head>
 <body>
-    <h2>Create new Project</h2>
-    <h3>Name:</h3>
-    <input id="name" type="text" placeholder="Give your project a name">
-    <h3>Description:</h3>
-    <textarea id="description" type="text" placeholder="Share what the project does, who's working on it and what's new.">
-    <h4>Demo Url(optional) </h4>
-    <input id="demo" type="text" placeholder="https://orosemo.de">
-    <h4>Repository Url: (optional)</h4>
-    <input id="repo" type="text" placeholder="https://github.com/Joko-26/flavorcode">
-    <h4>Ai declaration: (optional)</h4>
-    <textarea id="ai" type="text" placeholder="I didn't use ai to generate my code because im cool :D">
-    <p>Please set the Hackatime project manually on the a href="https://flavortown.hackclub.com/projects">Flavortown website</a> as the api doesnt support it. :(</p>
-    <div class="button-row">
-        <button onclick="Create()" >Create</button>
+    <div class="border-div" >
+        <h2>Create new Project</h2>
+        <h3>Name:</h3>
+        <input id="name" type="text" placeholder="Give your project a name">
+        <h3>Description:</h3>
+        <textarea id="description" type="text" placeholder="Share what the project does, who's working on it and what's new."></textarea>
+        <h4>Demo Url(optional) </h4>
+        <input id="demo" type="text" placeholder="https://orosemo.de">
+        <h4>Repository Url: (optional)</h4>
+        <input id="repo" type="text" placeholder="https://github.com/Joko-26/flavorcode">
+        <h4>Ai declaration: (optional)</h4>
+        <textarea id="ai" type="text" placeholder="I didn't use ai to generate my code because im cool :D"></textarea>
+        <p>Please set the Hackatime project manually on the a href="https://flavortown.hackclub.com/projects">Flavortown website</a> as the api doesnt support it. :(</p>
         <div class="button-row">
-            <input id="currentProject" class="checkbox" type="checkbox" checked>
-            <p>Set Project as workspace Project</p>
-        </div>        
+            <button onclick="Create()" >Create</button>
+            <label class="checkbox">
+                <input id="currentProject" type="checkbox" checked>
+                <span class="checkbox-box"></span>
+                <span>Set Project as workspace Project</span>
+            </label>
+        </div>
     </div>
+
     <script>
         const vscode = acquireVsCodeApi();
         function Create() {

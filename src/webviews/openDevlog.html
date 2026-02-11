@@ -6,11 +6,13 @@
     <title>View Devlog</title>
     <link rel="stylesheet" href="${styleUri}" />
   </head>
-  <body>
-    <h2>Devlog</h2>
-    <h4 id="meta"></h4>
-    <h4 id="duration"></h4>
-    <div id="content"></div>
+  <body class="devlog-body">
+    <div class="devlog-container">
+      <h2>Devlog</h2>
+      <h4 id="meta"></h4>
+      <h4 id="duration"></h4>
+      <div id="content" class="text-bodies"></div>
+    </div>
 
     <script>
       const vscode = acquireVsCodeApi();

@@ -1,33 +1,85 @@
+html,
 body {
   font-family: var(--vscode-font-family);
   color: var(--vscode-editor-foreground);
-  display: grid;
-  justify-content: center;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background-color: #7b4942;
+    justify-content: center;
   align-items: center;
 }
 
+body {
+  display: block;
+  overflow-wrap: break-word;
+}
+
 textarea {
-  background-color: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
+  width: 100%;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  color: #ffffe8;
+  background-origin: border-box;
+  background-color: #4e2c33;
+  cursor: text;
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #56312F;
+  border-image: initial;
+  text-decoration: none;
   overflow: scroll;
+  resize: vertical;
+  min-height: 20px;
 }
 
 input {
-  background-color: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
+  width: 100%;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  color: #ffffe8;
+  background-origin: border-box;
+  background-color: #4e2c33;
+  cursor: text;
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #56312F;
+  border-image: initial;
+  text-decoration: none;
 }
 
 input:focus {
   border-color: var(--vscode-editor-foreground);
 }
 
+
+
 button {
-  background-color: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
+  display: inline-flex;
+  align-items: center;
+  color: #ffffe8;
+  background-origin: border-box;
+  background-color: #4e2c33;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #56312F;
+  border-image: initial;
+  text-decoration: none;
 }
 
 button:hover {
-  background-color: var(--vscode-editor-foreground);
+  background-color: #AD7858;
   color: var(--vscode-editor-background);
 }
 
@@ -53,6 +105,130 @@ a {
 }
 
 .checkbox {
-  background-color: blue;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
   color: var(--vscode-editor-foreground);
+}
+
+.checkbox input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkbox-box {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #56312F;
+  border-radius: 4px;
+  background-color: #4e2c33;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+.checkbox input:checked + .checkbox-box {
+  background-color: #AD7858;
+  border-color: #AD7858;
+}
+
+.checkbox input:checked + .checkbox-box::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 10px;
+  border: solid #ffffe8;
+  border-width: 0 2px 2px 0;
+  transform: translate(4px, 0px) rotate(45deg);
+}
+
+.options {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 15px;
+}
+
+.options-button {
+
+}
+
+.link-row {
+  display: flex;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  color: #ffffe8;
+  background-origin: border-box;
+  background-color: #4e2c33;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #56312F;
+  border-image: initial;
+  text-decoration: none;
+}
+
+.link-button:hover {
+  background-color: #AD7858;
+}
+
+.border-div {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 10px;
+  background-color: #7b4942;
+  background-origin: padding-box;
+  background-clip: padding-box;
+}
+
+.border-div-full{
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  background-color: #7b4942;
+  padding: 20px;
+}
+
+.custom-body {
+  background-color: transparent;
+}
+
+.text-bodies {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border-color: #563038;
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  background-color: #68403D;
+  background-origin: padding-box;
+  background-clip: padding-box;
+}
+
+.devlog-body {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.devlog-container {
+  width: min(100%, 900px);
+  margin: 20px;
+  box-sizing: border-box;
 }

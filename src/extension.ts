@@ -16,6 +16,8 @@ import { cpSync } from "fs";
 import { devlogProvider } from "./devlogProvider";
 import { openDevlogHtml } from "./webviews/openDevlog";
 import * as emoji from "node-emoji";
+import { projectInfoProvider } from "./projectInfoWebViewProvider";
+
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -328,7 +330,7 @@ export function activate(context: vscode.ExtensionContext) {
         currentDevlogViewPanel = vscode.window.createWebviewPanel(
           "ViewDevlog",
           "view Devlog",
-          vscode.ViewColumn.One,
+          columToShowIn || vscode.ViewColumn.One,
           {
             // permissions
             enableScripts: true,
@@ -342,6 +344,10 @@ export function activate(context: vscode.ExtensionContext) {
           currentDevlogViewPanel.webview,
           context.extensionUri,
         );
+
+        currentDevlogViewPanel.onDidDispose(() => {
+          currentDevlogViewPanel = undefined;
+        });
       }
 
       const recordBody = pendingRecord?.body ?? "";
@@ -356,23 +362,7 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
-  const columToShowIn = vscode.window.activeTextEditor
-    ? vscode.window.activeTextEditor.viewColumn
-    : undefined;
-
-  const projectSidebarWebview = vscode.window.createWebviewPanel(
-    "flavorcode.infoView",
-    "Project Info",
-    columToShowIn || vscode.ViewColumn.One,
-    {
-      // permissions
-      enableScripts: true,
-      localResourceRoots: [
-        vscode.Uri.joinPath(context.extensionUri, "media"),
-        vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts"),
-      ],
-    },
-  );
+  const projectInfo = vscode.window.registerWebviewViewProvider(projectInfoProvider.viewType, new projectInfoProvider(context.extensionUri));
 
   const devlogTreeView = vscode.window.createTreeView("flavorcode.devlogView", {
     treeDataProvider: new devlogProvider(),
@@ -385,6 +375,7 @@ export function activate(context: vscode.ExtensionContext) {
     updateCurrentProject,
     openDevlog,
     devlogTreeView,
+    projectInfo
   );
 }
 

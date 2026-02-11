@@ -13,7 +13,7 @@ export function openDevlogHtml(
     extensionUri,
     "src",
     "webviews",
-    "openDevlog.htm",
+    "openDevlog.html",
   );
   const rawHtml = fs.readFileSync(htmlPath.fsPath, "utf8");
 

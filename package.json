@@ -10,7 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onStartupFinished",
+    "onView:flavorcode.infoView"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -58,7 +59,8 @@
       "projectInfo": [
         {
           "id": "flavorcode.infoView",
-          "name": "Flavortown project"
+          "name": "Flavortown project",
+          "type": "webview"
         },
         {
           "id": "flavorcode.devlogView",
