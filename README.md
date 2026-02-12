@@ -8,7 +8,10 @@
 - [Features](#features)
   - [View Flavortown project stats (WIP)](#view-flavortown-project-stats-wip)
     - [View Devlogs](#view-devlogs)
-  - [Add and Update Flavortown Projects ](#add-and-update-flavortown-projects) - [Create new project](#createproject) - [Update existing Project](#updateproject) -[Add and Update Devlogs (WIP)](#add-and-update-devlogs-wip)
+  - [Add and Update Flavortown Projects](#add-and-update-flavortown-projects)
+    - [Create new project](#createproject)
+    - [Update existing Project](#updateproject)
+    - [Add and Update Devlogs (WIP)](#add-and-update-devlogs-wip)
 - [Requirements](#requirements)
 - [Extension Settings](#extension-settings)
 - [Release Notes](#release-notes)
@@ -23,7 +26,7 @@ To setup the Extension use the `setup` command or open the `Flavorcode` tab on t
 
   View stats like `follower`, `votes` and `tracked time`
 
-- #### view Devlogs 
+- #### view Devlogs
 
   You can view an over view by opening the Flavorcode tab in the activity bar on the right and and full devlog details by clicking on them.
 
@@ -38,6 +41,7 @@ To setup the Extension use the `setup` command or open the `Flavorcode` tab on t
     Opens a webview pre-filled with all information from the current project for editing.
 
   - #### GUI
+
   You can also update projects with the `Edit`-button in the project overview page on the right.
 
 - ### Add and Update Devlogs (WIP) (Missing important api routes)
