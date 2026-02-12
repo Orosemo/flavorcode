@@ -17,6 +17,7 @@ import { devlogProvider } from "./devlogProvider";
 import { openDevlogHtml } from "./webviews/openDevlog";
 import * as emoji from "node-emoji";
 import { projectInfoProvider } from "./projectInfoWebViewProvider";
+import { viewDevlogProvider } from "./devlogViewWebviewProvider";
 
 
 // This method is called when your extension is activated
@@ -364,9 +365,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const projectInfo = vscode.window.registerWebviewViewProvider(projectInfoProvider.viewType, new projectInfoProvider(context.extensionUri));
 
-  const devlogTreeView = vscode.window.createTreeView("flavorcode.devlogView", {
-    treeDataProvider: new devlogProvider(),
-  });
+  const devlogView = vscode.window.registerWebviewViewProvider(viewDevlogProvider.viewType, new viewDevlogProvider(context.extensionUri));
 
   context.subscriptions.push(
     disposable,
@@ -374,8 +373,8 @@ export function activate(context: vscode.ExtensionContext) {
     createNewProject,
     updateCurrentProject,
     openDevlog,
-    devlogTreeView,
-    projectInfo
+    projectInfo,
+    devlogView
   );
 }
 

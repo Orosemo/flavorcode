@@ -64,7 +64,8 @@
         },
         {
           "id": "flavorcode.devlogView",
-          "name": "Devlogs"
+          "name": "Devlogs",
+          "type": "webview"
         }
       ]
     },

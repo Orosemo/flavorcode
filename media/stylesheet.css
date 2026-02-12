@@ -8,7 +8,7 @@ body {
   height: 100%;
   box-sizing: border-box;
   background-color: #7b4942;
-    justify-content: center;
+  justify-content: center;
   align-items: center;
 }
 
@@ -30,7 +30,7 @@ textarea {
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312F;
+  border-color: #56312f;
   border-image: initial;
   text-decoration: none;
   overflow: scroll;
@@ -51,7 +51,7 @@ input {
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312F;
+  border-color: #56312f;
   border-image: initial;
   text-decoration: none;
 }
@@ -59,8 +59,6 @@ input {
 input:focus {
   border-color: var(--vscode-editor-foreground);
 }
-
-
 
 button {
   display: inline-flex;
@@ -73,18 +71,24 @@ button {
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312F;
+  border-color: #56312f;
   border-image: initial;
   text-decoration: none;
 }
 
 button:hover {
-  background-color: #AD7858;
+  background-color: #ad7858;
   color: var(--vscode-editor-background);
 }
 
 a {
   text-decoration: underline;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .cancel {
@@ -121,7 +125,7 @@ a {
 .checkbox-box {
   width: 18px;
   height: 18px;
-  border: 2px solid #56312F;
+  border: 2px solid #56312f;
   border-radius: 4px;
   background-color: #4e2c33;
   box-sizing: border-box;
@@ -129,8 +133,8 @@ a {
 }
 
 .checkbox input:checked + .checkbox-box {
-  background-color: #AD7858;
-  border-color: #AD7858;
+  background-color: #ad7858;
+  border-color: #ad7858;
 }
 
 .checkbox input:checked + .checkbox-box::after {
@@ -147,10 +151,12 @@ a {
   display: flex;
   justify-content: flex-end;
   padding-top: 15px;
+  margin-right: 10px;
+  
 }
 
 .options-button {
-
+  margin-right: 10px;
 }
 
 .link-row {
@@ -172,13 +178,18 @@ a {
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312F;
+  border-color: #56312f;
   border-image: initial;
   text-decoration: none;
 }
 
 .link-button:hover {
-  background-color: #AD7858;
+  background-color: #ad7858;
+}
+
+.link-button.center {
+  display: flex;
+  justify-content: center;
 }
 
 .border-div {
@@ -193,7 +204,7 @@ a {
   background-clip: padding-box;
 }
 
-.border-div-full{
+.border-div-full {
   width: 100%;
   min-height: 100%;
   box-sizing: border-box;
@@ -207,16 +218,16 @@ a {
 
 .text-bodies {
   display: block;
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
+  margin-bottom: 10px;
   box-sizing: border-box;
   border-color: #563038;
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  background-color: #68403D;
+  background-color: #68403d;
   background-origin: padding-box;
   background-clip: padding-box;
 }
@@ -225,10 +236,53 @@ a {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  width: 100%;
 }
 
 .devlog-container {
   width: min(100%, 900px);
-  margin: 20px;
+  margin: 20px auto;
   box-sizing: border-box;
+}
+
+.devlog-display-entry {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 96px;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border-color: #563038;
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  background-color: #68403d;
+  background-origin: padding-box;
+  background-clip: padding-box;
+  gap: 20px;
+  margin-bottom: 20px;
+  text-overflow: ellipsis;
+}
+
+.devlog-display-entry p {
+  margin: 0;
+}
+
+.devlog-display-entry p:first-child {
+  flex: 1 1 auto;
+  text-overflow: ellipsis;
+}
+
+.devlog-display-entry p:last-child {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.devlog-display-container {
+  gap: 20px;
+  margin: 20px;
+  row-gap: 20px;
 }

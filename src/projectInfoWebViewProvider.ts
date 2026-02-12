@@ -1,4 +1,3 @@
-import { machine } from "os";
 import * as vscode from "vscode";
 import { overviewProjectHtml } from "./webviews/projectOverview";
 import { getProject, updateProject } from "./apiCalls";
@@ -30,12 +29,17 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
       const projectInfo = await getProject("", projectId);
 
       const projectInfoData = {
+        projectId: projectId,
         name: projectInfo.title,
         description: projectInfo.description,
         demo: projectInfo.demo_url,
         repo: projectInfo.repo_url,
         ai: projectInfo.ai_declaration,
         ship: projectInfo.ship_status,
+        readme: projectInfo.readme_url
+
+
+
       };
 
       webviewView.webview.postMessage({
@@ -70,6 +74,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
             );
 
             const projectInfoData = {
+              projectId: projectId,
               name: updatedProject.title,
               description: updatedProject.description,
               demo: updatedProject.demo_url,
@@ -89,6 +94,8 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               error instanceof Error ? error.message : String(error);
             vscode.window.showErrorMessage(errorMessage);
           }
+        } case "open-settings": {
+          vscode.commands.executeCommand('workbench.action.openSettings', 'flavorcode');
         }
       }
     });

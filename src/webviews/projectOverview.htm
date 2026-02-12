@@ -10,21 +10,24 @@
     <div class="border-div-full">
         <div id="display" style="display: block;">
             <div class="options">
-                <button onclick="switchMode('edit')">Edit</button>
+                <button class="options-button" onclick="switchMode('edit')">Edit</button>
+                <button class="options-button" onclick="openSetting()">Settings</button>
             </div>
             <div>
                 <h2 id="name"></h2>
-                <div class="text-bodies" id="description"></div>
                 <h4 id="ship"></h4>
-                <div id="links" class="link-row">
-                    <a id="demo" class="link-button" href="#">Demo</a>
-                    <a id="repo" class="link-button" href="#">Repository</a>
+                <div class="text-bodies" id="description"></div>
+                
+                <div class="text-bodies link-row" id="links" >
+                    <a id="demo" class="link-button center" style="margin-bottom: 10px; margin-top: 10px;" href="#">Demo</a>
+                    <a id="repo" class="link-button center" style="margin-bottom: 10px; margin-top: 10px;" href="#">Repository</a>
+                    <a id="readme" class="link-button center" style="margin-bottom: 10px; margin-top: 10px;" href="#">Readme</a>
                 </div>
-                <div id="ai-div">
-                    <h3 id="aiHeadline">AI Declaration:</h3>
-                    <h4 id="ai"></h4>
+                <div class="text-bodies" id="ai-div">
+                    <h3 id="aiHeadline">This project uses AI:</h3>
+                    <p id="ai"></p>
                 </div>
-                <a id="flavortown" href="#">View this Project on Flavortown</a>
+                <a id="flavortown" class="link-button center" href="#">View this Project on Flavortown</a>
             </div>
         </div>
 
@@ -55,13 +58,14 @@
         let projectId = 0
 
         // set default values to current project info
-        function passProjectInfo(projectInfo) {
+        function passProjectInfo(projectInfo, id) {
             document.getElementById("name").textContent = projectInfo.name
-            document.getElementById("ship").textContent = "Status: " + projectInfo.ship
+            document.getElementById("ship").textContent = "Shipping status: " + projectInfo.ship
             document.getElementById("demo").href = projectInfo.demo
             document.getElementById("repo").href = projectInfo.repo
-            document.getElementById("flavortown").href = `https://flavortown.hackclub.com/projects/${projectId}`
+            document.getElementById("flavortown").href = `https://flavortown.hackclub.com/projects/${id}`
             document.getElementById("ai").textContent = projectInfo.ai
+            document.getElementById("readme").href = projectInfo.readme
 
             const desc = document.getElementById("description");
             desc.textContent = "";
@@ -75,6 +79,9 @@
             }
             if (!projectInfo.repo) {
                 document.getElementById("links").removeChild(document.getElementById("repo"))
+            }
+            if (!projectInfo.readme) {
+                document.getElementById("links").removeChild(document.getElementById("readme"))
             }
             if (!projectInfo.ai) {
                 document.getElementById("ai-div").removeChild(document.getElementById("ai"))
@@ -110,7 +117,9 @@
             vscode.postMessage({ command: "update", value: createData })
         }
 
-        
+        function openSetting() {
+            vscode.postMessage({command: "open-settings"})
+        }
 
         function refresh() {
             vscode.postMessage({command:"refresh"})
@@ -123,12 +132,12 @@
             switch (message.command) {
                 case "project-info":
                     projectId = message.value.projectId
-                    passProjectInfo(message.value)
+                    passProjectInfo(message.value, message.value.projectId)
                     break
                 case "updated-project-info":
                     projectId = message.value.projectId
                     switchMode("display")
-                    passProjectInfo(message.value)
+                    passProjectInfo(message.value, message.value.projectId)
                     break
             }
         })
