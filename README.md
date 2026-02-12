@@ -19,25 +19,30 @@ To setup the Extension use the `setup` command or open the `Flavorcode` tab on t
 
 ## Features
 
-### View Flavortown project stats (WIP)
+- ### View Flavortown project stats (WIP)
 
-View stats like `follower`, `votes` and `tracked time`
+  View stats like `follower`, `votes` and `tracked time`
 
-- #### view Devlogs
+- #### view Devlogs 
+
   You can view an over view by opening the Flavorcode tab in the activity bar on the right and and full devlog details by clicking on them.
 
-### Add and Update Flavortown Projects
+- ### Add and Update Flavortown Projects
 
-- #### `createProject`
+  - #### `createProject`
 
-  Opens a webview form for the user to enter project creation information (the project is set as the workspace project after creation if you dont want that uncheck the option before hitting create) .
+    Opens a webview form for the user to enter project creation information (the project is set as the workspace project after creation if you dont want that uncheck the option before hitting create) .
 
-- #### `updateProject`
-  Opens a webview pre-filled with all information from the current project for editing.
+  - #### `updateProject`
 
-### Add and Update Devlogs (WIP)
+    Opens a webview pre-filled with all information from the current project for editing.
 
-Directly add or Devlogs in your code editor.
+  - #### GUI
+  You can also update projects with the `Edit`-button in the project overview page on the right.
+
+- ### Add and Update Devlogs (WIP) (Missing important api routes)
+
+  Directly add or Devlogs in your code editor.
 
 ## Requirements
 
