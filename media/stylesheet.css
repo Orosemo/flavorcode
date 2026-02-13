@@ -300,6 +300,10 @@ a {
   row-gap: 20px;
 }
 
+.devlog-display-container:last-child{
+  margin-bottom: 20px;
+}
+
 .devlog-display-entry-headline {
   display: flex;
   flex-direction: row;

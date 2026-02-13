@@ -1,6 +1,13 @@
 import * as vscode from "vscode";
 import { promises } from "dns";
 
+
+// Discord Rich Prensens
+export async function connectDiscordGateway(params:type) {
+  
+}
+
+
 // gets api key from the vscode settings
 function getApiKey() {
   const config = vscode.workspace.getConfiguration("flavorcode");

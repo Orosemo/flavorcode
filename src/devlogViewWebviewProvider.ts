@@ -28,16 +28,19 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
     async function populateWebview() {
       //  const devlogs = await getProjectDevlogs("")
 
-      const devlogs = [];
+      let devlogs = [];
       const project = await getProject("", projectId);
 
       for (let devlogId of project.devlog_ids) {
         devlogs.push(await getDevlog("", devlogId))
       }
+      
 
       //webviewView.webview.postMessage({command: "devlog-info", value:devlogs?.devlogs});
 
       webviewView.webview.postMessage({command: "devlog-info", value:devlogs});
+
+      devlogs = [];
     }
 
     populateWebview();
