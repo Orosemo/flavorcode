@@ -8,12 +8,7 @@ import {
   updateProject,
 } from "./apiCalls";
 import { createProjectHtml } from "./webviews/createProject";
-import { measureMemory } from "vm";
-import { title } from "process";
 import { updateProjectHtml } from "./webviews/updateProject";
-import common from "mocha/lib/interfaces/common";
-import { cpSync } from "fs";
-import { devlogProvider } from "./devlogProvider";
 import { openDevlogHtml } from "./webviews/openDevlog";
 import * as emoji from "node-emoji";
 import { projectInfoProvider } from "./projectInfoWebViewProvider";
@@ -55,28 +50,28 @@ export function activate(context: vscode.ExtensionContext) {
         value: number | string;
       }
 
-      // if there is no api key set ask the user to enter it
-      if (
-        config.get<string>("flavortownApiKey") === "none" ||
-        config.get<string>("flavortownApiKey") === ""
-      ) {
-        enteredApiKey = String(
-          await vscode.window.showInputBox({
-            placeHolder: "your Flavortown api key from the website",
-            prompt: "Go into the Flavortown settings and copy your api key",
-          }),
-        );
+      // ask the user to set or confirm their api key
 
-        if (!enteredApiKey) {
-          return;
-        }
+      const currentApiKey = config.get<string>("flavortownApiKey")
 
-        config.update(
-          "flavortownApiKey",
-          enteredApiKey,
-          vscode.ConfigurationTarget.Global,
-        );
+      enteredApiKey = String(
+        await vscode.window.showInputBox({
+          placeHolder: "your Flavortown api key from the website",
+          prompt: "Go into the Flavortown settings and copy your api key",
+          value: currentApiKey
+        }),
+      );
+
+      if (!enteredApiKey) {
+        return;
       }
+
+      config.update(
+        "flavortownApiKey",
+        enteredApiKey,
+        vscode.ConfigurationTarget.Global,
+      );
+
 
       // get user by api key
       const userSelf = await getUserSelf(enteredApiKey);

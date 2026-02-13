@@ -14,8 +14,14 @@
                 <button class="options-button" onclick="openSetting()">Settings</button>
             </div>
             <div>
-                <h2 id="name"></h2>
-                <h4 id="ship"></h4>
+                <h1 id="name"></h1>
+                <div class="text-bodies">
+                    <h4 id="ship"></h4>
+                    <div class="text-row">
+                        <p id="created"></p>
+                        <p id="updated"></p>
+                    </div>                    
+                </div>
                 <div class="text-bodies" id="description"></div>
                 
                 <div class="text-bodies link-row" id="links" >
@@ -29,7 +35,7 @@
                 </div>
                 <a id="flavortown" class="link-button center" href="#">View this Project on Flavortown</a>
             </div>
-        </div>
+        </div>f
 
         
 
@@ -66,6 +72,8 @@
             document.getElementById("flavortown").href = `https://flavortown.hackclub.com/projects/${id}`
             document.getElementById("ai").textContent = projectInfo.ai
             document.getElementById("readme").href = projectInfo.readme
+            document.getElementById('created').textContent = "Created: " + formatDate(projectInfo.created)
+            document.getElementById('updated').textContent = "Last updated: " + formatDate(projectInfo.updated)
 
             const desc = document.getElementById("description");
             desc.textContent = "";
@@ -104,6 +112,15 @@
                 document.getElementById("display").style = "display: none;"
                 document.getElementById("edit").style = "display: block;"
             }
+        }
+
+        function formatDate(value) {
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return value;
+            }
+
+            return date.toLocaleDateString();
         }
 
         // send inputs to extension

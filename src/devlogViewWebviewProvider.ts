@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getProject, getProjectDevlogs, updateProject } from "./apiCalls";
+import { getDevlog, getProject, getProjectDevlogs, updateProject } from "./apiCalls";
 import { viewDevlogtHtml } from "./webviews/viewDevlog";
 
 export class viewDevlogProvider implements vscode.WebviewViewProvider {
@@ -26,9 +26,18 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
     const projectId = Number(config.get<number>("projectId"));
 
     async function populateWebview() {
-        const devlogs = await getProjectDevlogs("")
+      //  const devlogs = await getProjectDevlogs("")
 
-        webviewView.webview.postMessage({command: "devlog-info", value:devlogs?.devlogs});
+      const devlogs = [];
+      const project = await getProject("", projectId);
+
+      for (let devlogId of project.devlog_ids) {
+        devlogs.push(await getDevlog("", devlogId))
+      }
+
+      //webviewView.webview.postMessage({command: "devlog-info", value:devlogs?.devlogs});
+
+      webviewView.webview.postMessage({command: "devlog-info", value:devlogs});
     }
 
     populateWebview();

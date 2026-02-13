@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { overviewProjectHtml } from "./webviews/projectOverview";
 import { getProject, updateProject } from "./apiCalls";
+import { create } from "domain";
 
 export class projectInfoProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flavorcode.infoView";
@@ -36,7 +37,9 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
         repo: projectInfo.repo_url,
         ai: projectInfo.ai_declaration,
         ship: projectInfo.ship_status,
-        readme: projectInfo.readme_url
+        readme: projectInfo.readme_url,
+        created: projectInfo.created_at,
+        updated: projectInfo.updated_at
 
 
 
@@ -81,6 +84,8 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               repo: updatedProject.repo_url,
               ai: updatedProject.ai_declaration,
               ship: updatedProject.ship_status,
+              created: updatedProject.created_at,
+              updated: updatedProject.updated_at
             };
 
             webviewView.webview.postMessage({

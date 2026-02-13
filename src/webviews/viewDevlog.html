@@ -7,19 +7,24 @@
     <link rel="stylesheet" href="${styleUri}" />
   </head>
   <body>
-    <div id="devlog-container" class="devlog-display-container"></div>
-
+    <div id="devlog-container" class="devlog-display-container"><div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div></div>
+    <div id="info-message" class="devlog-display-container" style="display: block;">
+      <p >Fetching devlogs this may take a while...</p>
+    </div>
+    
     <script>
         const vscode = acquireVsCodeApi();
         let Devlogs = []
 
         function populateDevlog(devlogInfo) {
+          document.getElementById("info-message").style = "display: none;"
+
             const devlogs = devlogInfo.map((devlog, index) => {
                 const devlogHead = getHead(devlog.body)
                 const duration = formatDuration(devlog.duration_seconds)
                 return (`<div class="devlog-display-entry" data-index="${index}"><p> ${trimHeadline(devlogHead.headline)}</p><p>${duration}</p></div>`)
             })
-            document.getElementById("devlog-container").innerHTML = devlogs.join("")
+            document.getElementById("devlog-container").innerHTML += devlogs.join("")
             
             // Add click listeners to devlog entries
             document.querySelectorAll(".devlog-display-entry").forEach(entry => {
@@ -45,7 +50,7 @@
         }
 
       function trimHeadline(headline) {
-          const normalized = headline.replace(/[#]+/g, "●");
+          const normalized = headline.replace(/[#]+/g, " ");
 
           if (!normalized) {
           return "";
