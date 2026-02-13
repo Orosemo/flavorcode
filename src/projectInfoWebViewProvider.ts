@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { overviewProjectHtml } from "./webviews/projectOverview";
-import { getProject, updateProject } from "./apiCalls";
+import { connectDiscordGateway, getProject, updateProject } from "./apiCalls";
 import { create } from "domain";
 
 export class projectInfoProvider implements vscode.WebviewViewProvider {
@@ -40,9 +40,6 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
         readme: projectInfo.readme_url,
         created: projectInfo.created_at,
         updated: projectInfo.updated_at
-
-
-
       };
 
       webviewView.webview.postMessage({
@@ -52,6 +49,10 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     }
 
     populateWebview();
+
+
+    const projectInfo = await getProject("", projectId);
+    await connectDiscordGateway(projectInfo.title, String(projectId), projectInfo.devlog_ids.length);
 
     webviewView.onDidChangeVisibility(async () => {
       populateWebview();

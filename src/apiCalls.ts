@@ -1,12 +1,90 @@
 import * as vscode from "vscode";
-import { promises } from "dns";
+import RPC from "discord-rpc";
 
+// Discord Rich Prensence
 
-// Discord Rich Prensens
-export async function connectDiscordGateway(params:type) {
-  
+let rpc: RPC.Client | null = null;
+let rpcReady = false;
+let lastActivity: { title: string; projectId: string, devlogs: number } | null = null;
+
+async function updateActivity() {
+  if (!rpc || !rpcReady || !lastActivity) {
+    return;
+  }
+  const { title, projectId, devlogs } = lastActivity;
+
+  console.log("updated activity")
+
+  const payload = {
+    details: `Working on: ${title}`,
+    state: `Devlogs so far: ${devlogs}`,
+    largeImageKey: "flavortown",
+    largeImageText: "Flavortown",
+    buttons: [
+      {
+        label: "To the Project".slice(0, 32),
+        url: `https://flavortown.hackclub.com/projects/${projectId}`.slice(0, 512),
+      },
+    ],
+  }
+  console.log(payload)
+  await rpc?.setActivity(payload as any);
 }
 
+export async function connectDiscordGateway(title: string, projectId: string, devlogs: number) {
+  const clientId = "1469410921704194090";
+
+  RPC.register(clientId);
+  lastActivity = {title, projectId, devlogs}
+
+  if (!rpc) {
+
+    rpc = new RPC.Client({ transport: "ipc" });
+
+    rpc.on("ready", async () => {
+      rpcReady = true;
+      console.log("dc ready");
+      await updateActivity()
+    });
+
+    const maxEntries = 5;
+
+    const attemptLogin = (retry: number) => {
+      rpc?.login({ clientId }).catch((err) => {
+        const message = err instanceof Error ? err.message : String(err);
+
+        if (message.includes("RPC_CONNECTION_TIMEOUT") && retry < maxEntries) {
+          const delayMs = Math.min(1000 * Math.pow(2, retry), 10000);
+          setTimeout(() => attemptLogin(retry + 1), delayMs);
+          return;
+        }
+        vscode.window.showErrorMessage(
+          `Flavortown discord richpresence: ${message}`,
+        );
+      });
+    };
+
+    attemptLogin(0);
+    return;
+  }
+
+  await updateActivity();
+}
+
+export async function disconnectDiscordGateway() {
+  if (!rpc) {
+    return;
+  }
+
+  try {
+    rpc.clearActivity?.();
+    rpc.destroy?.();
+  } finally {
+    rpc = null;
+    rpcReady = false;
+    lastActivity = null;
+  }
+}
 
 // gets api key from the vscode settings
 function getApiKey() {
@@ -422,7 +500,7 @@ export async function getProjectDevlogs(givenApiKey: string) {
 
   return (await res.json()) as DevlogsResponse;
 }
- 
+
 export async function getDevlog(givenApiKey: string, id: number) {
   // get api key
   let apiKey = givenApiKey;
@@ -462,9 +540,9 @@ export async function getDevlog(givenApiKey: string, id: number) {
   }
 
   interface CommentAuthor {
-    id: number,
-    dispaly_name: string,
-    avatar: string
+    id: number;
+    dispaly_name: string;
+    avatar: string;
   }
 
   const res = await fetch(
@@ -484,5 +562,4 @@ export async function getDevlog(givenApiKey: string, id: number) {
   }
 
   return (await res.json()) as DevlogsResponse;
-
 }

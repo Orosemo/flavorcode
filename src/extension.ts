@@ -6,6 +6,7 @@ import {
   getProject,
   createProject,
   updateProject,
+  disconnectDiscordGateway,
 } from "./apiCalls";
 import { createProjectHtml } from "./webviews/createProject";
 import { updateProjectHtml } from "./webviews/updateProject";
@@ -374,4 +375,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export async function deactivate() {
+  await disconnectDiscordGateway();
+}
