@@ -38,7 +38,7 @@
             const demo = document.getElementById("demo").value
             const repo = document.getElementById("repo").value
             const ai = document.getElementById("ai").value
-            const currenProject = document.getElementById("currentProject").value
+            const currenProject = document.getElementById("currentProject").checked
             const createData = { name: name, description: description, demo: demo, repo: repo, ai:ai, currenProject:currenProject}
             vscode.postMessage({ command: "create", value: createData })
         }

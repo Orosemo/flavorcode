@@ -78,11 +78,11 @@ export function activate(context: vscode.ExtensionContext) {
       const userSelf = await getUserSelf(enteredApiKey);
       // set in vscode settings if not set
       if (
-        config.get<string>("userName") === "your username" ||
-        config.get<string>("userName") === ""
+        config.get<string>("userId") === "your username" ||
+        config.get<string>("userId") === ""
       ) {
         config.update(
-          "userName",
+          "userId",
           userSelf.id,
           vscode.ConfigurationTarget.Global,
         );

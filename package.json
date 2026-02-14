@@ -90,10 +90,10 @@
           "description": "not needed rn, maybe in the future",
           "scope": "application"
         },
-        "flavorcode.userName": {
+        "flavorcode.userId": {
           "type": "string",
-          "default": "your username",
-          "description": "Your Flavortown username used to get user info and projects.",
+          "default": "your user Id",
+          "description": "Your Flavortown user Id used to get user info and projects.",
           "scope": "application"
         },
         "flavorcode.projectId": {

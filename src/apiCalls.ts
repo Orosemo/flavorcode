@@ -87,7 +87,7 @@ export async function disconnectDiscordGateway() {
 }
 
 // gets api key from the vscode settings
-function getApiKey() {
+function getApiKeyFromSettings(): string {
   const config = vscode.workspace.getConfiguration("flavorcode");
   const apiKey = config.get<string>("flavortownApiKey");
 
@@ -99,13 +99,18 @@ function getApiKey() {
   return apiKey;
 }
 
+// resolves api key: uses given key first, then tries settings
+function resolveApiKey(givenApiKey: string): string {
+  if (givenApiKey && givenApiKey.trim()) {
+    return givenApiKey;
+  }
+  return getApiKeyFromSettings();
+}
+
 // USERS:
 // get the user the api key belongs to
 export async function getUserSelf(givenApiKey: string) {
-  let apiKey = givenApiKey;
-  if (getApiKey()) {
-    apiKey = getApiKey();
-  }
+  const apiKey = resolveApiKey(givenApiKey);
 
   interface UserResponse {
     id: number;
@@ -134,10 +139,7 @@ export async function getUserSelf(givenApiKey: string) {
 
 // get a list of all users
 export async function getAllUsers(givenApiKey: string) {
-  let apiKey = givenApiKey;
-  if (getApiKey()) {
-    apiKey = getApiKey();
-  }
+  const apiKey = resolveApiKey(givenApiKey);
 
   interface UserResponse {
     users: User[];
@@ -179,10 +181,7 @@ export async function getAllUsers(givenApiKey: string) {
 // PROJECTS:
 // get project by id
 export async function getProject(givenApiKey: string, id: number) {
-  let apiKey = givenApiKey;
-  if (getApiKey()) {
-    apiKey = getApiKey();
-  }
+  const apiKey = resolveApiKey(givenApiKey);
 
   interface getProjectResponse {
     id: number;
@@ -218,10 +217,7 @@ export async function getProject(givenApiKey: string, id: number) {
 
 // get a list of all Projects
 export async function getAllProjects(givenApiKey: string) {
-  let apiKey = givenApiKey;
-  if (getApiKey()) {
-    apiKey = getApiKey();
-  }
+  const apiKey = resolveApiKey(givenApiKey);
 
   interface ProjectsResponse {
     projects: Project[];
@@ -278,11 +274,7 @@ export async function createProject(
   aiDeclaration?: string,
 ) {
   const config = vscode.workspace.getConfiguration("flavorcode");
-
-  let apiKey = givenApiKey;
-  if (getApiKey()) {
-    apiKey = getApiKey();
-  }
+  const apiKey = resolveApiKey(givenApiKey);
 
   interface createProjectResponse {
     id: number;
@@ -301,7 +293,6 @@ export async function createProject(
   const body = new URLSearchParams({
     title: title,
     description: description,
-    repo_url: repoUrl,
   });
 
   if (demo) {
@@ -355,10 +346,7 @@ export async function updateProject(
   demo?: string,
   aiDeclaration?: string,
 ) {
-  let apiKey = givenApiKey;
-  if (getApiKey()) {
-    apiKey = getApiKey();
-  }
+  const apiKey = resolveApiKey(givenApiKey);
 
   interface updateProjectResponse {
     id: number;
@@ -421,10 +409,7 @@ export async function createDevlog() {}
 // get all devlogs assouciated with one project
 export async function getProjectDevlogs(givenApiKey: string) {
   // get api key
-  let apiKey = givenApiKey;
-  if (getApiKey()) {
-    apiKey = getApiKey();
-  }
+  const apiKey = resolveApiKey(givenApiKey);
 
   // get project id
   const config = vscode.workspace.getConfiguration("flavorcode");
@@ -503,10 +488,7 @@ export async function getProjectDevlogs(givenApiKey: string) {
 
 export async function getDevlog(givenApiKey: string, id: number) {
   // get api key
-  let apiKey = givenApiKey;
-  if (getApiKey()) {
-    apiKey = getApiKey();
-  }
+  const apiKey = resolveApiKey(givenApiKey);
 
   // get project id
   const config = vscode.workspace.getConfiguration("flavorcode");

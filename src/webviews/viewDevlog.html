@@ -7,86 +7,119 @@
     <link rel="stylesheet" href="${styleUri}" />
   </head>
   <body>
-    <div id="devlog-container" class="devlog-display-container"><div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div></div>
-    <div id="info-message" class="devlog-display-container" style="display: block;">
-      <p >Fetching devlogs this may take a while...</p>
+    <div id="not-setup" class="devlog-display-container" style="display: none">
+      <p>Flavorcode not setup yet set it up in the window above :D</p>
     </div>
-    
+    <div
+      id="devlog-container"
+      class="devlog-display-container"
+      style="display: none"
+    >
+      <div class="devlog-display-entry-headline">
+        <p>Devlog Headline</p>
+        <p>Duration</p>
+      </div>
+      <div
+        id="info-message"
+        class="devlog-display-container"
+        style="display: block"
+      >
+        <p>Fetching devlogs this may take a while...</p>
+      </div>
+    </div>
+
     <script>
-        const vscode = acquireVsCodeApi();
-        let Devlogs = []
+      const vscode = acquireVsCodeApi();
+      let Devlogs = [];
 
-        function populateDevlog(devlogInfo) {
-          document.getElementById("info-message").style = "display: none;"
+      function populateDevlog(devlogInfo) {
+        document.getElementById("info-message").style = "display: none;";
 
-            const devlogs = devlogInfo.map((devlog, index) => {
-                const devlogHead = getHead(devlog.body)
-                const duration = formatDuration(devlog.duration_seconds)
-                return (`<div class="devlog-display-entry" data-index="${index}"><p> ${trimHeadline(devlogHead.headline)}</p><p>${duration}</p></div>`)
-            })
-            document.getElementById("devlog-container").innerHTML = `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div></div>`
-            document.getElementById("devlog-container").innerHTML += devlogs.join("")
-            
-            // Add click listeners to devlog entries
-            document.querySelectorAll(".devlog-display-entry").forEach(entry => {
-                entry.addEventListener("click", () => {
-                    openDevlog(entry.dataset.index)
-                })
-            })
-        }
+        const devlogs = devlogInfo.map((devlog, index) => {
+          const devlogHead = getHead(devlog.body);
+          const duration = formatDuration(devlog.duration_seconds);
+          return `<div class="devlog-display-entry" data-index="${index}"><p> ${trimHeadline(devlogHead.headline)}</p><p>${duration}</p></div>`;
+        });
+        document.getElementById("devlog-container").innerHTML =
+          `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div></div>`;
+        document.getElementById("devlog-container").innerHTML +=
+          devlogs.join("");
 
-        function formatDuration(value) {
-          const secondsIn = value;
-          if (secondsIn < 3600) {
-            let minutesOut = Math.floor(secondsIn / 60);
-            let secondsOut = secondsIn % 60;
-            return `${minutesOut} min; ${secondsOut} sec`;
-          } else {
-            let hoursOut = Math.floor(secondsIn / 3600);
-            let secondsInMin = secondsIn % 3600;
-            let minutesOut = Math.floor(secondsInMin / 60);
-            let secondsOut = secondsInMin % 60;
-            return `${hoursOut} h; ${minutesOut} min; ${secondsOut} sec`;
-          }
-        }
-
-      function trimHeadline(headline) {
-          const normalized = headline.replace(/[#]+/g, " ");
-
-          if (!normalized) {
-          return "";
-          }
-
-          return normalized;
+        // Add click listeners to devlog entries
+        document.querySelectorAll(".devlog-display-entry").forEach((entry) => {
+          entry.addEventListener("click", () => {
+            openDevlog(entry.dataset.index);
+          });
+        });
       }
 
-        // >_< hehehehehe
-        function getHead(body) {
-          const lines = body.split(/\r?\n/).map((line) => line.trim());
-          const nonEmpty = lines.filter((line) => line.length > 0);
+      function swapLayout(layout) {
+        if (layout === "devlogs") {
+          document.getElementById("not-setup").style = "display: none;";
+          document.getElementById("devlog-container").style = "display: block;";
+        } else {
+          document.getElementById("not-setup").style = "display: block;";
+          document.getElementById("devlog-container").style = "display: none;";
+        }
+      }
 
-          if (nonEmpty.length === 0) {
-            return { headline: "", content: "" };
-          }
+      function formatDuration(value) {
+        const secondsIn = value;
+        if (secondsIn < 3600) {
+          let minutesOut = Math.floor(secondsIn / 60);
+          let secondsOut = secondsIn % 60;
+          return `${minutesOut} min; ${secondsOut} sec`;
+        } else {
+          let hoursOut = Math.floor(secondsIn / 3600);
+          let secondsInMin = secondsIn % 3600;
+          let minutesOut = Math.floor(secondsInMin / 60);
+          let secondsOut = secondsInMin % 60;
+          return `${hoursOut} h; ${minutesOut} min; ${secondsOut} sec`;
+        }
+      }
 
-          const [headline, ...rest] = nonEmpty;
-          return { headline, content: rest.join(" ") };
+      function trimHeadline(headline) {
+        const normalized = headline.replace(/[#]+/g, " ");
+
+        if (!normalized) {
+          return "";
         }
 
-        function openDevlog(id) {
-            vscode.postMessage({command:"open-devlog", value:Devlogs[id]})
+        return normalized;
+      }
+
+      // >_< hehehehehe
+      function getHead(body) {
+        const lines = body.split(/\r?\n/).map((line) => line.trim());
+        const nonEmpty = lines.filter((line) => line.length > 0);
+
+        if (nonEmpty.length === 0) {
+          return { headline: "", content: "" };
         }
 
-        // listens for messages from the extentsion
-        window.addEventListener("message", (event) => {
-          const message = event.data;
+        const [headline, ...rest] = nonEmpty;
+        return { headline, content: rest.join(" ") };
+      }
 
-          switch (message.command) {
-            case "devlog-info":
-                Devlogs = message.value
-              populateDevlog(message.value);
-          }
-        });
+      function openDevlog(id) {
+        vscode.postMessage({ command: "open-devlog", value: Devlogs[id] });
+      }
+
+      // listens for messages from the extentsion
+      window.addEventListener("message", (event) => {
+        const message = event.data;
+
+        switch (message.command) {
+          case "devlog-info":
+            swapLayout("devlogs");
+            Devlogs = message.value;
+            populateDevlog(message.value);
+            break;
+          case "setup":
+            swapLayout(" ");
+            break;
+        }
+      });
     </script>
   </body>
 </html>

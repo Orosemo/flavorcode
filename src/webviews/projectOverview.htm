@@ -1,163 +1,433 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create new Project</title>
-    <link rel="stylesheet" href="${styleUri}">
-</head>
-<body id="body">
+    <link rel="stylesheet" href="${styleUri}" />
+  </head>
+  <body id="body">
     <div class="border-div-full">
-        <div id="display" style="display: block;">
-            <div class="options">
-                <button class="options-button" onclick="switchMode('edit')">Edit</button>
-                <button class="options-button" onclick="openSetting()">Settings</button>
-            </div>
-            <div>
-                <h1 id="name"></h1>
-                <div class="text-bodies">
-                    <h4 id="ship"></h4>
-                    <div class="text-row">
-                        <p id="created"></p>
-                        <p id="updated"></p>
-                    </div>                    
-                </div>
-                <div class="text-bodies" id="description"></div>
-                
-                <div class="text-bodies link-row" id="links" >
-                    <a id="demo" class="link-button center" style="margin-bottom: 10px; margin-top: 10px;" href="#">Demo</a>
-                    <a id="repo" class="link-button center" style="margin-bottom: 10px; margin-top: 10px;" href="#">Repository</a>
-                    <a id="readme" class="link-button center" style="margin-bottom: 10px; margin-top: 10px;" href="#">Readme</a>
-                </div>
-                <div class="text-bodies" id="ai-div">
-                    <h3 id="aiHeadline">This project uses AI:</h3>
-                    <p id="ai"></p>
-                </div>
-                <a id="flavortown" class="link-button center" href="#">View this Project on Flavortown</a>
-            </div>
+      <!--setup Page-->
+      <div id="setup" style="display: none">
+        <h1>Setup</h1>
+        <div class="text-bodies">
+          <h3>Your Flavortown Api key:</h3>
+          <input
+            id="api-key"
+            placeholder="(from the settings on the website)"
+            type="text"
+          />
+          <h3 id="api-warning" style="display: none; color: red;">Please enter your api key</h3>
         </div>
+        <div class="button-row">
+          <button onclick="createNew()">Create new Project</button>
+          <button onclick="chooseExisting()">Choose Existing Project</button>
+        </div>
+      </div>
 
+      <!--choose Page-->
+      <div id="choose" style="display: none">
+        <div class="options">
+          <button class="options-button" onclick="switchMode(' ')">Back</button>
+        </div>
+        <h1>Choose existing project:</h3>
+        <div class="text-bodies">
+          <select name="Flavortown projects" id="project-select"></select>
+        </div>
+        <h3 id="selection-warning" style="display: none; color: red;">Please select a project</h3>
+        <div class="button-row">
+          <button onclick="selection()">Select project</button>
+        </div>
         
+      </div>
 
-        <div id="edit" style="display: none;">
-            <h2>Update current Project</h2>
-            <h3>Name:</h3>
-            <input id="nameInput" type="text" placeholder="Give your project a name">
-            <h3>Description:</h3>
-            <textarea id="descriptionInput" placeholder="Share what the project does, who's working on it and what's new."></textarea>
-            <h4>Demo Url(optional)</h4>
-            <input id="demoInput" type="text" placeholder="https://orosemo.de">
-            <h4>Repository Url: (optional)</h4>
-            <input id="repoInput" type="text" placeholder="https://github.com/Joko-26/flavorcode">
-            <h4>Ai declaration: (optional)</h4>
-            <textarea id="aiInput" placeholder="I didn't use ai to generate my code because im cool :D"></textarea>
-            <p>Please set the Hackatime project manually on the <a href="https://flavortown.hackclub.com/projects">Flavortown website</a> as the api doesnt support it. :(</p>
-            <div class="button-row">
-                <button onclick="Update()">Update</button>
-                <button class="cancel" onclick="switchMode('display')">Cancel</button>
-            </div>
+      <!--create Page-->
+      <div id="create" style="display: none">
+        <div class="options">
+          <button class="options-button" onclick="switchMode(' ')">Back</button>
         </div>
+        <h2>Create new Project</h2>
+        <h3>Name:</h3>
+        <input
+          id="create-name"
+          type="text"
+          placeholder="Give your project a name"
+        />
+        <h3>Description:</h3>
+        <textarea
+          id="create-description"
+          type="text"
+          placeholder="Share what the project does, who's working on it and what's new."
+        ></textarea>
+        <h4>Demo Url(optional)</h4>
+        <input id="create-demo" type="text" placeholder="https://orosemo.de" />
+        <h4>Repository Url: (optional)</h4>
+        <input
+          id="create-repo"
+          type="text"
+          placeholder="https://github.com/Joko-26/flavorcode"
+        />
+        <h4>Ai declaration: (optional)</h4>
+        <textarea
+          id="create-ai"
+          type="text"
+          placeholder="I didn't use ai to generate my code because im cool :D"
+        ></textarea>
+        <p>
+          Please set the Hackatime project manually on the
+          <a href="https://flavortown.hackclub.com/projects"
+            >Flavortown website</a
+          >
+          as the api doesnt support it. :(
+        </p>
+        <div class="button-row">
+          <button onclick="Create()">Create</button>
+          <label class="checkbox">
+            <input id="create-currentProject" type="checkbox" checked />
+            <span class="checkbox-box"></span>
+            <span>Set Project as workspace Project</span>
+          </label>
+        </div>
+      </div>
+
+      <!--display Page-->
+      <div id="display" style="display: none">
+        <div class="options">
+          <button class="options-button" onclick="switchMode('edit')">
+            Edit
+          </button>
+          <button class="options-button" onclick="openSetting()">
+            Settings
+          </button>
+        </div>
+        <div id="content">
+          <h1 id="name"></h1>
+          <div class="text-bodies">
+            <h4 id="ship"></h4>
+            <div class="text-row">
+              <p id="created"></p>
+              <p id="updated"></p>
+            </div>
+          </div>
+          <div class="text-bodies" id="description"></div>
+
+          <div class="text-bodies link-row" id="links">
+            <a
+              id="demo"
+              class="link-button center"
+              style="margin-bottom: 10px; margin-top: 10px"
+              href="#"
+              >Demo</a
+            >
+            <a
+              id="repo"
+              class="link-button center"
+              style="margin-bottom: 10px; margin-top: 10px"
+              href="#"
+              >Repository</a
+            >
+            <a
+              id="readme"
+              class="link-button center"
+              style="margin-bottom: 10px; margin-top: 10px"
+              href="#"
+              >Readme</a
+            >
+          </div>
+          <div class="text-bodies" id="ai-div">
+            <h3 id="aiHeadline">This project uses AI:</h3>
+            <p id="ai"></p>
+          </div>
+          <a id="flavortown" class="link-button center" href="#"
+            >View this Project on Flavortown</a
+          >
+        </div>
+      </div>
+
+      <!--edit Page-->
+      <div id="edit" style="display: none">
+        <h2>Update current Project</h2>
+        <h3>Name:</h3>
+        <input
+          id="nameInput"
+          type="text"
+          placeholder="Give your project a name"
+        />
+        <h3>Description:</h3>
+        <textarea
+          id="descriptionInput"
+          placeholder="Share what the project does, who's working on it and what's new."
+        ></textarea>
+        <h4>Demo Url(optional)</h4>
+        <input id="demoInput" type="text" placeholder="https://orosemo.de" />
+        <h4>Repository Url: (optional)</h4>
+        <input
+          id="repoInput"
+          type="text"
+          placeholder="https://github.com/Joko-26/flavorcode"
+        />
+        <h4>Ai declaration: (optional)</h4>
+        <textarea
+          id="aiInput"
+          placeholder="I didn't use ai to generate my code because im cool :D"
+        ></textarea>
+        <p>
+          Please set the Hackatime project manually on the
+          <a href="https://flavortown.hackclub.com/projects"
+            >Flavortown website</a
+          >
+          as the api doesnt support it. :(
+        </p>
+        <div class="button-row">
+          <button onclick="Update()">Update</button>
+          <button class="cancel" onclick="switchMode('display')">Cancel</button>
+        </div>
+      </div>
     </div>
 
     <script nonce="${nonce}">
-        const vscode = acquireVsCodeApi();
-        let projectId = 0
+      const vscode = acquireVsCodeApi();
+      let projectId = 0;
+      let apiKey = "";
 
-        // set default values to current project info
-        function passProjectInfo(projectInfo, id) {
-            document.getElementById("name").textContent = projectInfo.name
-            document.getElementById("ship").textContent = "Shipping status: " + projectInfo.ship
-            document.getElementById("demo").href = projectInfo.demo
-            document.getElementById("repo").href = projectInfo.repo
-            document.getElementById("flavortown").href = `https://flavortown.hackclub.com/projects/${id}`
-            document.getElementById("ai").textContent = projectInfo.ai
-            document.getElementById("readme").href = projectInfo.readme
-            document.getElementById('created').textContent = "Created: " + formatDate(projectInfo.created)
-            document.getElementById('updated').textContent = "Last updated: " + formatDate(projectInfo.updated)
+      // set default values to current project info
+      function passProjectInfo(projectInfo, id) {
+        document.getElementById("name").textContent = projectInfo.name;
+        document.getElementById("ship").textContent =
+          "Shipping status: " + projectInfo.ship;
+        document.getElementById("demo").href = projectInfo.demo;
+        document.getElementById("repo").href = projectInfo.repo;
+        document.getElementById("flavortown").href =
+          `https://flavortown.hackclub.com/projects/${id}`;
+        document.getElementById("ai").textContent = projectInfo.ai;
+        document.getElementById("readme").href = projectInfo.readme;
+        document.getElementById("created").textContent =
+          "Created: " + formatDate(projectInfo.created);
+        document.getElementById("updated").textContent =
+          "Last updated: " + formatDate(projectInfo.updated);
 
-            const desc = document.getElementById("description");
-            desc.textContent = "";
-            (projectInfo.description || "").split("\n").forEach((line) => {
-                desc.innerHTML += `${line}<br>`;
-            });
+        const desc = document.getElementById("description");
+        desc.textContent = "";
+        (projectInfo.description || "").split("\n").forEach((line) => {
+          desc.innerHTML += `${line}<br>`;
+        });
 
-            // remove empty elements
-            if (!projectInfo.demo) {
-                document.getElementById("links").removeChild(document.getElementById("demo"))
-            }
-            if (!projectInfo.repo) {
-                document.getElementById("links").removeChild(document.getElementById("repo"))
-            }
-            if (!projectInfo.readme) {
-                document.getElementById("links").removeChild(document.getElementById("readme"))
-            }
-            if (!projectInfo.ai) {
-                document.getElementById("ai-div").removeChild(document.getElementById("ai"))
-                document.getElementById("ai-div").removeChild(document.getElementById("aiHeadline"))
-            }
-
-            document.getElementById("nameInput").value = projectInfo.name
-            document.getElementById("descriptionInput").value = projectInfo.description
-            document.getElementById("demoInput").value = projectInfo.demo
-            document.getElementById("repoInput").value = projectInfo.repo
-            document.getElementById("aiInput").value = projectInfo.ai
-
+        // remove empty elements
+        if (!projectInfo.demo) {
+          document
+            .getElementById("links")
+            .removeChild(document.getElementById("demo"));
+        }
+        if (!projectInfo.repo) {
+          document
+            .getElementById("links")
+            .removeChild(document.getElementById("repo"));
+        }
+        if (!projectInfo.readme) {
+          document
+            .getElementById("links")
+            .removeChild(document.getElementById("readme"));
+        }
+        if (!projectInfo.readme && !projectInfo.repo && !projectInfo.demo) {
+          document
+            .getElementById("content")
+            .removeChild(document.getElementById("links"));
+        }
+        if (!projectInfo.ai) {
+          document
+            .getElementById("ai-div")
+            .removeChild(document.getElementById("ai"));
+          document
+            .getElementById("ai-div")
+            .removeChild(document.getElementById("aiHeadline"));
+          document
+            .getElementById("content")
+            .removeChild(document.getElementById("ai-div"));
         }
 
-        function switchMode(mode) {
-            if (mode === "display") {
-                document.getElementById("display").style = "display: block;"
-                document.getElementById("edit").style = "display: none;"
-            } else {
-                document.getElementById("display").style = "display: none;"
-                document.getElementById("edit").style = "display: block;"
-            }
+        document.getElementById("nameInput").value = projectInfo.name;
+        document.getElementById("descriptionInput").value =
+          projectInfo.description;
+        document.getElementById("demoInput").value = projectInfo.demo;
+        document.getElementById("repoInput").value = projectInfo.repo;
+        document.getElementById("aiInput").value = projectInfo.ai;
+      }
+
+      function fillApiInput() {
+        if (apiKey) {
+          document.getElementById("api-key").value = apiKey;
+        }
+      }
+
+      function switchMode(mode) {
+        if (mode === "display") {
+          document.getElementById("display").style = "display: block;";
+          document.getElementById("edit").style = "display: none;";
+          document.getElementById("setup").style = "display: none;";
+          document.getElementById("create").style = "display: none;";
+          document.getElementById("choose").style = "display: none;";
+        } else if (mode === "edit") {
+          document.getElementById("display").style = "display: none;";
+          document.getElementById("edit").style = "display: block;";
+          document.getElementById("setup").style = "display: none;";
+          document.getElementById("create").style = "display: none;";
+          document.getElementById("choose").style = "display: none;";
+        } else if (mode === "create") {
+          document.getElementById("display").style = "display: none;";
+          document.getElementById("edit").style = "display: none;";
+          document.getElementById("setup").style = "display: none;";
+          document.getElementById("create").style = "display: none;";
+          document.getElementById("choose").style = "display: block;";
+        } else if (mode === "choose") {
+          document.getElementById("display").style = "display: none;";
+          document.getElementById("edit").style = "display: none;";
+          document.getElementById("setup").style = "display: none;";
+          document.getElementById("create").style = "display: none;";
+          document.getElementById("choose").style = "display: block;";
+        } else {
+          document.getElementById("display").style = "display: none;";
+          document.getElementById("edit").style = "display: none;";
+          document.getElementById("setup").style = "display: block;";
+          document.getElementById("create").style = "display: none;";
+          document.getElementById("choose").style = "display: none;";
+          fillApiInput();
+        }
+      }
+
+      function formatDate(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return value;
         }
 
-        function formatDate(value) {
-            const date = new Date(value);
-            if (Number.isNaN(date.getTime())) {
-                return value;
-            }
+        return date.toLocaleDateString();
+      }
 
-            return date.toLocaleDateString();
+      function chooseExisting() {
+        apiKey = document.getElementById("api-key").value;
+        if (apiKey) {
+          vscode.postMessage({ command: "get-projects", value: apiKey });
+        } else {
+          document.getElementById("api-warning").style = "display: block; color: red;";
         }
+      }
 
-        // send inputs to extension
-        function Update() {
-            const name = document.getElementById("nameInput").value
-            const description = document.getElementById("descriptionInput").value
-            const demo = document.getElementById("demoInput").value
-            const repo = document.getElementById("repoInput").value
-            const ai = document.getElementById("aiInput").value
-            const createData = { name: name, description: description, demo: demo, repo: repo, ai:ai }
-            vscode.postMessage({ command: "update", value: createData })
-        }
-
-        function openSetting() {
-            vscode.postMessage({command: "open-settings"})
-        }
-
-        function refresh() {
-            vscode.postMessage({command:"refresh"})
-        }
-
-        // listens for messages from the extentsion
-        window.addEventListener("message", event => {
-            const message = event.data
-
-            switch (message.command) {
-                case "project-info":
-                    projectId = message.value.projectId
-                    passProjectInfo(message.value, message.value.projectId)
-                    break
-                case "updated-project-info":
-                    projectId = message.value.projectId
-                    switchMode("display")
-                    passProjectInfo(message.value, message.value.projectId)
-                    break
-            }
+      function populateProjectSelect (projects) {
+        document.getElementById("project-select").innerHTML = ""
+        projects.map((project) => {
+          document.getElementById("project-select").innerHTML += `<option value="${project.value}">${project.label}</option>`
         })
+        switchMode("choose")
+      }
+
+      function selection() {
+        const selectedId = document.getElementById("project-select").value
+        console.log(selectedId)
+        if (selectedId) {
+        vscode.postMessage({command:"selected", value:selectedId})
+        } else {
+          document.getElementById("selection-warning").style = "display: block; color: red;";
+        }
+       }
+
+      function createNew() {
+        apiKey = document.getElementById("api-key").value;
+        if (apiKey) {
+          switchMode("create");
+        } else {
+          document.getElementById("api-warning").style = "display: block; color: red;";
+        }
+      }
+
+      function clearProjectCreation() {
+        document.getElementById("create-name").value = "";
+        document.getElementById("create-description").value = "";
+        document.getElementById("create-demo").value = "";
+        document.getElementById("create-repo").value = "";
+        document.getElementById("create-ai").value = "";
+        document.getElementById("create-currentProject").checked = true;
+      }
+
+      // sent infos of new project to extension
+      function Create() {
+        const name = document.getElementById("create-name").value;
+        const description = document.getElementById("create-description").value;
+        const demo = document.getElementById("create-demo").value;
+        const repo = document.getElementById("create-repo").value;
+        const ai = document.getElementById("create-ai").value;
+        const currenProject = document.getElementById(
+          "create-currentProject",
+        ).checked;
+        const createData = {
+          name: name,
+          description: description,
+          demo: demo,
+          repo: repo,
+          ai: ai,
+          currenProject: currenProject,
+          apiKey: apiKey,
+        };
+
+        if (currenProject) {
+          switchMode("display");
+        } else {
+          switchMode("create");
+          clearProjectCreation();
+        }
+
+        vscode.postMessage({ command: "create", value: createData });
+      }
+
+      // send inputs to extension
+      function Update() {
+        const name = document.getElementById("nameInput").value;
+        const description = document.getElementById("descriptionInput").value;
+        const demo = document.getElementById("demoInput").value;
+        const repo = document.getElementById("repoInput").value;
+        const ai = document.getElementById("aiInput").value;
+        const createData = {
+          name: name,
+          description: description,
+          demo: demo,
+          repo: repo,
+          ai: ai,
+        };
+        vscode.postMessage({ command: "update", value: createData });
+      }
+
+      function openSetting() {
+        vscode.postMessage({ command: "open-settings" });
+      }
+
+      function refresh() {
+        vscode.postMessage({ command: "refresh" });
+      }
+
+      // listens for messages from the extentsion
+      window.addEventListener("message", (event) => {
+        const message = event.data;
+
+        switch (message.command) {
+          case "project-info":
+            switchMode("display");
+            projectId = message.value.projectId;
+            passProjectInfo(message.value, message.value.projectId);
+            break;
+          case "updated-project-info":
+            projectId = message.value.projectId;
+            switchMode("display");
+            passProjectInfo(message.value, message.value.projectId);
+            break;
+          case "setup":
+            apiKey = message.value;
+            switchMode(" ");
+            break;
+          case "existing-projects":
+            populateProjectSelect(message.value)
+            break;
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

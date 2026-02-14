@@ -1,6 +1,12 @@
 import * as vscode from "vscode";
-import { getDevlog, getProject, getProjectDevlogs, updateProject } from "./apiCalls";
+import {
+  getDevlog,
+  getProject,
+  getProjectDevlogs,
+  updateProject,
+} from "./apiCalls";
 import { viewDevlogtHtml } from "./webviews/viewDevlog";
+import { measureMemory } from "vm";
 
 export class viewDevlogProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flavorcode.devlogView";
@@ -29,18 +35,27 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
       //  const devlogs = await getProjectDevlogs("")
 
       let devlogs = [];
-      const project = await getProject("", projectId);
+      try {
+        const project = await getProject("", projectId);
 
-      for (let devlogId of project.devlog_ids) {
-        devlogs.push(await getDevlog("", devlogId))
+        for (let devlogId of project.devlog_ids) {
+          devlogs.push(await getDevlog("", devlogId));
+        }
+
+        //webviewView.webview.postMessage({command: "devlog-info", value:devlogs?.devlogs});
+
+        webviewView.webview.postMessage({
+          command: "devlog-info",
+          value: devlogs,
+        });
+
+        devlogs = [];
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (!projectId || errorMessage.includes("404")) {
+          webviewView.webview.postMessage({ command: "setup" });  
+        }
       }
-      
-
-      //webviewView.webview.postMessage({command: "devlog-info", value:devlogs?.devlogs});
-
-      webviewView.webview.postMessage({command: "devlog-info", value:devlogs});
-
-      devlogs = [];
     }
 
     populateWebview();
@@ -50,13 +65,15 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
     });
 
     webviewView.webview.onDidReceiveMessage(async (message) => {
-        const messageContent = message.value;
-        switch (message.command) {
-            case "open-devlog": {
-                await vscode.commands.executeCommand("flavorcode.openDevlog", messageContent);
-            }
+      const messageContent = message.value;
+      switch (message.command) {
+        case "open-devlog": {
+          await vscode.commands.executeCommand(
+            "flavorcode.openDevlog",
+            messageContent,
+          );
         }
+      }
     });
-
   }
 }
