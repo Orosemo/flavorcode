@@ -102,23 +102,27 @@
       }
 
       function openDevlog(id) {
-        vscode.postMessage({ command: "open-devlog", value: Devlogs[id] });
+        vscode.postMessage({ command: "open-devlog", value: Devlogs[id], scope: "local" });
       }
 
       // listens for messages from the extentsion
       window.addEventListener("message", (event) => {
         const message = event.data;
-
-        switch (message.command) {
-          case "devlog-info":
-            swapLayout("devlogs");
-            Devlogs = message.value;
-            populateDevlog(message.value);
-            break;
-          case "setup":
-            swapLayout(" ");
-            break;
+        if (message.scope === "local") {
+          switch (message.command) {
+            case "devlog-info":
+              swapLayout("devlogs");
+              Devlogs = message.value;
+              populateDevlog(message.value);
+              break;
+            case "setup":
+              swapLayout(" ");
+              break;
+          }  
+        } else {
+          
         }
+
       });
     </script>
   </body>

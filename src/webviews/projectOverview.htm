@@ -277,8 +277,8 @@
           document.getElementById("display").style = "display: none;";
           document.getElementById("edit").style = "display: none;";
           document.getElementById("setup").style = "display: none;";
-          document.getElementById("create").style = "display: none;";
-          document.getElementById("choose").style = "display: block;";
+          document.getElementById("create").style = "display: block;";
+          document.getElementById("choose").style = "display: none;";
         } else if (mode === "choose") {
           document.getElementById("display").style = "display: none;";
           document.getElementById("edit").style = "display: none;";
@@ -307,7 +307,7 @@
       function chooseExisting() {
         apiKey = document.getElementById("api-key").value;
         if (apiKey) {
-          vscode.postMessage({ command: "get-projects", value: apiKey });
+          vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
         } else {
           document.getElementById("api-warning").style = "display: block; color: red;";
         }
@@ -325,7 +325,7 @@
         const selectedId = document.getElementById("project-select").value
         console.log(selectedId)
         if (selectedId) {
-        vscode.postMessage({command:"selected", value:selectedId})
+        vscode.postMessage({command:"selected", value:selectedId, scope: "local"})
         } else {
           document.getElementById("selection-warning").style = "display: block; color: red;";
         }
@@ -376,7 +376,7 @@
           clearProjectCreation();
         }
 
-        vscode.postMessage({ command: "create", value: createData });
+        vscode.postMessage({ command: "create", value: createData, scope: "local" });
       }
 
       // send inputs to extension
@@ -393,22 +393,22 @@
           repo: repo,
           ai: ai,
         };
-        vscode.postMessage({ command: "update", value: createData });
+        vscode.postMessage({ command: "update", value: createData, scope: "local" });
       }
 
       function openSetting() {
-        vscode.postMessage({ command: "open-settings" });
+        vscode.postMessage({ command: "open-settings", scope: "local" });
       }
 
       function refresh() {
-        vscode.postMessage({ command: "refresh" });
+        vscode.postMessage({ command: "refresh", scope: "local" });
       }
 
       // listens for messages from the extentsion
       window.addEventListener("message", (event) => {
         const message = event.data;
-
-        switch (message.command) {
+        if (message.scope === "local"){
+          switch (message.command) {
           case "project-info":
             switchMode("display");
             projectId = message.value.projectId;
@@ -426,7 +426,10 @@
           case "existing-projects":
             populateProjectSelect(message.value)
             break;
-        }
+        } 
+      } else {
+        
+      }
       });
     </script>
   </body>

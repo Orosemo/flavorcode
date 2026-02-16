@@ -15,7 +15,6 @@ import * as emoji from "node-emoji";
 import { projectInfoProvider } from "./projectInfoWebViewProvider";
 import { viewDevlogProvider } from "./devlogViewWebviewProvider";
 
-
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -53,13 +52,13 @@ export function activate(context: vscode.ExtensionContext) {
 
       // ask the user to set or confirm their api key
 
-      const currentApiKey = config.get<string>("flavortownApiKey")
+      const currentApiKey = config.get<string>("flavortownApiKey");
 
       enteredApiKey = String(
         await vscode.window.showInputBox({
           placeHolder: "your Flavortown api key from the website",
           prompt: "Go into the Flavortown settings and copy your api key",
-          value: currentApiKey
+          value: currentApiKey,
         }),
       );
 
@@ -73,7 +72,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.ConfigurationTarget.Global,
       );
 
-
       // get user by api key
       const userSelf = await getUserSelf(enteredApiKey);
       // set in vscode settings if not set
@@ -81,11 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
         config.get<string>("userId") === "your username" ||
         config.get<string>("userId") === ""
       ) {
-        config.update(
-          "userId",
-          userSelf.id,
-          vscode.ConfigurationTarget.Global,
-        );
+        config.update("userId", userSelf.id, vscode.ConfigurationTarget.Global);
       }
 
       // ask if user wants to choose a existing project or create a new one
@@ -231,7 +225,7 @@ export function activate(context: vscode.ExtensionContext) {
     "flavorcode.updateProject",
     async () => {
       const config = vscode.workspace.getConfiguration("flavorcode");
-      const projectId = config.get<number>("projectId");
+      const projectId = Number(config.get<string>("projectId"));
       if (!projectId || projectId === 0) {
         vscode.window.showErrorMessage(
           "No project set: please use the setup command to initialise the exentsion.",
@@ -359,9 +353,36 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
-  const projectInfo = vscode.window.registerWebviewViewProvider(projectInfoProvider.viewType, new projectInfoProvider(context.extensionUri));
+  // activity bar webviews
+  const devlogProvider = new viewDevlogProvider(context.extensionUri);
+  const projectProvider = new projectInfoProvider(context.extensionUri, devlogProvider);
 
-  const devlogView = vscode.window.registerWebviewViewProvider(viewDevlogProvider.viewType, new viewDevlogProvider(context.extensionUri));
+
+  const projectInfo = vscode.window.registerWebviewViewProvider(
+    projectInfoProvider.viewType,
+    projectProvider,
+  );
+
+
+  const devlogView = vscode.window.registerWebviewViewProvider(
+    viewDevlogProvider.viewType,
+    devlogProvider,
+  );
+
+  // messages from devlog provider to project webview and vice verca :) (not used rn but maybe in the future)
+  projectProvider.onMessage((message) => {
+    if (message.scope === "global") {
+      devlogProvider.postmessage(message);
+      
+    }
+  });
+
+  devlogProvider.onMessage((message) => {
+    if (message.scope === "global") {
+      projectProvider.postmessage(message);
+      
+    }
+  });;
 
   context.subscriptions.push(
     disposable,
@@ -370,7 +391,7 @@ export function activate(context: vscode.ExtensionContext) {
     updateCurrentProject,
     openDevlog,
     projectInfo,
-    devlogView
+    devlogView,
   );
 }
 

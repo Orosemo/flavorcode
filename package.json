@@ -97,7 +97,7 @@
           "scope": "application"
         },
         "flavorcode.projectId": {
-          "type": "number",
+          "type": "string",
           "default": "0",
           "description": "Your Flavortown project id"
         }
