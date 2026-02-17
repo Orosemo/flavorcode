@@ -323,7 +323,6 @@
 
       function selection() {
         const selectedId = document.getElementById("project-select").value
-        console.log(selectedId)
         if (selectedId) {
         vscode.postMessage({command:"selected", value:selectedId, scope: "local"})
         } else {

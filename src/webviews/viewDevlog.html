@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="${styleUri}" />
   </head>
   <body>
+    <!-- setup -->
     <div id="not-setup" class="devlog-display-container" style="display: none">
       <p>Flavorcode not setup yet set it up in the window above :D</p>
     </div>
+
+    <!-- Devlogs -->
     <div
       id="devlog-container"
       class="devlog-display-container"
@@ -33,17 +36,28 @@
       let Devlogs = [];
 
       function populateDevlog(devlogInfo) {
-        document.getElementById("info-message").style = "display: none;";
+        const infoMessage = document.getElementById("info-message");
+        if (infoMessage) {
+          infoMessage.style = "display: none;";
+        }
 
-        const devlogs = devlogInfo.map((devlog, index) => {
+        const safeDevlogs = Array.isArray(devlogInfo) ? devlogInfo : [];
+        const devlogs = safeDevlogs.map((devlog, index) => {
           const devlogHead = getHead(devlog.body);
           const duration = formatDuration(devlog.duration_seconds);
           return `<div class="devlog-display-entry" data-index="${index}"><p> ${trimHeadline(devlogHead.headline)}</p><p>${duration}</p></div>`;
         });
         document.getElementById("devlog-container").innerHTML =
-          `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div></div>`;
+          `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div>`;
         document.getElementById("devlog-container").innerHTML +=
           devlogs.join("");
+        if (
+          document.getElementById("devlog-container").innerHTML ===
+          `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div>`
+        ) {
+          document.getElementById("devlog-container").innerHTML +=
+            `<div class="devlog-display-container"><p>Nothing here :( What are you waiting for, start creatings</p></div>`;
+        }
 
         // Add click listeners to devlog entries
         document.querySelectorAll(".devlog-display-entry").forEach((entry) => {
@@ -53,8 +67,8 @@
         });
       }
 
-      function swapLayout(layout) {
-        if (layout === "devlogs") {
+      function switchMode(mode) {
+        if (mode === "devlogs") {
           document.getElementById("not-setup").style = "display: none;";
           document.getElementById("devlog-container").style = "display: block;";
         } else {
@@ -102,7 +116,11 @@
       }
 
       function openDevlog(id) {
-        vscode.postMessage({ command: "open-devlog", value: Devlogs[id], scope: "local" });
+        vscode.postMessage({
+          command: "open-devlog",
+          value: Devlogs[id],
+          scope: "local",
+        });
       }
 
       // listens for messages from the extentsion
@@ -111,18 +129,16 @@
         if (message.scope === "local") {
           switch (message.command) {
             case "devlog-info":
-              swapLayout("devlogs");
+              switchMode("devlogs");
               Devlogs = message.value;
               populateDevlog(message.value);
               break;
             case "setup":
-              swapLayout(" ");
+              switchMode(" ");
               break;
-          }  
+          }
         } else {
-          
         }
-
       });
     </script>
   </body>

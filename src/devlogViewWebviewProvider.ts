@@ -24,7 +24,7 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
   }
 
   public async refreshDevlogs() {
-    console.log("refresh")
+    console.log("refresh");
     const config = vscode.workspace.getConfiguration("flavorcode");
     const projectId = Number(config.get<string>("projectId"));
 
@@ -51,7 +51,7 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       if (!projectId || errorMessage.includes("404")) {
-        this._view?.webview.postMessage({ command: "setup" });  
+        this._view?.webview.postMessage({ command: "setup", scope: "local" });  
       }
     }
   }
@@ -61,6 +61,7 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
     context: vscode.WebviewViewResolveContext,
     token: vscode.CancellationToken,
   ): Promise<void> {
+    this._view = webviewView;
     webviewView.webview.options = {
       enableScripts: true,
       localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media")],
@@ -101,7 +102,7 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (!projectId || errorMessage.includes("404")) {
-          webviewView.webview.postMessage({ command: "setup" });  
+          webviewView.webview.postMessage({ command: "setup", scope: "local" });  
         }
       }
     }

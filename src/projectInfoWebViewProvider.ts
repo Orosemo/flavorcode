@@ -193,6 +193,12 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
                 );
 
                 if (messageContent.currenProject) {
+                  await config.update(
+                    "projectId",
+                    newProject.id,
+                    vscode.ConfigurationTarget.Workspace,
+                  );
+
                   const projectInfoData = {
                     projectId: newProject.id,
                     name: newProject.title,
@@ -212,7 +218,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
                     scope: "local",
                   });
                 }
-                webviewView.webview.postMessage({command: "refresh-devlogs", scope: "global"})
+                this.devlogProvider.refreshDevlogs();
               } catch (error) {
                 const errorMessage =
                   error instanceof Error ? error.message : String(error);

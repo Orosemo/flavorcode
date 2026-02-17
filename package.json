@@ -98,7 +98,7 @@
         },
         "flavorcode.projectId": {
           "type": "string",
-          "default": "0",
+          "default": " ",
           "description": "Your Flavortown project id"
         }
       }
