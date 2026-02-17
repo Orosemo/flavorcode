@@ -8,6 +8,16 @@ export function overviewProjectHtml(
   const styleUri = webview.asWebviewUri(
     vscode.Uri.joinPath(extensionUri, "media", "stylesheet.css"),
   );
+  const codiconUri = webview.asWebviewUri(
+    vscode.Uri.joinPath(
+      extensionUri,
+      "node_modules",
+      "@vscode",
+      "codicons",
+      "dist",
+      "codicon.css",
+    ),
+  );
 
   function getNonce(): string {
       let text = "";
@@ -25,7 +35,7 @@ export function overviewProjectHtml(
     "projectOverview.htm",
   );
   const rawHtml = fs.readFileSync(htmlPath.fsPath, "utf8");
-  const noncedHtml = rawHtml.replace("${nonce}", getNonce())
-  return noncedHtml.replace("${styleUri}", String(styleUri));
-  
+  const noncedHtml = rawHtml.replace("${nonce}", getNonce());
+  const iconHtml = noncedHtml.replace("${codiconUri}", String(codiconUri));
+  return iconHtml.replace("${styleUri}", String(styleUri));
 }

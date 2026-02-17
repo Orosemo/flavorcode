@@ -17,6 +17,58 @@ body {
   overflow-wrap: break-word;
 }
 
+select {
+  width: 100%;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  color: #ffffe8;
+  background-origin: border-box;
+  background-color: #4e2c33;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #56312f;
+  border-image: initial;
+  text-decoration: none;
+}
+
+select:hover {
+  background-color: #ad7858;
+}
+
+option {
+  width: 100%;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  color: #ffffe8;
+  background-origin: border-box;
+  background-color: #4e2c33;
+  cursor: text;
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #56312f;
+  border-image: initial;
+  text-decoration: none;
+}
+
+option:hover {
+  background-color: #ad7858;
+}
+
+a{
+  color: #ad7858;
+}
+
+a:hover {
+  color: #E7D4B1;
+}
+
 textarea {
   width: 100%;
   box-sizing: border-box;
@@ -152,8 +204,15 @@ a {
   justify-content: flex-end;
   padding-top: 15px;
   margin-right: 10px;
-  
 }
+
+.back {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: 15px;
+  margin-right: 10px;
+}
+
 
 .options-button {
   margin-right: 10px;

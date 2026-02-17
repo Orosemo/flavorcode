@@ -64,7 +64,7 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
     this._view = webviewView;
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media")],
+      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media"), vscode.Uri.joinPath(this.extensionUri, "node_modules", "@vscode", "codicons", "dist")],
     };
 
     webviewView.webview.html = viewDevlogtHtml(
@@ -114,6 +114,8 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
     });
 
     webviewView.webview.onDidReceiveMessage(async (message) => {
+      config = vscode.workspace.getConfiguration("flavorcode");
+      projectId = Number(config.get<string>("projectId"));
       this.messageCallback?.(message);
       const messageContent = message.value;
       if (message.scope === "local") {

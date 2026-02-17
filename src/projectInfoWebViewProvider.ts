@@ -32,7 +32,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
   ): Promise<void> {
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media")],
+      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media"), vscode.Uri.joinPath(this.extensionUri, "node_modules", "@vscode", "codicons", "dist")],
     };
 
     webviewView.webview.html = overviewProjectHtml(
@@ -123,6 +123,9 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     populateWebview();
 
     webviewView.webview.onDidReceiveMessage(async (message) => {
+      config = vscode.workspace.getConfiguration("flavorcode");
+      projectId = Number(config.get<number>("projectId"));
+      apiKey = config.get<string>("flavortownApiKey");
       this.messageCallback?.(message);
       try {
         const messageContent = message.value;

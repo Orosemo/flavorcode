@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create new Project</title>
     <link rel="stylesheet" href="${styleUri}" />
+    <link rel="stylesheet" href="${codiconUri}" />
   </head>
   <body id="body">
     <div class="border-div-full">
@@ -28,8 +29,8 @@
 
       <!--choose Page-->
       <div id="choose" style="display: none">
-        <div class="options">
-          <button class="options-button" onclick="switchMode(' ')">Back</button>
+        <div class="back">
+          <button class="options-button" onclick="switchMode(' ')"><i class="codicon codicon-arrow-left" ></i></button>
         </div>
         <h1>Choose existing project:</h3>
         <div class="text-bodies">
@@ -44,8 +45,8 @@
 
       <!--create Page-->
       <div id="create" style="display: none">
-        <div class="options">
-          <button class="options-button" onclick="switchMode(' ')">Back</button>
+        <div class="back">
+          <button class="options-button" onclick="switchMode(' ')"><i class="codicon codicon-arrow-left" ></i></button>
         </div>
         <h2>Create new Project</h2>
         <h3>Name:</h3>
@@ -95,10 +96,10 @@
       <div id="display" style="display: none">
         <div class="options">
           <button class="options-button" onclick="switchMode('edit')">
-            Edit
+            <i class="codicon codicon-edit" ></i>
           </button>
           <button class="options-button" onclick="openSetting()">
-            Settings
+            <i class="codicon codicon-gear"></i>
           </button>
         </div>
         <div id="content">

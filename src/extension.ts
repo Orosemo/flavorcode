@@ -328,6 +328,13 @@ export function activate(context: vscode.ExtensionContext) {
             localResourceRoots: [
               vscode.Uri.joinPath(context.extensionUri, "media"),
               vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts"),
+              vscode.Uri.joinPath(
+                context.extensionUri,
+                "node_modules",
+                "@vscode",
+                "codicons",
+                "dist",
+              ),
             ],
           },
         );
@@ -355,14 +362,15 @@ export function activate(context: vscode.ExtensionContext) {
 
   // activity bar webviews
   const devlogProvider = new viewDevlogProvider(context.extensionUri);
-  const projectProvider = new projectInfoProvider(context.extensionUri, devlogProvider);
-
+  const projectProvider = new projectInfoProvider(
+    context.extensionUri,
+    devlogProvider,
+  );
 
   const projectInfo = vscode.window.registerWebviewViewProvider(
     projectInfoProvider.viewType,
     projectProvider,
   );
-
 
   const devlogView = vscode.window.registerWebviewViewProvider(
     viewDevlogProvider.viewType,
@@ -373,16 +381,14 @@ export function activate(context: vscode.ExtensionContext) {
   projectProvider.onMessage((message) => {
     if (message.scope === "global") {
       devlogProvider.postmessage(message);
-      
     }
   });
 
   devlogProvider.onMessage((message) => {
     if (message.scope === "global") {
       projectProvider.postmessage(message);
-      
     }
-  });;
+  });
 
   context.subscriptions.push(
     disposable,
