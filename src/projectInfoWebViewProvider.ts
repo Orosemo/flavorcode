@@ -9,6 +9,7 @@ import {
   getProjectDevlogs,
   disconnectDiscordGateway,
 } from "./apiCalls";
+import { validateHeaderValue } from "http";
 
 export class projectInfoProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "flavorcode.infoView";
@@ -132,7 +133,33 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
       }
     }
 
+    function setTheme() {
+      config = vscode.workspace.getConfiguration("flavorcode");
+      const theme = config.get<string>("theme")
+      webviewView.webview.postMessage({command:"set-theme", value:theme, scope:"local"});
+    }
+
+    setTheme();
     populateWebview();
+
+    webviewView.onDidChangeVisibility(async () => {
+      setTheme();
+      populateWebview();
+    });
+
+    try {
+      config = vscode.workspace.getConfiguration("flavorcode");
+      if (config.get<Boolean>("useDiscord")) {
+        const projectInfo = await getProject("", projectId);
+        await connectDiscordGateway(
+          projectInfo.title,
+          String(projectId),
+          projectInfo.devlog_ids.length,
+        );
+      } else {
+        disconnectDiscordGateway();
+      }
+    } catch {}
 
     webviewView.webview.onDidReceiveMessage(async (message) => {
       config = vscode.workspace.getConfiguration("flavorcode");
@@ -293,32 +320,17 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               this.devlogProvider.refreshDevlogs();
               populateWebview();
             }
+            case "openThemes": {
+              vscode.commands.executeCommand(
+                "flavorcode.theme"
+              );
+              break;
+            }
           }
         }
       } catch (error) {
         console.error("Error in onDidReceiveMessage:", error);
       }
-    });
-
-    try {
-      console.log("load")
-      config = vscode.workspace.getConfiguration("flavorcode");
-      console.log(config.get<Boolean>("useDiscord"))
-      if (config.get<Boolean>("useDiscord")) {
-        
-        const projectInfo = await getProject("", projectId);
-        await connectDiscordGateway(
-          projectInfo.title,
-          String(projectId),
-          projectInfo.devlog_ids.length,
-        );
-      } else {
-        disconnectDiscordGateway();
-      }
-    } catch {}
-
-    webviewView.onDidChangeVisibility(async () => {
-      populateWebview();
     });
   }
 }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" id="html">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -124,6 +124,10 @@
         });
       }
 
+      function setTheme(theme) {
+        document.getElementById("html").classList = theme
+      }
+
       // listens for messages from the extentsion
       window.addEventListener("message", (event) => {
         const message = event.data;
@@ -137,8 +141,18 @@
             case "setup":
               switchMode(" ");
               break;
+            case "set-theme": {
+              setTheme(message.value);
+              break;
+            }
           }
         } else {
+          switch (message.command) {
+            case "set-theme": {
+              setTheme(message.value);
+              break;
+            }
+          }
         }
       });
     </script>

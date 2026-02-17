@@ -14,12 +14,13 @@ import { openDevlogHtml } from "./webviews/openDevlog";
 import * as emoji from "node-emoji";
 import { projectInfoProvider } from "./projectInfoWebViewProvider";
 import { viewDevlogProvider } from "./devlogViewWebviewProvider";
+import { chooseThemeHtml } from "./webviews/chooseTheme";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   let currentDevlogViewPanel: vscode.WebviewPanel | undefined = undefined;
-  let currentProjectViewPanel: vscode.WebviewPanel | undefined = undefined;
+  let currentThemeViewPanel: vscode.WebviewPanel | undefined = undefined;
 
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
@@ -169,6 +170,7 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
   */
+
 
   // create project Command
   const createNewProject = vscode.commands.registerCommand(
@@ -390,6 +392,65 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+
+  const chooseTheme = vscode.commands.registerCommand("flavorcode.theme", () => {
+    let config = vscode.workspace.getConfiguration("flavorcode");
+    const theme = config.get<string>("theme")
+    
+    const columToShowIn = vscode.window.activeTextEditor
+        ? vscode.window.activeTextEditor.viewColumn
+        : undefined;
+
+    if (currentThemeViewPanel) {
+      currentThemeViewPanel.reveal(columToShowIn);
+    } else {
+      currentThemeViewPanel = vscode.window.createWebviewPanel(
+        "ViewDevlog",
+        "view Devlog",
+        columToShowIn || vscode.ViewColumn.One,
+        {
+          // permissions
+          enableScripts: true,
+          localResourceRoots: [
+            vscode.Uri.joinPath(context.extensionUri, "media"),
+            vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts"),
+            vscode.Uri.joinPath(
+              context.extensionUri,
+              "node_modules",
+              "@vscode",
+              "codicons",
+              "dist",
+            ),
+          ],
+        },
+      );
+      currentThemeViewPanel.webview.html = openDevlogHtml(
+        currentThemeViewPanel.webview,
+        context.extensionUri,
+      );
+
+      currentThemeViewPanel.onDidDispose(() => {
+        currentThemeViewPanel = undefined;
+      });
+    }
+
+    currentThemeViewPanel.webview.html = chooseThemeHtml(currentThemeViewPanel.webview, context.extensionUri);
+
+    currentThemeViewPanel.webview.postMessage({command:"set-theme", value:theme});
+
+    currentThemeViewPanel.webview.onDidReceiveMessage((message) => {
+      switch (message.command) {
+        case "set-theme": {
+          config = vscode.workspace.getConfiguration("flavorcode");
+          config.update("theme", message.value, vscode.ConfigurationTarget.Global);
+          devlogProvider.postmessage({command: "set-theme", value:message.value, scope:"global"});
+          projectProvider.postmessage({command: "set-theme", value:message.value, scope:"global"});
+        }
+      }
+    });
+  });
+
+
   context.subscriptions.push(
     disposable,
     setupProject,
@@ -398,6 +459,7 @@ export function activate(context: vscode.ExtensionContext) {
     openDevlog,
     projectInfo,
     devlogView,
+    chooseTheme,
   );
 }
 

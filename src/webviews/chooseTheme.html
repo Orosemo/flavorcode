@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" id="html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create new Project</title>
+    <link rel="stylesheet" href="${styleUri}">
+</head>
+<body>
+    <div class="border-div" >
+        <h2 class="center">Select Theme</h2>
+        <div class="text-bodies">
+            <!-- Add custom theme here...-->
+            <button id="default" class="" onclick="setTheme(' ')">Default</button>
+            <button id="light" class="" onclick="setTheme('light')">Light</button>
+            <button id="midnight" class="" onclick="setTheme('midnight')">Midnight</button>
+        </div>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+
+        function setTheme (theme) {
+            setCurrentTheme(theme)
+            document.getElementById("html").classList = theme
+            vscode.postMessage({command: "set-theme", value:theme})
+        }
+
+        // ...and here
+        function setCurrentTheme (theme) {
+            document.getElementById("html").classList = theme
+            if (theme === "midnight") {
+                    document.getElementById("default").classList = " "
+                    document.getElementById("midnight").classList = "highlight"
+                    document.getElementById("light").classList = " "
+            }else if (theme === "light") {
+                    document.getElementById("default").classList = " "
+                    document.getElementById("midnight").classList = " "
+                    document.getElementById("light").classList = "highlight"
+            } else {
+                   document.getElementById("default").classList = "highlight"
+                    document.getElementById("midnight").classList = " "
+                    document.getElementById("light").classList = " "
+            }
+        }
+
+        window.addEventListener("message", (event) => {
+            const message = event.data;
+            switch (message.command) {
+                case 'set-theme': {
+                    setCurrentTheme(message.value);
+                    break;
+                }
+
+            }
+        })
+
+    </script>
+</body>
+</html>

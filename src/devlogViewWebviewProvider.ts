@@ -107,9 +107,17 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
       }
     }
 
+    function setTheme() {
+      config = vscode.workspace.getConfiguration("flavorcode");
+      const theme = config.get<string>("theme")
+      webviewView.webview.postMessage({command:"set-theme", value:theme, scope:"local"});
+    }
+
+    setTheme();
     populateWebview();
 
     webviewView.onDidChangeVisibility(async () => {
+      setTheme();
       populateWebview();
     });
 

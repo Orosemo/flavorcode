@@ -1,13 +1,72 @@
+/* themes */
+:root {
+  
+  --text: #ffffe8;
+  --background: #7b4942;
+  --border: #56312f;
+  --border-highlight: #bda292; 
+  --input-background:#4e2c33 ;
+  --input-background-hover:#ad7858 ;
+  --link: #ad7858;
+  --link-hover: #E7D4B1;
+  --button-background: #4e2c33;
+  --button-background-hover: #ad7858;
+  --textbox-background: #68403d;
+  --devlog-headline: #56312F;
+  --warning: #ff0000;
+  --warning-hover: #a30000;
+  
+}
+
+.light {
+  
+  --text: #563038;
+  --background: #E7D4B1;
+  --border: #BE8461;
+  --border-highlight: #926947; 
+  --input-background:#b8a088 ;
+  --input-background-hover:#ad7858 ;
+  --link: #3d252a;
+  --link-hover: #572e36;
+  --button-background: #D7B593;
+  --button-background-hover: #967F67;
+  --textbox-background: #F8E9D3;
+  --devlog-headline: #fcf1e0;
+  --warning: #d30000;
+  --warning-hover: #ff0000;
+  
+}
+
+.midnight {
+
+  --text: #ffffe8;
+  --background: #1E1F29;
+  --border: #44475A;
+  --border-highlight: #8791ad; 
+  --input-background:#1E1F29 ;
+  --input-background-hover:#6272A4 ;
+  --link: #6272A4;
+  --link-hover: #a1aac7;
+  --button-background: #21222D;
+  --button-background-hover: #6272A4;
+  --textbox-background: #272736;
+  --devlog-headline: #1B1C25;
+  --warning: #ff0000;
+  --warning-hover: #a30000;
+  
+}
+
+/* native classes */
 html,
 body {
   font-family: var(--vscode-font-family);
-  color: var(--vscode-editor-foreground);
+  color: var(--text);
   margin: 0 auto;
   padding: 0;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  background-color: #7b4942;
+  background-color: var(--background);
   justify-content: center;
   align-items: center;
 }
@@ -22,21 +81,21 @@ select {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
-  color: #ffffe8;
+  color: var(--text);
   background-origin: border-box;
-  background-color: #4e2c33;
+  background-color: var(--input-background);
   cursor: pointer;
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312f;
+  border-color: var(--border);
   border-image: initial;
   text-decoration: none;
 }
 
 select:hover {
-  background-color: #ad7858;
+  background-color: var(--input-background-hover);
 }
 
 option {
@@ -44,29 +103,29 @@ option {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
-  color: #ffffe8;
+  color: var(--text);
   background-origin: border-box;
-  background-color: #4e2c33;
+  background-color: var(--input-background);
   cursor: text;
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312f;
+  border-color: var(--border);
   border-image: initial;
   text-decoration: none;
 }
 
 option:hover {
-  background-color: #ad7858;
+  background-color: var(--input-background-hover);
 }
 
 a{
-  color: #ad7858;
+  color: var(--link);
 }
 
 a:hover {
-  color: #E7D4B1;
+  color: var(--link-hover);
 }
 
 textarea {
@@ -74,15 +133,15 @@ textarea {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
-  color: #ffffe8;
+  color: var(--text);
   background-origin: border-box;
-  background-color: #4e2c33;
+  background-color: var(--input-background);
   cursor: text;
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312f;
+  border-color: var(--border);
   border-image: initial;
   text-decoration: none;
   overflow: scroll;
@@ -95,15 +154,15 @@ input {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
-  color: #ffffe8;
+  color: var(--text);
   background-origin: border-box;
-  background-color: #4e2c33;
+  background-color: var(--input-background);
   cursor: text;
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312f;
+  border-color: var(--border);
   border-image: initial;
   text-decoration: none;
 }
@@ -115,21 +174,21 @@ input:focus {
 button {
   display: inline-flex;
   align-items: center;
-  color: #ffffe8;
+  color: var(--text);
   background-origin: border-box;
-  background-color: #4e2c33;
+  background-color: var(--button-background);
   cursor: pointer;
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312f;
+  border-color: var(--border);
   border-image: initial;
   text-decoration: none;
 }
 
 button:hover {
-  background-color: #ad7858;
+  background-color: var(--button-background-hover);
   color: var(--vscode-editor-background);
 }
 
@@ -137,6 +196,7 @@ a {
   text-decoration: underline;
 }
 
+/* custom classes */
 .center {
   display: flex;
   justify-content: center;
@@ -144,12 +204,12 @@ a {
 }
 
 .cancel {
-  color: #ff0000;
+  color: var(--warning);
 }
 
 .cancel:hover {
   color: (--vscode-editor-background);
-  background-color: #a30000;
+  background-color: var(--warning-hover);
 }
 
 .button-row {
@@ -177,16 +237,16 @@ a {
 .checkbox-box {
   width: 18px;
   height: 18px;
-  border: 2px solid #56312f;
+  border: 2px solid var(--border);
   border-radius: 4px;
-  background-color: #4e2c33;
+  background-color: var(--input-background);
   box-sizing: border-box;
   display: inline-block;
 }
 
 .checkbox input:checked + .checkbox-box {
-  background-color: #ad7858;
-  border-color: #ad7858;
+  background-color: var(--input-background-hover);
+  border-color: var(--input-background-hover);
 }
 
 .checkbox input:checked + .checkbox-box::after {
@@ -194,9 +254,13 @@ a {
   display: block;
   width: 6px;
   height: 10px;
-  border: solid #ffffe8;
+  border: solid var(--text);
   border-width: 0 2px 2px 0;
   transform: translate(4px, 0px) rotate(45deg);
+}
+
+.highlight {
+  border-color: var(--border-highlight);
 }
 
 .options {
@@ -229,21 +293,21 @@ a {
 .link-button {
   display: inline-flex;
   align-items: center;
-  color: #ffffe8;
+  color: var(--text);
   background-origin: border-box;
-  background-color: #4e2c33;
+  background-color: var(--button-background);
   cursor: pointer;
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  border-color: #56312f;
+  border-color: var(--border);
   border-image: initial;
   text-decoration: none;
 }
 
 .link-button:hover {
-  background-color: #ad7858;
+  background-color: var(--button-background-hover);
 }
 
 .link-button.center {
@@ -258,7 +322,7 @@ a {
   margin: 0 auto;
   box-sizing: border-box;
   padding: 10px;
-  background-color: #7b4942;
+  background-color: var(--background);
   background-origin: padding-box;
   background-clip: padding-box;
 }
@@ -267,7 +331,7 @@ a {
   width: 100%;
   min-height: 100%;
   box-sizing: border-box;
-  background-color: #7b4942;
+  background-color: var(--background);
   padding: 20px;
   text-align: left;
 }
@@ -283,12 +347,12 @@ a {
   margin-bottom: 10px;
   text-align: left;
   box-sizing: border-box;
-  border-color: #563038;
+  border-color: var(--border);
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  background-color: #68403d;
+  background-color: var(--textbox-background);
   background-origin: padding-box;
   background-clip: padding-box;
 }
@@ -326,12 +390,12 @@ a {
   align-items: center;
   margin: 0 auto;
   box-sizing: border-box;
-  border-color: #563038;
+  border-color: var(--border);
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  background-color: #68403d;
+  background-color: var(--textbox-background);
   background-origin: padding-box;
   background-clip: padding-box;
   gap: 20px;
@@ -372,12 +436,12 @@ a {
   align-items: center;
   margin: 0 auto;
   box-sizing: border-box;
-  border-color: #56312F;
+  border-color: var(--devlog-headline);
   padding: 10px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
-  background-color: #4E2C33;
+  background-color: var(--devlog-headline);
   background-origin: padding-box;
   background-clip: padding-box;
   gap: 20px;

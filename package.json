@@ -36,14 +36,14 @@
         "title": "update current Project"
       },
       {
-        "command": "flavorcode.deletCurrentProject",
-        "category": "Flavorcode",
-        "title": "delet current Project"
-      },
-      {
         "command": "flavorcode.openDevlog",
         "category": "flavorcode",
         "title": "Open devlog"
+      },
+      {
+        "command": "flavorcode.theme",
+        "category": "flavorcode",
+        "title": "set Flavorcode theme"
       }
     ],
     "viewsContainers": {
@@ -105,6 +105,12 @@
           "type": "boolean",
           "default": "true",
           "description": "Connect to discord rich Presence",
+          "scope": "application"
+        },
+        "flavorcode.theme": {
+          "type":"string",
+          "default":" ",
+          "description": "Set the theme of Flavorcode!",
           "scope": "application"
         }
       }
