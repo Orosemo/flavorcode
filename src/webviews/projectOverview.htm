@@ -95,6 +95,9 @@
       <!--display Page-->
       <div id="display" style="display: none">
         <div class="options">
+          <button class="options-button" onclick="reload()">
+            <i class="codicon codicon-refresh" ></i>
+          </button>
           <button class="options-button" onclick="switchMode('edit')">
             <i class="codicon codicon-edit" ></i>
           </button>
@@ -402,6 +405,10 @@
 
       function refresh() {
         vscode.postMessage({ command: "refresh", scope: "local" });
+      }
+
+      function reload() {
+        vscode.postMessage({command: "reload", scope:"local"})
       }
 
       // listens for messages from the extentsion

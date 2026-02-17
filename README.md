@@ -7,11 +7,12 @@
 - [Setup](#setup)
 - [Features](#features)
   - [View Flavortown project stats (WIP)](#view-flavortown-project-stats-wip)
-    - [View Devlogs](#view-devlogs)
+  - [View Devlogs](#view-devlogs)
   - [Add and Update Flavortown Projects](#add-and-update-flavortown-projects)
     - [Create new project](#createproject)
     - [Update existing Project](#updateproject)
-    - [Add and Update Devlogs (WIP)](#add-and-update-devlogs-wip)
+    - [Add and Update Devlogs (WIP)](#add-and-update-devlogs-wip-missing-important-api-routes)
+  - [Discord Rich Presence](#discord-rich-presence)
 - [Requirements](#requirements)
 - [Extension Settings](#extension-settings)
 - [Release Notes](#release-notes)
@@ -24,7 +25,7 @@ To setup the Extension use the `setup` command or open the `Flavorcode` tab on t
 
 - ### View Flavortown project stats (WIP)
 
-  View stats like `follower`, `votes` and `tracked time`
+  View stats like `creation time`, `last updated` and `user cookies (WIP)`
 
 - #### view Devlogs
 
@@ -47,6 +48,10 @@ To setup the Extension use the `setup` command or open the `Flavorcode` tab on t
 - ### Add and Update Devlogs (WIP) (Missing important api routes)
 
   Directly add or Devlogs in your code editor.
+
+- ### Discord Rich Presence
+
+  Discord Rich presence is activ by default and displays project stats (To disable it simply deactivate it in the settings (`setting>flavorcode>Use Discord`) and refresh the webview (Button in the top left corner))
 
 ## Requirements
 

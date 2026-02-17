@@ -7,6 +7,7 @@ import {
   createProject,
   getUserSelf,
   getProjectDevlogs,
+  disconnectDiscordGateway,
 } from "./apiCalls";
 
 export class projectInfoProvider implements vscode.WebviewViewProvider {
@@ -14,7 +15,10 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView;
   private messageCallback?: (message: any) => void;
 
-  constructor(private readonly extensionUri: vscode.Uri, private  devlogProvider: any) {}
+  constructor(
+    private readonly extensionUri: vscode.Uri,
+    private devlogProvider: any,
+  ) {}
 
   public postmessage(message: any) {
     this._view?.webview.postMessage(message);
@@ -24,7 +28,6 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     this.messageCallback = callback;
   }
 
-
   async resolveWebviewView(
     webviewView: vscode.WebviewView,
     context: vscode.WebviewViewResolveContext,
@@ -32,7 +35,16 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
   ): Promise<void> {
     webviewView.webview.options = {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "media"), vscode.Uri.joinPath(this.extensionUri, "node_modules", "@vscode", "codicons", "dist")],
+      localResourceRoots: [
+        vscode.Uri.joinPath(this.extensionUri, "media"),
+        vscode.Uri.joinPath(
+          this.extensionUri,
+          "node_modules",
+          "@vscode",
+          "codicons",
+          "dist",
+        ),
+      ],
     };
 
     webviewView.webview.html = overviewProjectHtml(
@@ -105,7 +117,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
         webviewView.webview.postMessage({
           command: "project-info",
           value: projectInfoData,
-          scope: "local"
+          scope: "local",
         });
       } catch (error) {
         const errorMessage =
@@ -266,6 +278,21 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               this.devlogProvider.refreshDevlogs();
               break;
             }
+            case "reload": {
+              config = vscode.workspace.getConfiguration("flavorcode");
+              if (config.get<Boolean>("useDiscord")) {
+                const projectInfo = await getProject("", projectId);
+                await connectDiscordGateway(
+                  projectInfo.title,
+                  String(projectId),
+                  projectInfo.devlog_ids.length,
+                );
+              } else {
+                disconnectDiscordGateway();
+              }
+              this.devlogProvider.refreshDevlogs();
+              populateWebview();
+            }
           }
         }
       } catch (error) {
@@ -274,12 +301,20 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     });
 
     try {
-      const projectInfo = await getProject("", projectId);
-      await connectDiscordGateway(
-        projectInfo.title,
-        String(projectId),
-        projectInfo.devlog_ids.length,
-      );
+      console.log("load")
+      config = vscode.workspace.getConfiguration("flavorcode");
+      console.log(config.get<Boolean>("useDiscord"))
+      if (config.get<Boolean>("useDiscord")) {
+        
+        const projectInfo = await getProject("", projectId);
+        await connectDiscordGateway(
+          projectInfo.title,
+          String(projectId),
+          projectInfo.devlog_ids.length,
+        );
+      } else {
+        disconnectDiscordGateway();
+      }
     } catch {}
 
     webviewView.onDidChangeVisibility(async () => {

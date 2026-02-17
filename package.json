@@ -100,6 +100,12 @@
           "type": "string",
           "default": " ",
           "description": "Your Flavortown project id"
+        },
+        "flavorcode.useDiscord": {
+          "type": "boolean",
+          "default": "true",
+          "description": "Connect to discord rich Presence",
+          "scope": "application"
         }
       }
     }
