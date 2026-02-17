@@ -312,6 +312,9 @@ export function activate(context: vscode.ExtensionContext) {
   const openDevlog = vscode.commands.registerCommand(
     "flavorcode.openDevlog",
     (record) => {
+      let config = vscode.workspace.getConfiguration("flavorcode");
+      const theme = config.get<string>("theme")
+
       let pendingRecord = record;
       const columToShowIn = vscode.window.activeTextEditor
         ? vscode.window.activeTextEditor.viewColumn
@@ -359,6 +362,10 @@ export function activate(context: vscode.ExtensionContext) {
         command: "devlog-info",
         value: emojifiedRecord,
       });
+      currentDevlogViewPanel.webview.postMessage({
+        command:"set-theme",
+        value: theme
+      })
     },
   );
 
