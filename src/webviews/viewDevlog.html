@@ -13,7 +13,7 @@
       <p>Flavorcode not setup yet set it up in the window above :D</p>
     </div>
 
-    <!-- Devlogs -->
+    <!-- devlogs -->
     <div
       id="devlog-container"
       class="devlog-display-container"
@@ -33,40 +33,11 @@
     </div>
 
     <script>
+    // vars
       const vscode = acquireVsCodeApi();
       let Devlogs = [];
 
-      function populateDevlog(devlogInfo) {
-        const infoMessage = document.getElementById("info-message");
-        if (infoMessage) {
-          infoMessage.style = "display: none;";
-        }
-
-        const safeDevlogs = Array.isArray(devlogInfo) ? devlogInfo : [];
-        const devlogs = safeDevlogs.map((devlog, index) => {
-          const devlogHead = getHead(devlog.body);
-          const duration = formatDuration(devlog.duration_seconds);
-          return `</i><div class="devlog-display-entry" data-index="${index}"><p> ${trimHeadline(devlogHead.headline)}</p><p>${duration}</p></div>`;
-        });
-        document.getElementById("devlog-container").innerHTML =
-          `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div>`;
-        document.getElementById("devlog-container").innerHTML +=
-          devlogs.join("");
-        if (
-          document.getElementById("devlog-container").innerHTML ===
-          `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div>`
-        ) {
-          document.getElementById("devlog-container").innerHTML +=
-            `<div class="devlog-display-container"><p>Nothing here :( What are you waiting for, start creatings</p></div>`;
-        }
-
-        // Add click listeners to devlog entries
-        document.querySelectorAll(".devlog-display-entry").forEach((entry) => {
-          entry.addEventListener("click", () => {
-            openDevlog(entry.dataset.index);
-          });
-        });
-      }
+    // general functions
 
       function switchMode(mode) {
         if (mode === "devlogs") {
@@ -116,6 +87,50 @@
         return { headline, content: rest.join(" ") };
       }
 
+      function setTheme(theme) {
+        document.getElementById("html").classList = theme
+      }
+      
+    // functions for the setup page
+
+      //  nothing here
+
+    // functions for the devlogs page
+
+      function populateDevlog(devlogInfo) {
+        const infoMessage = document.getElementById("info-message");
+        if (infoMessage) {
+          infoMessage.style = "display: none;";
+        }
+
+        const safeDevlogs = Array.isArray(devlogInfo) ? devlogInfo : [];
+        const devlogs = safeDevlogs.map((devlog, index) => {
+          const devlogHead = getHead(devlog.body);
+          const duration = formatDuration(devlog.duration_seconds);
+          return `</i><div class="devlog-display-entry" data-index="${index}"><p> ${trimHeadline(devlogHead.headline)}</p><p>${duration}</p></div>`;
+        });
+        document.getElementById("devlog-container").innerHTML =
+          `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div>`;
+        document.getElementById("devlog-container").innerHTML +=
+          devlogs.join("");
+        if (
+          document.getElementById("devlog-container").innerHTML ===
+          `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div>`
+        ) {
+          document.getElementById("devlog-container").innerHTML +=
+            `<div class="devlog-display-container"><p>Nothing here :( What are you waiting for, start creatings</p></div>`;
+        }
+
+        // Add click listeners to devlog entries
+        document.querySelectorAll(".devlog-display-entry").forEach((entry) => {
+          entry.addEventListener("click", () => {
+            openDevlog(entry.dataset.index);
+          });
+        });
+      }
+
+
+
       function openDevlog(id) {
         vscode.postMessage({
           command: "open-devlog",
@@ -124,11 +139,9 @@
         });
       }
 
-      function setTheme(theme) {
-        document.getElementById("html").classList = theme
-      }
 
-      // listens for messages from the extentsion
+
+    // listens for messages from the extentsion
       window.addEventListener("message", (event) => {
         const message = event.data;
         if (message.scope === "local") {

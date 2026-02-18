@@ -29,18 +29,17 @@
         // ...and here
         function setCurrentTheme (theme) {
             document.getElementById("html").classList = theme
+
+            document.getElementById("default").classList = " "
+            document.getElementById("midnight").classList = " "
+            document.getElementById("light").classList = " "
+
             if (theme === "midnight") {
-                    document.getElementById("default").classList = " "
-                    document.getElementById("midnight").classList = "highlight"
-                    document.getElementById("light").classList = " "
+                document.getElementById("midnight").classList = "highlight"
             }else if (theme === "light") {
-                    document.getElementById("default").classList = " "
-                    document.getElementById("midnight").classList = " "
-                    document.getElementById("light").classList = "highlight"
+                document.getElementById("light").classList = "highlight"
             } else {
-                   document.getElementById("default").classList = "highlight"
-                    document.getElementById("midnight").classList = " "
-                    document.getElementById("light").classList = " "
+                document.getElementById("default").classList = "highlight"
             }
         }
 

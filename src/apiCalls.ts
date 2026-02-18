@@ -44,7 +44,7 @@ export async function connectDiscordGateway(title: string, projectId: string, de
     rpc.on("ready", async () => {
       rpcReady = true;
       console.log("dc ready");
-      await updateActivity()
+      await updateActivity();
     });
 
     const maxEntries = 5;

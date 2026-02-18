@@ -218,9 +218,12 @@
     </div>
 
     <script nonce="${nonce}">
+    // Vars
       const vscode = acquireVsCodeApi();
       let projectId = 0;
       let apiKey = "";
+
+    // general functions
 
       // set default values to current project info
       function passProjectInfo(projectInfo, id) {
@@ -285,73 +288,41 @@
         document.getElementById("aiInput").value = projectInfo.ai;
       }
 
-      function fillApiInput() {
-        if (apiKey) {
-          document.getElementById("api-key").value = apiKey;
-        }
-      }
-
-      function fillSettingsApiInput() {
-        if (apiKey) {
-          document.getElementById("api-key-settings").value = apiKey;
-        }
-      }
-
       function switchMode(mode) {
+        document.getElementById("display").style = "display: none;";
+        document.getElementById("edit").style = "display: none;";
+        document.getElementById("setup").style = "display: none;";
+        document.getElementById("create").style = "display: none;";
+        document.getElementById("choose").style = "display: none;";
+        document.getElementById("settings").style = "display: none;";
+
         if (mode === "display") {
           document.getElementById("display").style = "display: block;";
-          document.getElementById("edit").style = "display: none;";
-          document.getElementById("setup").style = "display: none;";
-          document.getElementById("create").style = "display: none;";
-          document.getElementById("choose").style = "display: none;";
-          document.getElementById("settings").style = "display: none;";
         } else if (mode === "edit") {
-          document.getElementById("display").style = "display: none;";
           document.getElementById("edit").style = "display: block;";
-          document.getElementById("setup").style = "display: none;";
-          document.getElementById("create").style = "display: none;";
-          document.getElementById("choose").style = "display: none;";
-          document.getElementById("settings").style = "display: none;";
         } else if (mode === "create") {
-          document.getElementById("display").style = "display: none;";
-          document.getElementById("edit").style = "display: none;";
-          document.getElementById("setup").style = "display: none;";
           document.getElementById("create").style = "display: block;";
-          document.getElementById("choose").style = "display: none;";
-          document.getElementById("settings").style = "display: none;";
         } else if (mode === "choose") {
-          document.getElementById("display").style = "display: none;";
-          document.getElementById("edit").style = "display: none;";
-          document.getElementById("setup").style = "display: none;";
-          document.getElementById("create").style = "display: none;";
           document.getElementById("choose").style = "display: block;";
-          document.getElementById("settings").style = "display: none;";
         } else if (mode === "settings") {
-          document.getElementById("display").style = "display: none;";
-          document.getElementById("edit").style = "display: none;";
-          document.getElementById("setup").style = "display: none;";
-          document.getElementById("create").style = "display: none;";
-          document.getElementById("choose").style = "display: none;";
           document.getElementById("settings").style = "display: block;";
           fillSettingsApiInput();
         } else {
-          document.getElementById("display").style = "display: none;";
-          document.getElementById("edit").style = "display: none;";
-          document.getElementById("setup").style = "display: block;";
-          document.getElementById("create").style = "display: none;";
-          document.getElementById("choose").style = "display: none;";
-          document.getElementById("settings").style = "display: none;";
+          document.getElementById("setup").style = "display: block;";    
           fillApiInput();
         }
       }
 
-      function formatDate(value) {
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) {
-          return value;
-        }
+      function setTheme(theme) {
+        document.getElementById("html").classList = theme
+      }
 
-        return date.toLocaleDateString();
+    // functions for the setup page
+
+      function fillApiInput() {
+        if (apiKey) {
+          document.getElementById("api-key").value = apiKey;
+        }
       }
 
       function chooseExisting() {
@@ -363,6 +334,24 @@
         }
       }
 
+      function createNew() {
+        apiKey = document.getElementById("api-key").value;
+        if (apiKey) {
+          switchMode("create");
+        } else {
+          document.getElementById("api-warning").style = "display: block; color: red;";
+        }
+      }
+
+
+    // functions for the settings page
+
+      function fillSettingsApiInput() {
+        if (apiKey) {
+          document.getElementById("api-key-settings").value = apiKey;
+        }
+      }
+
       function chooseExistingSettings() {
         apiKey = document.getElementById("api-key-settings").value;
         if (apiKey) {
@@ -371,6 +360,18 @@
           document.getElementById("api-warning-settings").style = "display: block; color: red;";
         }
       }
+
+      function createNewSettings() {
+        apiKey = document.getElementById("api-key-settings").value;
+        if (apiKey) {
+          switchMode("create");
+        } else {
+          document.getElementById("api-warning-settings").style = "display: block; color: red;";
+        }
+      }
+
+
+    // functions for the choose page
 
       function populateProjectSelect (projects) {
         document.getElementById("project-select").innerHTML = ""
@@ -389,23 +390,8 @@
         }
        }
 
-      function createNew() {
-        apiKey = document.getElementById("api-key").value;
-        if (apiKey) {
-          switchMode("create");
-        } else {
-          document.getElementById("api-warning").style = "display: block; color: red;";
-        }
-      }
 
-      function createNewSettings() {
-        apiKey = document.getElementById("api-key-settings").value;
-        if (apiKey) {
-          switchMode("create");
-        } else {
-          document.getElementById("api-warning-settings").style = "display: block; color: red;";
-        }
-      }
+    // functions for the create page
 
       function clearProjectCreation() {
         document.getElementById("create-name").value = "";
@@ -416,7 +402,8 @@
         document.getElementById("create-currentProject").checked = true;
       }
 
-      // sent infos of new project to extension
+    // sent infos of new project to extension
+
       function Create() {
         const name = document.getElementById("create-name").value;
         const description = document.getElementById("create-description").value;
@@ -446,6 +433,35 @@
         vscode.postMessage({ command: "create", value: createData, scope: "local" });
       }
 
+    // functions for the display page
+
+      function formatDate(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return value;
+        }
+
+        return date.toLocaleDateString();
+      }
+
+      function openSetting() {
+        vscode.postMessage({ command: "open-settings", scope: "local" });
+      }
+
+      function openThemes() {
+        vscode.postMessage({command: "openThemes", scope:"local"})
+      }
+
+      function settings () {
+        vscode.postMessage({command:"open-setup", scope:"local"})
+      }    
+      
+      function reload() {
+        vscode.postMessage({command: "reload", scope:"local"})
+      }
+            
+    // functions for the edit page
+
       // send inputs to extension
       function Update() {
         const name = document.getElementById("nameInput").value;
@@ -463,31 +479,7 @@
         vscode.postMessage({ command: "update", value: createData, scope: "local" });
       }
 
-      function openSetting() {
-        vscode.postMessage({ command: "open-settings", scope: "local" });
-      }
-
-      function refresh() {
-        vscode.postMessage({ command: "refresh", scope: "local" });
-      }
-
-      function reload() {
-        vscode.postMessage({command: "reload", scope:"local"})
-      }
-
-      function setTheme(theme) {
-        document.getElementById("html").classList = theme
-      }
-
-      function openThemes() {
-        vscode.postMessage({command: "openThemes", scope:"local"})
-      }
-
-      function settings () {
-        vscode.postMessage({command:"open-setup", scope:"local"})
-      }
-
-      // listens for messages from the extentsion
+    // listens for messages from the extentsion
       window.addEventListener("message", (event) => {
         const message = event.data;
         if (message.scope === "local"){
