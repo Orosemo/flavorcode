@@ -27,8 +27,9 @@ async function updateActivity() {
       },
     ],
   }
-  console.log(payload)
+  console.log(payload);
   await rpc?.setActivity(payload as any);
+  vscode.window.showInformationMessage("Updated discord rich presence")
 }
 
 export async function connectDiscordGateway(title: string, projectId: string, devlogs: number) {

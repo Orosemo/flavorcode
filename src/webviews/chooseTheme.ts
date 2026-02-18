@@ -13,7 +13,7 @@ export function chooseThemeHtml(
     extensionUri,
     "src",
     "webviews",
-    "chooseTHeme.html",
+    "chooseTheme.html",
   );
   const rawHtml = fs.readFileSync(htmlPath.fsPath, "utf8");
 

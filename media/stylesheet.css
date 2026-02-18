@@ -56,6 +56,44 @@
   
 }
 
+.orosemo {
+  
+  --text: #ffffe8;
+  --background: #000000;
+  --border: #155442;
+  --border-highlight: #53a08a; 
+  --input-background:#09262B ;
+  --input-background-hover:#0f353b ;
+  --link: #39816D;
+  --link-hover: #53a08a;
+  --button-background: #155442;
+  --button-background-hover: #39816D;
+  --textbox-background: #09262B;
+  --devlog-headline: #155442;
+  --warning: #ff0000;
+  --warning-hover: #a30000;
+  
+}
+
+.fire{
+  
+  --text: #ffffe8;
+  --background: #5a1e0a;
+  --border: #F26C23;
+  --border-highlight: #f7b861; 
+  --input-background:#C7461A ;
+  --input-background-hover:#91300f ;
+  --link: #FBAA38;
+  --link-hover: #f7b861;
+  --button-background: #F26C23;
+  --button-background-hover: #FBAA38;
+  --textbox-background: #C7461A;
+  --devlog-headline: #F26C23;
+  --warning: #ff0000;
+  --warning-hover: #a30000;
+  
+}
+
 /* native classes */
 html,
 body {

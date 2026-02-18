@@ -132,7 +132,9 @@
             <i class="codicon codicon-gear"></i>
           </button>
         </div>
-        <div id="content">
+
+        <!--project section-->
+        <div id="project">
           <h1 id="name"></h1>
           <div class="text-bodies">
             <h4 id="ship"></h4>
@@ -173,6 +175,20 @@
           <a id="flavortown" class="link-button center" href="#"
             >View this Project on Flavortown</a
           >
+        </div>
+
+        <!-- user section-->
+        <div id="user" style="display: none;">
+          <div>
+
+          </div>
+          <h1 id="user-name"></h1>
+          <h2 id="cookies"></h2>
+          <div class="text-bodies">
+            <div class="text-row">
+              <p></p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -265,7 +281,7 @@
         }
         if (!projectInfo.readme && !projectInfo.repo && !projectInfo.demo) {
           document
-            .getElementById("content")
+            .getElementById("project")
             .removeChild(document.getElementById("links"));
         }
         if (!projectInfo.ai) {
@@ -276,7 +292,7 @@
             .getElementById("ai-div")
             .removeChild(document.getElementById("aiHeadline"));
           document
-            .getElementById("content")
+            .getElementById("project")
             .removeChild(document.getElementById("ai-div"));
         }
 
@@ -435,15 +451,6 @@
 
     // functions for the display page
 
-      function formatDate(value) {
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) {
-          return value;
-        }
-
-        return date.toLocaleDateString();
-      }
-
       function openSetting() {
         vscode.postMessage({ command: "open-settings", scope: "local" });
       }
@@ -459,6 +466,18 @@
       function reload() {
         vscode.postMessage({command: "reload", scope:"local"})
       }
+
+      // functions for the project overview section
+      function formatDate(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return value;
+        }
+
+        return date.toLocaleDateString();
+      }
+
+      // functions for the user section 
             
     // functions for the edit page
 

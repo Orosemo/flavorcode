@@ -11,9 +11,11 @@
         <h2 class="center">Select Theme</h2>
         <div class="text-bodies">
             <!-- Add custom theme here...-->
-            <button id="default" class="" onclick="setTheme(' ')">Default</button>
+            <button id="default" class="" onclick="setTheme('')">Default</button>
             <button id="light" class="" onclick="setTheme('light')">Light</button>
             <button id="midnight" class="" onclick="setTheme('midnight')">Midnight</button>
+            <button id="orosemo" class="" onclick="setTheme('orosemo')">Orsemo</button>
+            <button id="fire" class="" onclick="setTheme('fire')">Fire</button>
         </div>
     </div>
 
@@ -21,25 +23,33 @@
         const vscode = acquireVsCodeApi();
 
         function setTheme (theme) {
-            setCurrentTheme(theme)
-            document.getElementById("html").classList = theme
-            vscode.postMessage({command: "set-theme", value:theme})
+            const normalizedTheme = (theme || "").trim()
+            setCurrentTheme(normalizedTheme)
+            document.getElementById("html").className = normalizedTheme
+            vscode.postMessage({command: "set-theme", value: normalizedTheme})
         }
 
         // ...and here
         function setCurrentTheme (theme) {
-            document.getElementById("html").classList = theme
+            const normalizedTheme = (theme || "").trim()
+            document.getElementById("html").className = normalizedTheme
 
-            document.getElementById("default").classList = " "
-            document.getElementById("midnight").classList = " "
-            document.getElementById("light").classList = " "
+            document.getElementById("default").className = ""
+            document.getElementById("midnight").className = ""
+            document.getElementById("light").className = ""
+            document.getElementById("orosemo").className = ""
+            document.getElementById("fire").className = ""
 
-            if (theme === "midnight") {
-                document.getElementById("midnight").classList = "highlight"
-            }else if (theme === "light") {
-                document.getElementById("light").classList = "highlight"
-            } else {
-                document.getElementById("default").classList = "highlight"
+            if (normalizedTheme === "midnight") {
+                document.getElementById("midnight").className = "highlight"
+            }else if (normalizedTheme === "light") {
+                document.getElementById("light").className = "highlight"
+            }else if (normalizedTheme === "orosemo") {
+                document.getElementById("orosemo").className = "highlight"
+            }else if (normalizedTheme === "fire") {
+                document.getElementById("fire").className = "highlight"
+            }else {
+                document.getElementById("default").className = "highlight"
             }
         }
 
