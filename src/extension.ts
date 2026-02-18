@@ -8,8 +8,6 @@ import {
   updateProject,
   disconnectDiscordGateway,
 } from "./apiCalls";
-import { createProjectHtml } from "./webviews/createProject";
-import { updateProjectHtml } from "./webviews/updateProject";
 import { openDevlogHtml } from "./webviews/openDevlog";
 import * as emoji from "node-emoji";
 import { projectInfoProvider } from "./projectInfoWebViewProvider";
@@ -171,143 +169,6 @@ export function activate(context: vscode.ExtensionContext) {
   );
   */
 
-
-  // create project Command
-  const createNewProject = vscode.commands.registerCommand(
-    "flavorcode.createProject",
-    async () => {
-      const panel = vscode.window.createWebviewPanel(
-        "createProject",
-        "create new Project",
-        vscode.ViewColumn.One,
-        {
-          // permissions
-          enableScripts: true,
-          localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, "media"),
-          ],
-        },
-      );
-
-      // create webview
-      panel.webview.html = createProjectHtml(
-        panel.webview,
-        context.extensionUri,
-      );
-
-      // handle webview interactions
-      panel.webview.onDidReceiveMessage(async (message) => {
-        const messageContent = message.value;
-        switch (message.command) {
-          case "create":
-            const newProject = await createProject(
-              "",
-              messageContent.currenProject,
-              messageContent.name,
-              messageContent.description,
-              messageContent.repo,
-              messageContent.demo,
-              messageContent.ai,
-            );
-            panel.dispose();
-            if (newProject instanceof Error) {
-              vscode.window.showErrorMessage(newProject.message);
-            } else {
-              vscode.window.showInformationMessage(
-                `Created new project "${newProject.title}" succesfully`,
-              );
-            }
-            return;
-        }
-      });
-    },
-  );
-
-  const updateCurrentProject = vscode.commands.registerCommand(
-    "flavorcode.updateProject",
-    async () => {
-      const config = vscode.workspace.getConfiguration("flavorcode");
-      const projectId = Number(config.get<string>("projectId"));
-      if (!projectId || projectId === 0) {
-        vscode.window.showErrorMessage(
-          "No project set: please use the setup command to initialise the exentsion.",
-        );
-        return;
-      }
-
-      const panel = vscode.window.createWebviewPanel(
-        "updateProject",
-        "Modify current Project",
-        vscode.ViewColumn.One,
-        {
-          // permissions
-          enableScripts: true,
-          localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, "media"),
-          ],
-        },
-      );
-
-      panel.webview.html = updateProjectHtml(
-        panel.webview,
-        context.extensionUri,
-      );
-
-      // handle project messages from webview
-      panel.webview.onDidReceiveMessage(async (message) => {
-        const messageContent = message.value;
-        switch (message.command) {
-          // update project (get data from webview and make api call)
-          case "update":
-            try {
-              const updatedProject = await updateProject(
-                "",
-                projectId,
-                messageContent.name,
-                messageContent.description,
-                messageContent.repo,
-                messageContent.demo,
-                messageContent.ai,
-              );
-              // message
-              vscode.window.showInformationMessage(
-                `Updated project "${updatedProject.title}" succesfully`,
-              );
-              panel.dispose();
-              // error
-            } catch (error) {
-              const errorMessage =
-                error instanceof Error ? error.message : String(error);
-              vscode.window.showErrorMessage(errorMessage);
-            }
-            return;
-          // cancel
-          case "cancel":
-            panel.dispose();
-            return;
-        }
-      });
-
-      // populate form
-      const projectInfo = await getProject("", projectId);
-
-      const projectInfoData = {
-        name: projectInfo.title,
-        description: projectInfo.description,
-        demo: projectInfo.demo_url,
-        repo: projectInfo.repo_url,
-        ai: projectInfo.ai_declaration,
-        ship: projectInfo.ship_status,
-      };
-
-      // send date to webview
-      panel.webview.postMessage({
-        command: "project-info",
-        value: projectInfoData,
-      });
-    },
-  );
-
   // opens webview with devlog details
   const openDevlog = vscode.commands.registerCommand(
     "flavorcode.openDevlog",
@@ -461,8 +322,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     disposable,
     setupProject,
-    createNewProject,
-    updateCurrentProject,
     openDevlog,
     projectInfo,
     devlogView,
