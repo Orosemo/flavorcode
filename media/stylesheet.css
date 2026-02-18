@@ -218,6 +218,7 @@ a {
   justify-content: center;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .checkbox {
@@ -266,6 +267,8 @@ a {
 .options {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
   padding-top: 15px;
   margin-right: 10px;
 }
@@ -279,7 +282,7 @@ a {
 
 
 .options-button {
-  margin-right: 10px;
+  margin-right: 0;
 }
 
 .link-row {

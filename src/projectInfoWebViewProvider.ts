@@ -326,6 +326,15 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               );
               break;
             }
+            case "open-setup": {
+              config = vscode.workspace.getConfiguration("flavorcode");
+              apiKey = config.get<string>("flavortownApiKey");
+              webviewView.webview.postMessage({
+                command: "settings",
+                value: apiKey,
+                scope: "local",
+              });
+            }
           }
         }
       } catch (error) {

@@ -27,6 +27,27 @@
         </div>
       </div>
 
+      <!--settings page-->
+      <div id="settings" style="display: none">
+        <div class="back">
+          <button class="options-button" onclick="switchMode('display')"><i class="codicon codicon-arrow-left" ></i></button>
+        </div>
+        <h1>Update Settings</h1>
+        <div class="text-bodies">
+          <h3>Your Flavortown Api key:</h3>
+          <input
+            id="api-key-settings"
+            placeholder="(from the settings on the website)"
+            type="text"
+          />
+          <h3 id="api-warning-settings" style="display: none; color: red;">Please enter your api key</h3>
+        </div>
+        <div class="button-row">
+          <button onclick="createNewSettings()">Create new Project</button>
+          <button onclick="chooseExistingSettings()">Choose Existing Project</button>
+        </div>
+      </div>
+
       <!--choose Page-->
       <div id="choose" style="display: none">
         <div class="back">
@@ -104,6 +125,9 @@
           <button class="options-button" onclick="openThemes()">
             <i class="codicon codicon-color-mode"></i>
           </button> 
+          <button class="options-button" onclick="settings()">
+            <i class="codicon codicon-list-selection"></i>
+          </button>
           <button class="options-button" onclick="openSetting()">
             <i class="codicon codicon-gear"></i>
           </button>
@@ -267,6 +291,12 @@
         }
       }
 
+      function fillSettingsApiInput() {
+        if (apiKey) {
+          document.getElementById("api-key-settings").value = apiKey;
+        }
+      }
+
       function switchMode(mode) {
         if (mode === "display") {
           document.getElementById("display").style = "display: block;";
@@ -274,30 +304,43 @@
           document.getElementById("setup").style = "display: none;";
           document.getElementById("create").style = "display: none;";
           document.getElementById("choose").style = "display: none;";
+          document.getElementById("settings").style = "display: none;";
         } else if (mode === "edit") {
           document.getElementById("display").style = "display: none;";
           document.getElementById("edit").style = "display: block;";
           document.getElementById("setup").style = "display: none;";
           document.getElementById("create").style = "display: none;";
           document.getElementById("choose").style = "display: none;";
+          document.getElementById("settings").style = "display: none;";
         } else if (mode === "create") {
           document.getElementById("display").style = "display: none;";
           document.getElementById("edit").style = "display: none;";
           document.getElementById("setup").style = "display: none;";
           document.getElementById("create").style = "display: block;";
           document.getElementById("choose").style = "display: none;";
+          document.getElementById("settings").style = "display: none;";
         } else if (mode === "choose") {
           document.getElementById("display").style = "display: none;";
           document.getElementById("edit").style = "display: none;";
           document.getElementById("setup").style = "display: none;";
           document.getElementById("create").style = "display: none;";
           document.getElementById("choose").style = "display: block;";
+          document.getElementById("settings").style = "display: none;";
+        } else if (mode === "settings") {
+          document.getElementById("display").style = "display: none;";
+          document.getElementById("edit").style = "display: none;";
+          document.getElementById("setup").style = "display: none;";
+          document.getElementById("create").style = "display: none;";
+          document.getElementById("choose").style = "display: none;";
+          document.getElementById("settings").style = "display: block;";
+          fillSettingsApiInput();
         } else {
           document.getElementById("display").style = "display: none;";
           document.getElementById("edit").style = "display: none;";
           document.getElementById("setup").style = "display: block;";
           document.getElementById("create").style = "display: none;";
           document.getElementById("choose").style = "display: none;";
+          document.getElementById("settings").style = "display: none;";
           fillApiInput();
         }
       }
@@ -317,6 +360,15 @@
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
         } else {
           document.getElementById("api-warning").style = "display: block; color: red;";
+        }
+      }
+
+      function chooseExistingSettings() {
+        apiKey = document.getElementById("api-key-settings").value;
+        if (apiKey) {
+          vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
+        } else {
+          document.getElementById("api-warning-settings").style = "display: block; color: red;";
         }
       }
 
@@ -343,6 +395,15 @@
           switchMode("create");
         } else {
           document.getElementById("api-warning").style = "display: block; color: red;";
+        }
+      }
+
+      function createNewSettings() {
+        apiKey = document.getElementById("api-key-settings").value;
+        if (apiKey) {
+          switchMode("create");
+        } else {
+          document.getElementById("api-warning-settings").style = "display: block; color: red;";
         }
       }
 
@@ -422,6 +483,10 @@
         vscode.postMessage({command: "openThemes", scope:"local"})
       }
 
+      function settings () {
+        vscode.postMessage({command:"open-setup", scope:"local"})
+      }
+
       // listens for messages from the extentsion
       window.addEventListener("message", (event) => {
         const message = event.data;
@@ -446,6 +511,11 @@
             break;
           case "set-theme": {
             setTheme(message.value);
+            break;
+          }
+          case "settings": {
+            apiKey = message.value;
+            switchMode("settings");
             break;
           }
         } 
