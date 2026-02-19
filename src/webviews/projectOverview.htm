@@ -133,8 +133,13 @@
           </button>
         </div>
 
+        <div class="display-switch-container">
+          <button id="display-switch-project" class="display-switch-selected" onclick="switchDisplayMode('project')">Project</button>
+          <button id="display-switch-user" class="" onclick="switchDisplayMode('user')">User</button>
+        </div>
+
         <!--project section-->
-        <div id="project">
+        <div id="project" style="display: block;">
           <h1 id="name"></h1>
           <div class="text-bodies">
             <h4 id="ship"></h4>
@@ -345,6 +350,7 @@
         apiKey = document.getElementById("api-key").value;
         if (apiKey) {
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
+          vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
         } else {
           document.getElementById("api-warning").style = "display: block; color: red;";
         }
@@ -353,6 +359,7 @@
       function createNew() {
         apiKey = document.getElementById("api-key").value;
         if (apiKey) {
+          vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
           switchMode("create");
         } else {
           document.getElementById("api-warning").style = "display: block; color: red;";
@@ -372,6 +379,7 @@
         apiKey = document.getElementById("api-key-settings").value;
         if (apiKey) {
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
+          vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
         } else {
           document.getElementById("api-warning-settings").style = "display: block; color: red;";
         }
@@ -381,6 +389,7 @@
         apiKey = document.getElementById("api-key-settings").value;
         if (apiKey) {
           switchMode("create");
+          vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
         } else {
           document.getElementById("api-warning-settings").style = "display: block; color: red;";
         }
@@ -478,7 +487,27 @@
       }
 
       // functions for the user section 
-            
+          
+      function populateUserSection (message) {
+        document.getElementById("cookies").textContent = message.cookies
+        document.getElementById("user-name").textContent = message.display_name
+      }
+
+      function switchDisplayMode(mode) {
+        document.getElementById("user").style = "display: none;"
+        document.getElementById("project").style = "display: none;"
+        document.getElementById("display-switch-user").className = ""
+        document.getElementById("display-switch-project").className = ""
+
+        if (mode === "user") {
+          document.getElementById("user").style = "display: block;"
+          document.getElementById("display-switch-user").className = "display-switch-selected"
+        } else {
+          document.getElementById("project").style = "display: block;"
+          document.getElementById("display-switch-project").className = "display-switch-selected"
+        }
+      }
+
     // functions for the edit page
 
       // send inputs to extension
@@ -504,22 +533,22 @@
         if (message.scope === "local"){
           switch (message.command) {
           case "project-info":
-            switchMode("display");
+            switchMode("display");{
             projectId = message.value.projectId;
             passProjectInfo(message.value, message.value.projectId);
-            break;
-          case "updated-project-info":
+            break;}
+          case "updated-project-info":{
             projectId = message.value.projectId;
             switchMode("display");
             passProjectInfo(message.value, message.value.projectId);
-            break;
-          case "setup":
+            break;}
+          case "setup":{
             apiKey = message.value;
             switchMode(" ");
-            break;
-          case "existing-projects":
+            break;}
+          case "existing-projects":{ 
             populateProjectSelect(message.value)
-            break;
+            break;}
           case "set-theme": {
             setTheme(message.value);
             break;
@@ -527,6 +556,10 @@
           case "settings": {
             apiKey = message.value;
             switchMode("settings");
+            break;
+          } 
+          case "user-data": {
+            populateUserSection(message.value)
             break;
           }
         } 

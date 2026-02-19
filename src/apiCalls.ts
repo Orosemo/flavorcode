@@ -5,7 +5,8 @@ import RPC from "discord-rpc";
 
 let rpc: RPC.Client | null = null;
 let rpcReady = false;
-let lastActivity: { title: string; projectId: string, devlogs: number } | null = null;
+let lastActivity: { title: string; projectId: string; devlogs: number } | null =
+  null;
 
 async function updateActivity() {
   if (!rpc || !rpcReady || !lastActivity) {
@@ -13,7 +14,7 @@ async function updateActivity() {
   }
   const { title, projectId, devlogs } = lastActivity;
 
-  console.log("updated activity")
+  console.log("updated activity");
 
   const payload = {
     details: `Working on: ${title}`,
@@ -23,23 +24,29 @@ async function updateActivity() {
     buttons: [
       {
         label: "To the Project".slice(0, 32),
-        url: `https://flavortown.hackclub.com/projects/${projectId}`.slice(0, 512),
+        url: `https://flavortown.hackclub.com/projects/${projectId}`.slice(
+          0,
+          512,
+        ),
       },
     ],
-  }
+  };
   console.log(payload);
   await rpc?.setActivity(payload as any);
-  vscode.window.showInformationMessage("Updated discord rich presence")
+  vscode.window.showInformationMessage("Updated discord rich presence");
 }
 
-export async function connectDiscordGateway(title: string, projectId: string, devlogs: number) {
+export async function connectDiscordGateway(
+  title: string,
+  projectId: string,
+  devlogs: number,
+) {
   const clientId = "1469410921704194090";
 
   RPC.register(clientId);
-  lastActivity = {title, projectId, devlogs}
+  lastActivity = { title, projectId, devlogs };
 
   if (!rpc) {
-
     rpc = new RPC.Client({ transport: "ipc" });
 
     rpc.on("ready", async () => {
@@ -164,6 +171,39 @@ export async function getAllUsers(givenApiKey: string) {
   }
 
   const res = await fetch(`https://flavortown.hackclub.com/api/v1/users`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      [`X-Flavortown-Ext-${11154}`]: "true",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to get Users: ${res.status} ${await res.text()}`);
+  }
+
+  return (await res.json()) as UserResponse;
+}
+
+// get a list of all users
+export async function getUser(givenApiKey: string, userID: string) {
+  const apiKey = resolveApiKey(givenApiKey);
+
+  interface UserResponse {
+    id: Number;
+    slack_id: Number;
+    display_name: Number;
+    avatar: Number;
+    project_ids: Number[];
+    cookies: Number | null;
+    vote_count: Number;
+    like_count: Number;
+    devlog_seconds_total: Number;
+    devlog_seconds_today: Number;
+  }
+
+  const res = await fetch(`https://flavortown.hackclub.com/api/v1/users/${userID}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${apiKey}`,

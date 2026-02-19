@@ -11,6 +11,7 @@
   --link-hover: #E7D4B1;
   --button-background: #4e2c33;
   --button-background-hover: #ad7858;
+  --button-background-focus: #56312F;
   --textbox-background: #68403d;
   --devlog-headline: #56312F;
   --warning: #ff0000;
@@ -30,6 +31,7 @@
   --link-hover: #572e36;
   --button-background: #D7B593;
   --button-background-hover: #967F67;
+  --button-background-focus: #fcf1e0;
   --textbox-background: #F8E9D3;
   --devlog-headline: #fcf1e0;
   --warning: #d30000;
@@ -49,6 +51,7 @@
   --link-hover: #a1aac7;
   --button-background: #21222D;
   --button-background-hover: #6272A4;
+  --button-background-focus: #1B1C25;
   --textbox-background: #272736;
   --devlog-headline: #1B1C25;
   --warning: #ff0000;
@@ -68,6 +71,7 @@
   --link-hover: #53a08a;
   --button-background: #155442;
   --button-background-hover: #39816D;
+  --button-background-focus: #155442;
   --textbox-background: #09262B;
   --devlog-headline: #155442;
   --warning: #ff0000;
@@ -87,6 +91,7 @@
   --link-hover: #f7b861;
   --button-background: #F26C23;
   --button-background-hover: #FBAA38;
+    --button-background-focus: #F26C23;
   --textbox-background: #C7461A;
   --devlog-headline: #F26C23;
   --warning: #ff0000;
@@ -489,3 +494,36 @@ a {
   margin-bottom: 20px;
   text-overflow: ellipsis;
 }
+
+.display-switch-container {
+  display: flex;
+  width: fit-content;
+  margin: 10px auto;
+  margin-top: 30px;
+  gap: 10px;
+  border-color: var(--border);
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  background-color: var(--button-background);
+  background-origin: padding-box;
+  background-clip: padding-box;
+}
+
+.display-switch-container button {
+  background-color: var(--button-background);
+  border-style: none;
+}
+
+.display-switch-container button:hover {
+  background-color: var(--button-background-focus);
+  border-style: hidden;
+  color: var(--text);
+}
+
+.display-switch-container button.display-switch-selected {
+  background-color: var(--button-background-hover);
+  color: var(--text);
+}
+

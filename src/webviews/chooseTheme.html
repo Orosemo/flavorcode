@@ -23,16 +23,14 @@
         const vscode = acquireVsCodeApi();
 
         function setTheme (theme) {
-            const normalizedTheme = (theme || "").trim()
-            setCurrentTheme(normalizedTheme)
-            document.getElementById("html").className = normalizedTheme
-            vscode.postMessage({command: "set-theme", value: normalizedTheme})
+            setCurrentTheme(theme)
+            document.getElementById("html").className = theme
+            vscode.postMessage({command: "set-theme", value: theme})
         }
 
         // ...and here
         function setCurrentTheme (theme) {
-            const normalizedTheme = (theme || "").trim()
-            document.getElementById("html").className = normalizedTheme
+            document.getElementById("html").className = theme
 
             document.getElementById("default").className = ""
             document.getElementById("midnight").className = ""
@@ -40,13 +38,13 @@
             document.getElementById("orosemo").className = ""
             document.getElementById("fire").className = ""
 
-            if (normalizedTheme === "midnight") {
+            if (theme === "midnight") {
                 document.getElementById("midnight").className = "highlight"
-            }else if (normalizedTheme === "light") {
+            }else if (theme === "light") {
                 document.getElementById("light").className = "highlight"
-            }else if (normalizedTheme === "orosemo") {
+            }else if (theme === "orosemo") {
                 document.getElementById("orosemo").className = "highlight"
-            }else if (normalizedTheme === "fire") {
+            }else if (theme === "fire") {
                 document.getElementById("fire").className = "highlight"
             }else {
                 document.getElementById("default").className = "highlight"

@@ -8,6 +8,7 @@ import {
   getUserSelf,
   getProjectDevlogs,
   disconnectDiscordGateway,
+  getUser,
 } from "./apiCalls";
 import { validateHeaderValue } from "http";
 
@@ -58,11 +59,13 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     let config = vscode.workspace.getConfiguration("flavorcode");
     let projectId = Number(config.get<string>("projectId"));
     let apiKey = config.get<string>("flavortownApiKey");
+    let userId = config.get<string>("userId");
 
     async function populateWebview() {
       config = vscode.workspace.getConfiguration("flavorcode");
       projectId = Number(config.get<number>("projectId"));
       apiKey = config.get<string>("flavortownApiKey");
+      userId = String(config.get<string>("userId"));
 
       try {
         const projectInfo = await getProject("", projectId);
@@ -85,6 +88,19 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
           value: projectInfoData,
           scope: "local",
         });
+
+        const userId = (await getUserSelf(String(apiKey))).id;
+        config = vscode.workspace.getConfiguration("flavorcode");
+        config.update("userId", String(userId));
+
+        const userInfo = await getUser(String(apiKey), String(userId));
+
+        webviewView.webview.postMessage({
+          command: "user-data",
+          value: userInfo,
+          scope: "local",
+        });
+        
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
@@ -120,6 +136,19 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
           value: projectInfoData,
           scope: "local",
         });
+
+        const userId = (await getUserSelf(String(apiKey))).id;
+        config = vscode.workspace.getConfiguration("flavorcode");
+        config.update("userId", String(userId));
+
+        const userInfo = await getUser(String(apiKey), String(userId))
+
+        webviewView.webview.postMessage({
+          command: "set-user",
+          value: userInfo,
+          scope: "local",
+        });
+
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
@@ -135,8 +164,12 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
 
     function setTheme() {
       config = vscode.workspace.getConfiguration("flavorcode");
-      const theme = config.get<string>("theme")
-      webviewView.webview.postMessage({command:"set-theme", value:theme, scope:"local"});
+      const theme = config.get<string>("theme");
+      webviewView.webview.postMessage({
+        command: "set-theme",
+        value: theme,
+        scope: "local",
+      });
     }
 
     setTheme();
@@ -319,11 +352,10 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               }
               this.devlogProvider.refreshDevlogs();
               populateWebview();
+              break;
             }
             case "openThemes": {
-              vscode.commands.executeCommand(
-                "flavorcode.theme"
-              );
+              vscode.commands.executeCommand("flavorcode.theme");
               break;
             }
             case "open-setup": {
@@ -334,6 +366,15 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
                 value: apiKey,
                 scope: "local",
               });
+            }
+            case "set-user": {
+              try {
+                const userId = (await getUserSelf(String(apiKey))).id;
+                config = vscode.workspace.getConfiguration("flavorcode");
+                config.update("userId", String(userId));
+              } catch {
+                vscode.window.showErrorMessage("Unable to get user id");
+              }
             }
           }
         }
