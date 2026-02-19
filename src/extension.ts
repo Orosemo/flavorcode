@@ -273,8 +273,8 @@ export function activate(context: vscode.ExtensionContext) {
       currentThemeViewPanel.reveal(columToShowIn);
     } else {
       currentThemeViewPanel = vscode.window.createWebviewPanel(
-        "ViewDevlog",
-        "view Devlog",
+        "ChooseTheme",
+        "choose Theme",
         columToShowIn || vscode.ViewColumn.One,
         {
           // permissions

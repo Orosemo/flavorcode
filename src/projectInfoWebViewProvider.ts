@@ -61,6 +61,22 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     let apiKey = config.get<string>("flavortownApiKey");
     let userId = config.get<string>("userId");
 
+    async function getUserId() {
+      try {
+        const userId = (await getUserSelf(String(apiKey))).id;
+        config = vscode.workspace.getConfiguration("flavorcode");
+        await config.update(
+          "userId",
+          String(userId),
+          vscode.ConfigurationTarget.Global,
+        );
+        return userId;
+      } catch {
+        vscode.window.showErrorMessage("Unable to get user id");
+      }
+
+    }
+
     async function populateWebview() {
       config = vscode.workspace.getConfiguration("flavorcode");
       projectId = Number(config.get<number>("projectId"));
@@ -89,10 +105,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
           scope: "local",
         });
 
-        const userId = (await getUserSelf(String(apiKey))).id;
-        config = vscode.workspace.getConfiguration("flavorcode");
-        config.update("userId", String(userId));
-
+        const userId = await getUserId();
         const userInfo = await getUser(String(apiKey), String(userId));
 
         webviewView.webview.postMessage({
@@ -137,11 +150,9 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
           scope: "local",
         });
 
-        const userId = (await getUserSelf(String(apiKey))).id;
-        config = vscode.workspace.getConfiguration("flavorcode");
-        config.update("userId", String(userId));
+        const userId = await getUserId();
 
-        const userInfo = await getUser(String(apiKey), String(userId))
+        const userInfo = await getUser(String(apiKey), String(userId));
 
         webviewView.webview.postMessage({
           command: "set-user",
@@ -268,6 +279,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
                 );
 
                 if (messageContent.currenProject) {
+                  await getUserId();
                   await config.update(
                     "projectId",
                     newProject.id,
@@ -328,7 +340,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
             }
             case "selected": {
               const selectedProjectId = messageContent;
-              console.log(selectedProjectId);
+              await getUserId();
               await config.update(
                 "projectId",
                 selectedProjectId,
@@ -361,20 +373,17 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
             case "open-setup": {
               config = vscode.workspace.getConfiguration("flavorcode");
               apiKey = config.get<string>("flavortownApiKey");
+              await getUserId();
               webviewView.webview.postMessage({
                 command: "settings",
                 value: apiKey,
                 scope: "local",
               });
+              break;
             }
             case "set-user": {
-              try {
-                const userId = (await getUserSelf(String(apiKey))).id;
-                config = vscode.workspace.getConfiguration("flavorcode");
-                config.update("userId", String(userId));
-              } catch {
-                vscode.window.showErrorMessage("Unable to get user id");
-              }
+              await getUserId();
+              break;
             }
           }
         }

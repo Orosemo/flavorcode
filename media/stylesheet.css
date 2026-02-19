@@ -1,102 +1,92 @@
 /* themes */
 :root {
-  
   --text: #ffffe8;
   --background: #7b4942;
   --border: #56312f;
-  --border-highlight: #bda292; 
-  --input-background:#4e2c33 ;
-  --input-background-hover:#ad7858 ;
+  --border-highlight: #bda292;
+  --input-background: #4e2c33;
+  --input-background-hover: #ad7858;
   --link: #ad7858;
-  --link-hover: #E7D4B1;
+  --link-hover: #e7d4b1;
   --button-background: #4e2c33;
   --button-background-hover: #ad7858;
-  --button-background-focus: #56312F;
+  --button-background-focus: #56312f;
   --textbox-background: #68403d;
-  --devlog-headline: #56312F;
+  --devlog-headline: #56312f;
   --warning: #ff0000;
   --warning-hover: #a30000;
-  
 }
 
 .light {
-  
   --text: #563038;
-  --background: #E7D4B1;
-  --border: #BE8461;
-  --border-highlight: #926947; 
-  --input-background:#b8a088 ;
-  --input-background-hover:#ad7858 ;
+  --background: #e7d4b1;
+  --border: #be8461;
+  --border-highlight: #926947;
+  --input-background: #b8a088;
+  --input-background-hover: #ad7858;
   --link: #3d252a;
   --link-hover: #572e36;
-  --button-background: #D7B593;
-  --button-background-hover: #967F67;
+  --button-background: #d7b593;
+  --button-background-hover: #967f67;
   --button-background-focus: #fcf1e0;
-  --textbox-background: #F8E9D3;
+  --textbox-background: #f8e9d3;
   --devlog-headline: #fcf1e0;
   --warning: #d30000;
   --warning-hover: #ff0000;
-  
 }
 
 .midnight {
-
   --text: #ffffe8;
-  --background: #1E1F29;
-  --border: #44475A;
-  --border-highlight: #8791ad; 
-  --input-background:#1E1F29 ;
-  --input-background-hover:#6272A4 ;
-  --link: #6272A4;
+  --background: #1e1f29;
+  --border: #44475a;
+  --border-highlight: #8791ad;
+  --input-background: #1e1f29;
+  --input-background-hover: #6272a4;
+  --link: #6272a4;
   --link-hover: #a1aac7;
-  --button-background: #21222D;
-  --button-background-hover: #6272A4;
-  --button-background-focus: #1B1C25;
+  --button-background: #21222d;
+  --button-background-hover: #6272a4;
+  --button-background-focus: #1b1c25;
   --textbox-background: #272736;
-  --devlog-headline: #1B1C25;
+  --devlog-headline: #1b1c25;
   --warning: #ff0000;
   --warning-hover: #a30000;
-  
 }
 
 .orosemo {
-  
   --text: #ffffe8;
   --background: #000000;
   --border: #155442;
-  --border-highlight: #53a08a; 
-  --input-background:#09262B ;
-  --input-background-hover:#0f353b ;
-  --link: #39816D;
+  --border-highlight: #53a08a;
+  --input-background: #09262b;
+  --input-background-hover: #0f353b;
+  --link: #39816d;
   --link-hover: #53a08a;
   --button-background: #155442;
-  --button-background-hover: #39816D;
+  --button-background-hover: #39816d;
   --button-background-focus: #155442;
-  --textbox-background: #09262B;
+  --textbox-background: #09262b;
   --devlog-headline: #155442;
   --warning: #ff0000;
   --warning-hover: #a30000;
-  
 }
 
-.fire{
-  
+.fire {
   --text: #ffffe8;
   --background: #5a1e0a;
-  --border: #F26C23;
-  --border-highlight: #f7b861; 
-  --input-background:#C7461A ;
-  --input-background-hover:#91300f ;
-  --link: #FBAA38;
+  --border: #f26c23;
+  --border-highlight: #f7b861;
+  --input-background: #c7461a;
+  --input-background-hover: #91300f;
+  --link: #fbaa38;
   --link-hover: #f7b861;
-  --button-background: #F26C23;
-  --button-background-hover: #FBAA38;
-    --button-background-focus: #F26C23;
-  --textbox-background: #C7461A;
-  --devlog-headline: #F26C23;
+  --button-background: #f26c23;
+  --button-background-hover: #fbaa38;
+  --button-background-focus: #f26c23;
+  --textbox-background: #c7461a;
+  --devlog-headline: #f26c23;
   --warning: #ff0000;
   --warning-hover: #a30000;
-  
 }
 
 /* native classes */
@@ -163,7 +153,7 @@ option:hover {
   background-color: var(--input-background-hover);
 }
 
-a{
+a {
   color: var(--link);
 }
 
@@ -323,7 +313,6 @@ a {
   margin-right: 10px;
 }
 
-
 .options-button {
   margin-right: 0;
 }
@@ -469,7 +458,7 @@ a {
   row-gap: 20px;
 }
 
-.devlog-display-container:last-child{
+.devlog-display-container:last-child {
   margin-bottom: 20px;
 }
 
@@ -501,18 +490,13 @@ a {
   margin: 10px auto;
   margin-top: 30px;
   gap: 10px;
-  border-color: var(--border);
   padding: 10px;
-  border-radius: 10px;
-  border-width: 5px;
-  border-style: solid;
-  background-color: var(--button-background);
   background-origin: padding-box;
   background-clip: padding-box;
 }
 
 .display-switch-container button {
-  background-color: var(--button-background);
+  background-color: var(--background);
   border-style: none;
 }
 
@@ -527,3 +511,21 @@ a {
   color: var(--text);
 }
 
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.user-header-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.pfp {
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 10px;
+  margin-right: 30px;
+}

@@ -81,7 +81,7 @@
         "flavorcode.flavortownApiKey": {
           "type": "string",
           "default": "none",
-          "description": "Set your flavortown api key to use this extension. (no worries its just saved locally ;) )",
+          "description": "Set your flavortown api key to use this extension.)",
           "scope": "application"
         },
         "flavorcode.hackatimeApiKey": {
@@ -92,7 +92,7 @@
         },
         "flavorcode.userId": {
           "type": "string",
-          "default": "your user Id",
+          "default": "",
           "description": "Your Flavortown user Id used to get user info and projects.",
           "scope": "application"
         },

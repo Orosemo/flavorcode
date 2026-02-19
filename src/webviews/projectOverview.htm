@@ -187,13 +187,34 @@
           <div>
 
           </div>
-          <h1 id="user-name"></h1>
-          <h2 id="cookies"></h2>
-          <div class="text-bodies">
-            <div class="text-row">
-              <p></p>
+          <div class="user-header">
+            <div class="user-header-item">
+              <h1 id="user-name"></h1>
+              <h2 id="cookies"></h2>              
+            </div>
+            <div class="user-header-item">
+              <img class="pfp" id="pfp" src="#" alt="">
             </div>
           </div>
+
+          <div class="text-bodies">
+            <div class="text-row">
+              <p id="vote-count"></p>
+              <p id="like-count"></p>
+            </div>
+          </div>          
+          <div class="text-bodies">
+            <h3>Time logged:</h3>
+            <div>
+              <h4>All Time:</h4>
+              <p id="user-devlog-sec"></p>
+            </div>
+            <div>
+              <h4>Today</h4>
+              <p id="user-devlog-today"></p>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -489,8 +510,13 @@
       // functions for the user section 
           
       function populateUserSection (message) {
-        document.getElementById("cookies").textContent = message.cookies
+        document.getElementById("cookies").textContent = `🍪 ${message.cookies}`
         document.getElementById("user-name").textContent = message.display_name
+        document.getElementById("user-devlog-sec").textContent = `${formatDuration(message.devlog_seconds_total)}`
+        document.getElementById("user-devlog-today").textContent = `${formatDuration(message.devlog_seconds_today)}`
+        document.getElementById("like-count").textContent = `Likes: ${message.like_count}`
+        document.getElementById("vote-count").textContent = `Votes: ${message.vote_count}`
+        document.getElementById("pfp").src = message.avatar
       }
 
       function switchDisplayMode(mode) {
@@ -505,6 +531,21 @@
         } else {
           document.getElementById("project").style = "display: block;"
           document.getElementById("display-switch-project").className = "display-switch-selected"
+        }
+      }
+
+      function formatDuration(value) {
+        const secondsIn = value;
+        if (secondsIn < 3600) {
+          let minutesOut = Math.floor(secondsIn / 60);
+          let secondsOut = secondsIn % 60;
+          return `${minutesOut} min; ${secondsOut} sec`;
+        } else {
+          let hoursOut = Math.floor(secondsIn / 3600);
+          let secondsInMin = secondsIn % 3600;
+          let minutesOut = Math.floor(secondsInMin / 60);
+          let secondsOut = secondsInMin % 60;
+          return `${hoursOut} h; ${minutesOut} min; ${secondsOut} sec`;
         }
       }
 
