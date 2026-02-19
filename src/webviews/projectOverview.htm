@@ -210,11 +210,13 @@
               <p id="user-devlog-sec"></p>
             </div>
             <div>
-              <h4>Today</h4>
+              <h4>Today:</h4>
               <p id="user-devlog-today"></p>
             </div>
           </div>
-
+          <a id="user-link" class="link-button center" href="#"
+            >View user page on Flavortown</a
+          >
         </div>
       </div>
 
@@ -517,6 +519,7 @@
         document.getElementById("like-count").textContent = `Likes: ${message.like_count}`
         document.getElementById("vote-count").textContent = `Votes: ${message.vote_count}`
         document.getElementById("pfp").src = message.avatar
+        document.getElementById("user-link").href = `https://flavortown.hackclub.com/users/${message.id}`
       }
 
       function switchDisplayMode(mode) {
