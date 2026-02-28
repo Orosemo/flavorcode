@@ -271,19 +271,19 @@
 
       // set default values to current project info
       function passProjectInfo(projectInfo, id) {
-        document.getElementById("name").textContent = projectInfo.name;
+        document.getElementById("name").textContent = projectInfo.title;
         document.getElementById("ship").textContent =
           "Shipping status: " + projectInfo.ship;
-        document.getElementById("demo").href = projectInfo.demo;
-        document.getElementById("repo").href = projectInfo.repo;
+        document.getElementById("demo").href = projectInfo.demo_url;
+        document.getElementById("repo").href = projectInfo.repo_url;
         document.getElementById("flavortown").href =
           `https://flavortown.hackclub.com/projects/${id}`;
-        document.getElementById("ai").textContent = projectInfo.ai;
-        document.getElementById("readme").href = projectInfo.readme;
+        document.getElementById("ai").textContent = projectInfo.ai_declaration;
+        document.getElementById("readme").href = projectInfo.readme_url;
         document.getElementById("created").textContent =
-          "Created: " + formatDate(projectInfo.created);
+          "Created: " + formatDate(projectInfo.created_at);
         document.getElementById("updated").textContent =
-          "Last updated: " + formatDate(projectInfo.updated);
+          "Last updated: " + formatDate(projectInfo.updated_at);
 
         const desc = document.getElementById("description");
         desc.textContent = "";
@@ -292,27 +292,27 @@
         });
 
         // remove empty elements
-        if (!projectInfo.demo) {
+        if (!projectInfo.demo_url) {
           document
             .getElementById("links")
             .removeChild(document.getElementById("demo"));
         }
-        if (!projectInfo.repo) {
+        if (!projectInfo.repo_url) {
           document
             .getElementById("links")
             .removeChild(document.getElementById("repo"));
         }
-        if (!projectInfo.readme) {
+        if (!projectInfo.readme_url) {
           document
             .getElementById("links")
             .removeChild(document.getElementById("readme"));
         }
-        if (!projectInfo.readme && !projectInfo.repo && !projectInfo.demo) {
+        if (!projectInfo.readme_url && !projectInfo.repo_url && !projectInfo.demo) {
           document
             .getElementById("project")
             .removeChild(document.getElementById("links"));
         }
-        if (!projectInfo.ai) {
+        if (!projectInfo.ai_declaration) {
           document
             .getElementById("ai-div")
             .removeChild(document.getElementById("ai"));
@@ -324,12 +324,12 @@
             .removeChild(document.getElementById("ai-div"));
         }
 
-        document.getElementById("nameInput").value = projectInfo.name;
+        document.getElementById("nameInput").value = projectInfo.title;
         document.getElementById("descriptionInput").value =
           projectInfo.description;
-        document.getElementById("demoInput").value = projectInfo.demo;
-        document.getElementById("repoInput").value = projectInfo.repo;
-        document.getElementById("aiInput").value = projectInfo.ai;
+        document.getElementById("demoInput").value = projectInfo.demo_url;
+        document.getElementById("repoInput").value = projectInfo.repo_url;
+        document.getElementById("aiInput").value = projectInfo.ai_declaration;
       }
 
       function switchMode(mode) {

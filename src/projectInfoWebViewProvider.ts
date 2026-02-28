@@ -86,22 +86,9 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
       try {
         const projectInfo = await getProject("", projectId);
 
-        const projectInfoData = {
-          projectId: projectId,
-          name: projectInfo.title,
-          description: projectInfo.description,
-          demo: projectInfo.demo_url,
-          repo: projectInfo.repo_url,
-          ai: projectInfo.ai_declaration,
-          ship: projectInfo.ship_status,
-          readme: projectInfo.readme_url,
-          created: projectInfo.created_at,
-          updated: projectInfo.updated_at,
-        };
-
         webviewView.webview.postMessage({
           command: "project-info",
-          value: projectInfoData,
+          value: projectInfo,
           scope: "local",
         });
 
@@ -131,22 +118,9 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
       try {
         const projectInfo = await getProject("", Number(id));
 
-        const projectInfoData = {
-          projectId: projectId,
-          name: projectInfo.title,
-          description: projectInfo.description,
-          demo: projectInfo.demo_url,
-          repo: projectInfo.repo_url,
-          ai: projectInfo.ai_declaration,
-          ship: projectInfo.ship_status,
-          readme: projectInfo.readme_url,
-          created: projectInfo.created_at,
-          updated: projectInfo.updated_at,
-        };
-
         webviewView.webview.postMessage({
           command: "project-info",
-          value: projectInfoData,
+          value: projectInfo,
           scope: "local",
         });
 
@@ -230,21 +204,9 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
                   `Updated project "${updatedProject.title}" succesfully`,
                 );
 
-                const projectInfoData = {
-                  projectId: projectId,
-                  name: updatedProject.title,
-                  description: updatedProject.description,
-                  demo: updatedProject.demo_url,
-                  repo: updatedProject.repo_url,
-                  ai: updatedProject.ai_declaration,
-                  ship: updatedProject.ship_status,
-                  created: updatedProject.created_at,
-                  updated: updatedProject.updated_at,
-                };
-
                 webviewView.webview.postMessage({
                   command: "updated-project-info",
-                  value: projectInfoData,
+                  value: updateProject,
                   scope: "local",
                 });
 
@@ -286,22 +248,9 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
                     vscode.ConfigurationTarget.Workspace,
                   );
 
-                  const projectInfoData = {
-                    projectId: newProject.id,
-                    name: newProject.title,
-                    description: newProject.description,
-                    demo: newProject.demo_url,
-                    repo: newProject.repo_url,
-                    ai: newProject.ai_declaration,
-                    ship: newProject.ship_status,
-                    readme: newProject.readme_url,
-                    created: newProject.created_at,
-                    updated: newProject.updated_at,
-                  };
-
                   webviewView.webview.postMessage({
                     command: "project-info",
-                    value: projectInfoData,
+                    value: newProject,
                     scope: "local",
                   });
                 }
