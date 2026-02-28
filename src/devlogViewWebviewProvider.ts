@@ -103,13 +103,15 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (!projectId || errorMessage.includes("404")) {
           webviewView.webview.postMessage({ command: "setup", scope: "local" });  
+        } else {
+          vscode.window.showErrorMessage(errorMessage);
         }
       }
     }
 
     function setTheme() {
       config = vscode.workspace.getConfiguration("flavorcode");
-      const theme = config.get<string>("theme")
+      const theme = config.get<string>("theme");
       webviewView.webview.postMessage({command:"set-theme", value:theme, scope:"local"});
     }
 

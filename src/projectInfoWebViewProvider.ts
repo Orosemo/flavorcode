@@ -71,8 +71,10 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
           vscode.ConfigurationTarget.Global,
         );
         return userId;
-      } catch {
-        vscode.window.showErrorMessage("Unable to get user id");
+      } catch (error) {
+        const errorMessage =
+        error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(errorMessage);
       }
 
     }
@@ -110,6 +112,8 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
             value: apiKey,
             scope: "local",
           });
+        } else {
+          vscode.window.showErrorMessage(errorMessage);
         }
       }
     };
@@ -143,6 +147,8 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
             value: apiKey,
             scope: "local",
           });
+        } else {
+          vscode.window.showErrorMessage(errorMessage);
         }
       }
     }

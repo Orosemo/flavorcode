@@ -172,11 +172,11 @@ export function activate(context: vscode.ExtensionContext) {
   // opens webview with devlog details
   const openDevlog = vscode.commands.registerCommand(
     "flavorcode.openDevlog",
-    (record) => {
+    (devlog) => {
       let config = vscode.workspace.getConfiguration("flavorcode");
       const theme = config.get<string>("theme")
 
-      let pendingRecord = record;
+      let pendingDevlog = devlog;
       const columToShowIn = vscode.window.activeTextEditor
         ? vscode.window.activeTextEditor.viewColumn
         : undefined;
@@ -214,10 +214,10 @@ export function activate(context: vscode.ExtensionContext) {
         });
       }
 
-      const recordBody = pendingRecord?.body ?? "";
-      const emojifiedRecord = pendingRecord
-        ? { ...pendingRecord, body: emoji.emojify(String(recordBody)) }
-        : pendingRecord;
+      const recordBody = pendingDevlog?.body ?? "";
+      const emojifiedRecord = pendingDevlog
+        ? { ...pendingDevlog, body: emoji.emojify(String(recordBody)) }
+        : pendingDevlog;
 
       currentDevlogViewPanel.webview.postMessage({
         command: "devlog-info",

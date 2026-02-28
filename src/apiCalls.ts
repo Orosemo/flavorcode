@@ -33,7 +33,7 @@ async function updateActivity() {
   };
   console.log(payload);
   await rpc?.setActivity(payload as any);
-  vscode.window.showInformationMessage("Updated discord rich presence");
+  vscode.window.showInformationMessage("updated Flavortown discord richpresence");
 }
 
 export async function connectDiscordGateway(
@@ -67,7 +67,7 @@ export async function connectDiscordGateway(
           return;
         }
         vscode.window.showErrorMessage(
-          `Flavortown discord richpresence: ${message}`,
+          `failed to update Flavortown discord richpresence: ${message}`,
         );
       });
     };
