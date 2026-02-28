@@ -150,32 +150,32 @@
           </div>
           <div class="text-bodies" id="description"></div>
 
-          <div class="text-bodies link-row" id="links">
+          <div class="text-bodies link-row" id="links" style="display: block;">
             <a
               id="demo"
-              class="link-button center"
-              style="margin-bottom: 10px; margin-top: 10px"
+              class="link-button center project-link-button"
+              style="display: block;"
               href="#"
               >Demo</a
             >
             <a
               id="repo"
-              class="link-button center"
-              style="margin-bottom: 10px; margin-top: 10px"
+              class="link-button center project-link-button"
+              style="display: block;"
               href="#"
               >Repository</a
             >
             <a
               id="readme"
-              class="link-button center"
-              style="margin-bottom: 10px; margin-top: 10px"
+              class="link-button center project-link-button"
+              style="display: block;"
               href="#"
               >Readme</a
             >
           </div>
-          <div class="text-bodies" id="ai-div">
-            <h3 id="aiHeadline">This project uses AI:</h3>
-            <p id="ai"></p>
+          <div class="text-bodies" id="ai-div" style="display: block;">
+            <h3 id="aiHeadline" style="display: block;">This project uses AI:</h3>
+            <p id="ai" style="display: block;"></p>
           </div>
           <a id="flavortown" class="link-button center" href="#"
             >View this Project on Flavortown</a
@@ -271,65 +271,62 @@
 
       // set default values to current project info
       function passProjectInfo(projectInfo, id) {
-        document.getElementById("name").textContent = projectInfo.title;
+        // make all optional fields visible
+        document.getElementById("demo").style = "display: block;"
+        document.getElementById("repo").style = "display: block;"
+        document.getElementById("readme").style = "display: block;"
+        document.getElementById("links").style = "display: block;"
+        document.getElementById("ai").style = "display: block;"
+        document.getElementById("aiHeadline").style = "display: block;"
+        document.getElementById("ai-div").style = "display: block;"
+
+
+        document.getElementById("name").textContent = projectInfo?.title;
         document.getElementById("ship").textContent =
-          "Shipping status: " + projectInfo.ship;
-        document.getElementById("demo").href = projectInfo.demo_url;
-        document.getElementById("repo").href = projectInfo.repo_url;
+          "Shipping status: " + projectInfo?.ship;
+        document.getElementById("demo").href = projectInfo?.demo_url;
+        document.getElementById("repo").href = projectInfo?.repo_url;
         document.getElementById("flavortown").href =
           `https://flavortown.hackclub.com/projects/${id}`;
-        document.getElementById("ai").textContent = projectInfo.ai_declaration;
-        document.getElementById("readme").href = projectInfo.readme_url;
+        document.getElementById("ai").textContent = projectInfo?.ai_declaration;
+        document.getElementById("readme").href = projectInfo?.readme_url;
         document.getElementById("created").textContent =
-          "Created: " + formatDate(projectInfo.created_at);
+          "Created: " + formatDate(projectInfo?.created_at);
         document.getElementById("updated").textContent =
-          "Last updated: " + formatDate(projectInfo.updated_at);
+          "Last updated: " + formatDate(projectInfo?.updated_at);
 
         const desc = document.getElementById("description");
         desc.textContent = "";
-        (projectInfo.description || "").split("\n").forEach((line) => {
+        (projectInfo?.description || "").split("\n").forEach((line) => {
           desc.innerHTML += `${line}<br>`;
         });
 
         // remove empty elements
-        if (!projectInfo.demo_url) {
-          document
-            .getElementById("links")
-            .removeChild(document.getElementById("demo"));
+        if (!projectInfo?.demo_url) {
+          document.getElementById("demo").style = "display: none;"
         }
-        if (!projectInfo.repo_url) {
-          document
-            .getElementById("links")
-            .removeChild(document.getElementById("repo"));
+        if (!projectInfo?.repo_url) {
+          document.getElementById("repo").style = "display: none;"
         }
-        if (!projectInfo.readme_url) {
-          document
-            .getElementById("links")
-            .removeChild(document.getElementById("readme"));
+        if (!projectInfo?.readme_url) {
+          document.getElementById("readme").style = "display: none;"
         }
-        if (!projectInfo.readme_url && !projectInfo.repo_url && !projectInfo.demo) {
-          document
-            .getElementById("project")
-            .removeChild(document.getElementById("links"));
+        if (!projectInfo?.readme_url && !projectInfo?.repo_url && !projectInfo?.demo) {
+          document.getElementById("links").style = "display: none;"
         }
-        if (!projectInfo.ai_declaration) {
-          document
-            .getElementById("ai-div")
-            .removeChild(document.getElementById("ai"));
-          document
-            .getElementById("ai-div")
-            .removeChild(document.getElementById("aiHeadline"));
-          document
-            .getElementById("project")
-            .removeChild(document.getElementById("ai-div"));
+        if (!projectInfo?.ai_declaration) {
+          document.getElementById("ai").style = "display: none;"
+          document.getElementById("aiHeadline").style = "display: none;"
+          document.getElementById("ai-div").style = "display: none;"
         }
 
-        document.getElementById("nameInput").value = projectInfo.title;
+        // populate edit page
+        document.getElementById("nameInput").value = projectInfo?.title;
         document.getElementById("descriptionInput").value =
-          projectInfo.description;
-        document.getElementById("demoInput").value = projectInfo.demo_url;
-        document.getElementById("repoInput").value = projectInfo.repo_url;
-        document.getElementById("aiInput").value = projectInfo.ai_declaration;
+          projectInfo?.description;
+        document.getElementById("demoInput").value = projectInfo?.demo_url;
+        document.getElementById("repoInput").value = projectInfo?.repo_url;
+        document.getElementById("aiInput").value = projectInfo?.ai_declaration;
       }
 
       function switchMode(mode) {
@@ -450,7 +447,7 @@
         document.getElementById("create-currentProject").checked = true;
       }
 
-    // sent infos of new project to extension
+      // sent infos of new project to extension
 
       function Create() {
         const name = document.getElementById("create-name").value;
@@ -578,13 +575,13 @@
           switch (message.command) {
           case "project-info":
             switchMode("display");{
-            projectId = message.value.projectId;
-            passProjectInfo(message.value, message.value.projectId);
+            projectId = message.value?.id;
+            passProjectInfo(message.value, message.value?.id);
             break;}
           case "updated-project-info":{
-            projectId = message.value.projectId;
+            projectId = message.value?.id;
             switchMode("display");
-            passProjectInfo(message.value, message.value.projectId);
+            passProjectInfo(message.value, message.value?.id);
             break;}
           case "setup":{
             apiKey = message.value;

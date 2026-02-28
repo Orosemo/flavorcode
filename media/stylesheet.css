@@ -350,6 +350,11 @@ a {
   justify-content: center;
 }
 
+.project-link-button {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
 .border-div {
   display: block;
   width: fit-content;

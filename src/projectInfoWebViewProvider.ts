@@ -77,7 +77,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
 
     }
 
-    async function populateWebview() {
+    const populateWebview = async () => {
       config = vscode.workspace.getConfiguration("flavorcode");
       projectId = Number(config.get<number>("projectId"));
       apiKey = config.get<string>("flavortownApiKey");
@@ -112,9 +112,9 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
           });
         }
       }
-    }
+    };
 
-    async function populateWebviewId(id: string) {
+    const populateWebviewId = async (id: string) => {
       try {
         const projectInfo = await getProject("", Number(id));
 
