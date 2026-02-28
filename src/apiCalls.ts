@@ -552,6 +552,12 @@ export async function getDevlog(givenApiKey: string, id: number) {
     created_at: string;
     updated_at: string;
     comments: DevlogComment[];
+    media: DevlogMedia[]
+  }
+
+  interface DevlogMedia {
+    content_type: string,
+    url: string
   }
 
   interface DevlogComment {

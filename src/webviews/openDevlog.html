@@ -13,21 +13,50 @@
       <h4 id="meta"></h4>
       <h4 id="duration"></h4>
       <div id="content" class="text-bodies"></div>
+      <div id="devlog-media" class="text-bodies">
+        <div class="devlog-media-buttons">
+          <button class="" onclick="prevMedia()">
+            <i class="codicon codicon-chevron-left"></i>
+          </button>
+          <button class="" onclick="nextMedia()">
+            <i class="codicon codicon-chevron-right"></i>
+          </button>
+        </div class="center">
+        <img
+          id="devlog-img"
+          class="devlog-media center"
+          style="display: block"
+          src=""
+          alt="devlog-media"
+        />
+        <video
+          id="devlog-vid"
+          class="devlog-media center"
+          style="display: none"
+          src=""
+        ></video>
+      </div>
     </div>
 
     <script>
-    // vars
+      // vars
       const vscode = acquireVsCodeApi();
 
-    // general/utilitie functions
+      let devlogMedia = [];
+      let currentDevlogMedia = 0;
+
+      // general/utilitie functions
 
       // set default values to current project info
-      function populateDevlog(record) {
-        document.getElementById("content").innerHTML = parser(record.body);
+      function populateDevlog(devlog) {
+        devlogMedia = Array.isArray(devlog.media) ? devlog.media : [];
+        currentDevlogMedia = 0;
+        showMedia(currentDevlogMedia);
+        document.getElementById("content").innerHTML = parser(devlog.body);
         document.getElementById("duration").textContent =
-          "Logged: " + formatDuration(record.duration_seconds);
+          "Logged: " + formatDuration(devlog.duration_seconds);
         document.getElementById("meta").textContent =
-          record.likes_count + "❤️  " + record.comments_count + "🗒️";
+          devlog.likes_count + "❤️  " + devlog.comments_count + "🗒️";
       }
 
       function formatDate(value) {
@@ -67,7 +96,7 @@
           .replace(/'/g, "&#39;");
       }
 
-      // credit to sabioOfficial 
+      // credit to sabioOfficial
       function parser(text) {
         if (!text) return "";
 
@@ -161,8 +190,55 @@
         return html;
       }
 
-      function setTheme (theme) {
-        document.getElementById("html").classList = theme
+      function setTheme(theme) {
+        document.getElementById("html").classList = theme;
+      }
+
+      // media functions
+      function showMedia(mediaIndex) {
+        document.getElementById("devlog-media").style = "display: block;";
+        if (!devlogMedia.length || !devlogMedia[mediaIndex]) {
+          document.getElementById("devlog-media").style = "display: none;";
+          document.getElementById("devlog-img").style = "display: none;";
+          document.getElementById("devlog-vid").style = "display: none;";
+          return;
+        }
+
+        const media = devlogMedia[mediaIndex];
+        const contentType = String(media.content_type || "").toLowerCase();
+
+        // show all
+        document.getElementById("devlog-img").style = "display: block;";
+        document.getElementById("devlog-vid").style = "display: block;";
+
+        // show only correct media type
+        if (contentType.startsWith("image")) {
+          document.getElementById("devlog-vid").style = "display: none;";
+          document.getElementById("devlog-img").src = media.url;
+        } else {
+          document.getElementById("devlog-img").style = "display: none;";
+          document.getElementById("devlog-vid").src = media.url;
+        }
+      }
+
+      function nextMedia() {
+        if (currentDevlogMedia + 1 > devlogMedia.length - 1) {
+          currentDevlogMedia = 0;
+          showMedia(currentDevlogMedia);
+        } else {
+          currentDevlogMedia += 1;
+          showMedia(currentDevlogMedia);
+        }
+      }
+
+      function prevMedia() {
+        if (currentDevlogMedia - 1 === -1) {
+          currentDevlogMedia = devlogMedia.length - 1;
+          showMedia(currentDevlogMedia);
+        } else {
+          currentDevlogMedia -= 1;
+          showMedia(currentDevlogMedia);
+        }
       }
 
       // listens for messages from the extentsion
@@ -170,12 +246,12 @@
         const message = event.data;
 
         switch (message.command) {
-          case "devlog-info":{
+          case "devlog-info": {
             populateDevlog(message.value);
             break;
-          } 
+          }
           case "set-theme": {
-            setTheme(message.value)
+            setTheme(message.value);
             break;
           }
         }

@@ -8,6 +8,16 @@ export function openDevlogHtml(
   const styleUri = webview.asWebviewUri(
     vscode.Uri.joinPath(extensionUri, "media", "stylesheet.css"),
   );
+  const codiconUri = webview.asWebviewUri(
+    vscode.Uri.joinPath(
+      extensionUri,
+      "node_modules",
+      "@vscode",
+      "codicons",
+      "dist",
+      "codicon.css",
+    ),
+  );
 
   const htmlPath = vscode.Uri.joinPath(
     extensionUri,
@@ -16,6 +26,7 @@ export function openDevlogHtml(
     "openDevlog.html",
   );
   const rawHtml = fs.readFileSync(htmlPath.fsPath, "utf8");
+  const iconHtml = rawHtml.replace("${codiconUri}", String(codiconUri));
 
-  return rawHtml.replace("${styleUri}", String(styleUri));
+  return iconHtml.replace("${styleUri}", String(styleUri));
 }

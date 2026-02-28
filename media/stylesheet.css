@@ -13,6 +13,7 @@
   --button-background-focus: #56312f;
   --textbox-background: #68403d;
   --devlog-headline: #56312f;
+  --devlog-media-boder: #472826;
   --warning: #ff0000;
   --warning-hover: #a30000;
 }
@@ -31,6 +32,7 @@
   --button-background-focus: #fcf1e0;
   --textbox-background: #f8e9d3;
   --devlog-headline: #fcf1e0;
+  --devlog-media-boder: #c99473;
   --warning: #d30000;
   --warning-hover: #ff0000;
 }
@@ -49,6 +51,7 @@
   --button-background-focus: #1b1c25;
   --textbox-background: #272736;
   --devlog-headline: #1b1c25;
+  --devlog-media-boder: #575a6e;
   --warning: #ff0000;
   --warning-hover: #a30000;
 }
@@ -67,6 +70,7 @@
   --button-background-focus: #155442;
   --textbox-background: #09262b;
   --devlog-headline: #155442;
+  --devlog-media-boder: #226d58;
   --warning: #ff0000;
   --warning-hover: #a30000;
 }
@@ -85,6 +89,7 @@
   --button-background-focus: #f26c23;
   --textbox-background: #c7461a;
   --devlog-headline: #f26c23;
+  --devlog-media-boder: #f77d3c;
   --warning: #ff0000;
   --warning-hover: #a30000;
 }
@@ -533,4 +538,26 @@ a {
   max-height: 80px;
   border-radius: 10px;
   margin-right: 30px;
+}
+
+.devlog-media-buttons {
+  display: flex;
+  width: fit-content;
+  margin: 10px auto;
+  margin-top: 10px;
+  gap: 10px;
+  padding: 10px;
+  background-origin: padding-box;
+  background-clip: padding-box;
+}
+
+.devlog-media {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+  border-color: var(--devlog-media-boder);
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
 }

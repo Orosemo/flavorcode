@@ -20,6 +20,80 @@ export function activate(context: vscode.ExtensionContext) {
   let currentDevlogViewPanel: vscode.WebviewPanel | undefined = undefined;
   let currentThemeViewPanel: vscode.WebviewPanel | undefined = undefined;
 
+  // functions to refresh the devlog and themes page when the user clicks back into them
+  let lastOpenedDevlog: any;
+
+  function getCurrentTheme() {
+    const config = vscode.workspace.getConfiguration("flavorcode");
+    return config.get<string>("theme");
+  }
+
+  function prepareDevlogRecord(devlog: any) {
+    const recordBody = devlog?.body ?? "";
+    const mediaBaseUrl = "https://flavortown.hackclub.com";
+    const normalizedMedia = Array.isArray(devlog?.media)
+      ? devlog.media.map((item: { url?: string }) => {
+          const mediaUrl = String(item?.url ?? "");
+          const isAbsolute = /^https?:\/\//i.test(mediaUrl);
+
+          return {
+            ...item,
+            url:
+              mediaUrl && !isAbsolute
+                ? `${mediaBaseUrl}${mediaUrl.startsWith("/") ? "" : "/"}${mediaUrl}`
+                : mediaUrl,
+          };
+        })
+      : devlog?.media;
+
+    return devlog
+      ? {
+          ...devlog,
+          body: emoji.emojify(String(recordBody)),
+          media: normalizedMedia,
+        }
+      : devlog;
+  }
+
+  function refreshOpenDevlogWebview() {
+    if (!currentDevlogViewPanel) {
+      return;
+    }
+
+    currentDevlogViewPanel.webview.html = openDevlogHtml(
+      currentDevlogViewPanel.webview,
+      context.extensionUri,
+    );
+
+    if (lastOpenedDevlog) {
+      currentDevlogViewPanel.webview.postMessage({
+        command: "devlog-info",
+        value: lastOpenedDevlog,
+      });
+    }
+
+    currentDevlogViewPanel.webview.postMessage({
+      command: "set-theme",
+      value: getCurrentTheme(),
+    });
+  }
+
+  function refreshThemeWebview() {
+    if (!currentThemeViewPanel) {
+      return;
+    }
+
+    currentThemeViewPanel.webview.html = chooseThemeHtml(
+      currentThemeViewPanel.webview,
+      context.extensionUri,
+    );
+
+    currentThemeViewPanel.webview.postMessage({
+      command: "set-theme",
+      value: getCurrentTheme(),
+    });
+  }
+
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "flavorcode" is now active!');
@@ -173,10 +247,6 @@ export function activate(context: vscode.ExtensionContext) {
   const openDevlog = vscode.commands.registerCommand(
     "flavorcode.openDevlog",
     (devlog) => {
-      let config = vscode.workspace.getConfiguration("flavorcode");
-      const theme = config.get<string>("theme")
-
-      let pendingDevlog = devlog;
       const columToShowIn = vscode.window.activeTextEditor
         ? vscode.window.activeTextEditor.viewColumn
         : undefined;
@@ -209,24 +279,23 @@ export function activate(context: vscode.ExtensionContext) {
           context.extensionUri,
         );
 
+        currentDevlogViewPanel.onDidChangeViewState((event) => {
+          if (event.webviewPanel.visible) {
+            refreshOpenDevlogWebview();
+          }
+        });
+
         currentDevlogViewPanel.onDidDispose(() => {
           currentDevlogViewPanel = undefined;
         });
       }
 
-      const recordBody = pendingDevlog?.body ?? "";
-      const emojifiedRecord = pendingDevlog
-        ? { ...pendingDevlog, body: emoji.emojify(String(recordBody)) }
-        : pendingDevlog;
+      const preparedDevlog = prepareDevlogRecord(devlog);
+      if (preparedDevlog) {
+        lastOpenedDevlog = preparedDevlog;
+      }
 
-      currentDevlogViewPanel.webview.postMessage({
-        command: "devlog-info",
-        value: emojifiedRecord,
-      });
-      currentDevlogViewPanel.webview.postMessage({
-        command:"set-theme",
-        value: theme
-      })
+      refreshOpenDevlogWebview();
     },
   );
 
@@ -263,7 +332,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   const chooseTheme = vscode.commands.registerCommand("flavorcode.theme", () => {
     let config = vscode.workspace.getConfiguration("flavorcode");
-    const theme = config.get<string>("theme")
     
     const columToShowIn = vscode.window.activeTextEditor
         ? vscode.window.activeTextEditor.viewColumn
@@ -292,30 +360,34 @@ export function activate(context: vscode.ExtensionContext) {
           ],
         },
       );
-      currentThemeViewPanel.webview.html = openDevlogHtml(
+      currentThemeViewPanel.webview.html = chooseThemeHtml(
         currentThemeViewPanel.webview,
         context.extensionUri,
       );
+
+      currentThemeViewPanel.onDidChangeViewState((event) => {
+        if (event.webviewPanel.visible) {
+          refreshThemeWebview();
+        }
+      });
+
+      currentThemeViewPanel.webview.onDidReceiveMessage((message) => {
+        switch (message.command) {
+          case "set-theme": {
+            config = vscode.workspace.getConfiguration("flavorcode");
+            config.update("theme", message.value, vscode.ConfigurationTarget.Global);
+            devlogProvider.postmessage({command: "set-theme", value:message.value, scope:"global"});
+            projectProvider.postmessage({command: "set-theme", value:message.value, scope:"global"});
+          }
+        }
+      });
 
       currentThemeViewPanel.onDidDispose(() => {
         currentThemeViewPanel = undefined;
       });
     }
 
-    currentThemeViewPanel.webview.html = chooseThemeHtml(currentThemeViewPanel.webview, context.extensionUri);
-
-    currentThemeViewPanel.webview.postMessage({command:"set-theme", value:theme});
-
-    currentThemeViewPanel.webview.onDidReceiveMessage((message) => {
-      switch (message.command) {
-        case "set-theme": {
-          config = vscode.workspace.getConfiguration("flavorcode");
-          config.update("theme", message.value, vscode.ConfigurationTarget.Global);
-          devlogProvider.postmessage({command: "set-theme", value:message.value, scope:"global"});
-          projectProvider.postmessage({command: "set-theme", value:message.value, scope:"global"});
-        }
-      }
-    });
+    refreshThemeWebview();
   });
 
 
