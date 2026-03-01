@@ -1,5 +1,24 @@
 /* themes */
 :root {
+  --text: var(--vscode-editor-foreground);
+  --background: var(--vscode-editor-background);
+  --border: var(--vscode-panel-border, var(--vscode-input-border));
+  --border-highlight: var(--vscode-focusBorder);
+  --input-background: var(--vscode-input-background);
+  --input-background-hover: var(--vscode-list-hoverBackground, var(--vscode-button-hoverBackground));
+  --link: var(--vscode-textLink-foreground);
+  --link-hover: var(--vscode-textLink-activeForeground);
+  --button-background: var(--vscode-button-background);
+  --button-background-hover: var(--vscode-button-hoverBackground);
+  --button-background-focus: var(--vscode-button-secondaryBackground, var(--vscode-button-background));
+  --textbox-background: var(--vscode-editorWidget-background, var(--vscode-input-background));
+  --devlog-headline: var(--vscode-sideBarSectionHeader-background, var(--vscode-editorWidget-background));
+  --devlog-media-boder: var(--vscode-panel-border, var(--vscode-input-border));
+  --warning: var(--vscode-errorForeground);
+  --warning-hover: var(--vscode-errorForeground);
+}
+
+.dark {
   --text: #ffffe8;
   --background: #7b4942;
   --border: #56312f;
@@ -74,6 +93,7 @@
   --warning: #ff0000;
   --warning-hover: #a30000;
 }
+
 
 /* native classes */
 html,
