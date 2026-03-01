@@ -75,25 +75,6 @@
   --warning-hover: #a30000;
 }
 
-.fire {
-  --text: #ffffe8;
-  --background: #5a1e0a;
-  --border: #f26c23;
-  --border-highlight: #f7b861;
-  --input-background: #c7461a;
-  --input-background-hover: #91300f;
-  --link: #fbaa38;
-  --link-hover: #f7b861;
-  --button-background: #f26c23;
-  --button-background-hover: #fbaa38;
-  --button-background-focus: #f26c23;
-  --textbox-background: #c7461a;
-  --devlog-headline: #f26c23;
-  --devlog-media-boder: #f77d3c;
-  --warning: #ff0000;
-  --warning-hover: #a30000;
-}
-
 /* native classes */
 html,
 body {

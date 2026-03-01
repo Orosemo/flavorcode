@@ -38,6 +38,8 @@
           id="devlog-vid"
           class="devlog-media center"
           style="display: none"
+          controls
+          preload="metadata"
           src=""
         ></video>
       </div>
@@ -202,11 +204,16 @@
     // media functions
 
       function showMedia(mediaIndex) {
+        const videoElement = document.getElementById("devlog-vid");
+        const imageElement = document.getElementById("devlog-img");
         document.getElementById("devlog-media").style = "display: block;";
         if (!devlogMedia.length || !devlogMedia[mediaIndex]) {
           document.getElementById("devlog-media").style = "display: none;";
-          document.getElementById("devlog-img").style = "display: none;";
-          document.getElementById("devlog-vid").style = "display: none;";
+          imageElement.style = "display: none;";
+          videoElement.style = "display: none;";
+          videoElement.pause();
+          videoElement.removeAttribute("src");
+          videoElement.load();
           return;
         }
 
@@ -214,18 +221,22 @@
         const contentType = String(media.content_type || "").toLowerCase();
 
         // show all
-        document.getElementById("devlog-img").style = "display: block;";
-        document.getElementById("devlog-vid").style = "display: block;";
+        imageElement.style = "display: block;";
+        videoElement.style = "display: block;";
 
         // show only correct media type
         if (contentType.startsWith("image")) {
-          document.getElementById("devlog-vid").style = "display: none;";
-          document.getElementById("devlog-img").src = media.url;
+          videoElement.pause();
+          videoElement.style = "display: none;";
+          imageElement.src = media.url;
         } else {
-          document.getElementById("devlog-img").style = "display: none;";
-          document.getElementById("devlog-vid").src = media.url;
+          imageElement.style = "display: none;";
+          videoElement.src = media.url;
+          videoElement.load();
+          videoElement.play().catch(() => {});
         }
 
+        // update dot display
         updateDots()
       }
 
@@ -249,6 +260,7 @@
         }
       }
 
+      // updates dot display
       function updateDots() {
         document.getElementById("dot1").style = "display: block;";
         document.getElementById("dot2").style = "display: block;";
