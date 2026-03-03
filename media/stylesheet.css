@@ -11,6 +11,7 @@
   --button-background: var(--vscode-button-background);
   --button-background-hover: var(--vscode-button-hoverBackground);
   --button-background-focus: var(--vscode-button-secondaryBackground, var(--vscode-button-background));
+  --button-background-disabled: var(--vscode-button-hoverBackground);
   --textbox-background: var(--vscode-editorWidget-background, var(--vscode-input-background));
   --devlog-headline: var(--vscode-sideBarSectionHeader-background, var(--vscode-editorWidget-background));
   --devlog-media-boder: var(--vscode-panel-border, var(--vscode-input-border));
@@ -30,6 +31,7 @@
   --button-background: #4e2c33;
   --button-background-hover: #ad7858;
   --button-background-focus: #56312f;
+  --button-background-disabled: #ad7858;  
   --textbox-background: #68403d;
   --devlog-headline: #56312f;
   --devlog-media-boder: #472826;
@@ -49,6 +51,7 @@
   --button-background: #d7b593;
   --button-background-hover: #967f67;
   --button-background-focus: #fcf1e0;
+  --button-background-disabled: #967f67;  
   --textbox-background: #f8e9d3;
   --devlog-headline: #fcf1e0;
   --devlog-media-boder: #c99473;
@@ -68,6 +71,7 @@
   --button-background: #21222d;
   --button-background-hover: #6272a4;
   --button-background-focus: #1b1c25;
+  --button-background-disabled: #6272a4;
   --textbox-background: #272736;
   --devlog-headline: #1b1c25;
   --devlog-media-boder: #575a6e;
@@ -87,13 +91,13 @@
   --button-background: #155442;
   --button-background-hover: #39816d;
   --button-background-focus: #155442;
+  --button-background-disabled: #39816d;
   --textbox-background: #09262b;
   --devlog-headline: #155442;
   --devlog-media-boder: #226d58;
   --warning: #ff0000;
   --warning-hover: #a30000;
 }
-
 
 /* native classes */
 html,
@@ -236,6 +240,12 @@ a {
 }
 
 /* custom classes */
+
+button.button-disabled,
+.button-disabled {
+  cursor: not-allowed;
+}
+
 .center {
   display: flex;
   justify-content: center;

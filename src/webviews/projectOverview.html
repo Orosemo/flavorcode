@@ -22,8 +22,8 @@
           <h3 id="api-warning" style="display: none; color: red;">Please enter your api key</h3>
         </div>
         <div class="button-row">
-          <button onclick="createNew()">Create new Project</button>
-          <button onclick="chooseExisting()">Choose Existing Project</button>
+          <button id="setup-create" onclick="createNew()">Create new Project</button>
+          <button id="setup-choose" onclick="chooseExisting()">Choose Existing Project</button>
         </div>
       </div>
 
@@ -43,8 +43,8 @@
           <h3 id="api-warning-settings" style="display: none; color: red;">Please enter your api key</h3>
         </div>
         <div class="button-row">
-          <button onclick="createNewSettings()">Create new Project</button>
-          <button onclick="chooseExistingSettings()">Choose Existing Project</button>
+          <button id="settings-create" onclick="createNewSettings()">Create new Project</button>
+          <button id="settings-choose" onclick="chooseExistingSettings()">Choose Existing Project</button>
         </div>
       </div>
 
@@ -358,6 +358,7 @@
         document.getElementById("html").classList = theme
       }
 
+
     // functions for the setup page
 
       function fillApiInput() {
@@ -386,6 +387,20 @@
         }
       }
 
+      function disableSetupButtons() {
+        document.getElementById("setup-choose").className = "button-disabled"
+        document.getElementById("setup-choose").disabled = true
+        document.getElementById("setup-create").className = "button-disabled"
+        document.getElementById("setup-create").disabled = true
+      }
+
+      function enableSetupButtons() {
+        document.getElementById("setup-choose").className = ""
+        document.getElementById("setup-choose").disabled = false
+        document.getElementById("setup-create").className = ""
+        document.getElementById("setup-create").disabled = false
+      }
+
 
     // functions for the settings page
 
@@ -398,6 +413,7 @@
       function chooseExistingSettings() {
         apiKey = document.getElementById("api-key-settings").value;
         if (apiKey) {
+          disableSettingsButtons();
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
         } else {
@@ -413,6 +429,20 @@
         } else {
           document.getElementById("api-warning-settings").style = "display: block; color: red;";
         }
+      }
+
+      function disableSettingsButtons() {
+        document.getElementById("settings-choose").className = "button-disabled"
+        document.getElementById("settings-choose").disabled = true
+        document.getElementById("settings-create").className = "button-disabled"
+        document.getElementById("settings-create").disabled = true
+      }
+
+      function enableSettingsButtons() {
+        document.getElementById("settings-choose").className = ""
+        document.getElementById("settings-choose").disabled = false
+        document.getElementById("settings-create").className = ""
+        document.getElementById("settings-create").disabled = false
       }
 
 
@@ -693,6 +723,7 @@
             switchMode(" ");
             break;}
           case "existing-projects":{ 
+            enableSettingsButtons();
             populateProjectSelect(message.value)
             break;}
           case "set-theme": {

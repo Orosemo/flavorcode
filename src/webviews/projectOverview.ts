@@ -32,7 +32,7 @@ export function overviewProjectHtml(
     extensionUri,
     "src",
     "webviews",
-    "projectOverview.htm",
+    "projectOverview.html",
   );
   const rawHtml = fs.readFileSync(htmlPath.fsPath, "utf8");
   const noncedHtml = rawHtml.replace("${nonce}", getNonce());
