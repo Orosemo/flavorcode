@@ -107,7 +107,7 @@
         const devlogs = safeDevlogs.map((devlog, index) => {
           const devlogHead = getHead(devlog.body);
           const duration = formatDuration(devlog.duration_seconds);
-          return `</i><div class="devlog-display-entry" data-index="${index}"><p> ${trimHeadline(devlogHead.headline)}</p><p>${duration}</p></div>`;
+          return `</i><div class="devlog-display-entry" data-index="${index}"><p>${safeDevlogs.length - index}. ${trimHeadline(devlogHead.headline)}</p><p>${duration}</p></div>`;
         });
         document.getElementById("devlog-container").innerHTML =
           `<div class="devlog-display-entry-headline"><p>Devlog Headline</p><p>Duration</p></div>`;

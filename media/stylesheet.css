@@ -252,6 +252,10 @@ button.button-disabled,
   align-items: center;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .cancel {
   color: var(--warning);
 }
@@ -434,6 +438,8 @@ button.button-disabled,
 .devlog-container {
   width: min(100%, 900px);
   margin: 20px auto;
+  margin-right: 20px;
+  margin-left: 20px;
   box-sizing: border-box;
 }
 
@@ -447,7 +453,7 @@ button.button-disabled,
   margin: 0 auto;
   box-sizing: border-box;
   border-color: var(--border);
-  padding: 10px;
+  padding: 20px;
   border-radius: 10px;
   border-width: 5px;
   border-style: solid;
@@ -461,6 +467,7 @@ button.button-disabled,
 
 .devlog-display-entry p {
   margin: 0;
+  text-overflow: clip;
 }
 
 .devlog-display-entry p:first-child {
