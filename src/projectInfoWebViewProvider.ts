@@ -212,7 +212,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
 
                 webviewView.webview.postMessage({
                   command: "updated-project-info",
-                  value: updateProject,
+                  value: updatedProject,
                   scope: "local",
                 });
 

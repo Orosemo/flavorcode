@@ -297,7 +297,7 @@
 
         const desc = document.getElementById("description");
         desc.textContent = "";
-        (projectInfo?.description || "").split("\n").forEach((line) => {
+        parser((projectInfo?.description || "")).split("\n").forEach((line) => {
           desc.innerHTML += `${line}<br>`;
         });
 
@@ -479,6 +479,111 @@
       }
 
     // functions for the display page
+
+      function escapeHtml(value) {
+        if (!value) return "";
+
+        return value
+          .replace(/&(?!(?:[a-zA-Z]+|#\d+|#x[a-fA-F0-9]+);)/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      // credit to sabioOfficial
+      function parser(text) {
+        if (!text) return "";
+
+        let html = escapeHtml(text);
+
+        const codeBlocks = [];
+        html = html.replace(
+          /\`\`\`(\w*)\n([\s\S]*?)\`\`\`/g,
+          function (_, language, code) {
+            const id = "TOKENCODEBLOCK" + codeBlocks.length + "TOKEN";
+            codeBlocks.push(
+              '<pre><code class="' +
+                language +
+                '"><span>' +
+                code.trim() +
+                "</span></code></pre>",
+            );
+            return "\n\n" + id + "\n\n";
+          },
+        );
+
+        html = html
+          .replace(/^### (.*$)/gim, "<h6>$1</h6>")
+          .replace(/^## (.*$)/gim, "<h5>$1</h5>")
+          .replace(/^# (.*$)/gim, "<h4>$1</h4>")
+          .replace(/^---$/gim, "<hr/>")
+          .replace(/^\s*[-*]\s+(.*)(\n)?/gim, "<ubli>$1</ubli>")
+          .replace(/^\s*\d+\.\s+(.*)(\n)?/gim, "<obli>$1</obli>")
+          .replace(/^&gt;[ ]?(.*)$/gim, "<bq>$1</bq>");
+
+        html = html
+          .replace(/(<ubli>.*<\/ubli>\s*)+/g, function (m) {
+            return (
+              "<ul>" + m.replace(/ubli/g, "li").replace(/\n/g, "") + "</ul>"
+            );
+          })
+          .replace(/(<obli>.*<\/obli>\s*)+/g, function (m) {
+            return (
+              "<ol>" + m.replace(/obli/g, "li").replace(/\n/g, "") + "</ol>"
+            );
+          })
+          .replace(/(<bq>.*<\/bq>\s*)+/g, function (m) {
+            const content = m.replace(/<\/?bq>/g, "").trim();
+            return (
+              "<blockquote><p>" +
+              content.split("\n").join("</p><p>") +
+              "</p></blockquote>"
+            );
+          });
+
+        html = html
+          .split(/\n\n+/)
+          .map(function (block) {
+            const trimmed = block.trim();
+            if (
+              /^<(h[1-6]|ul|ol|blockquote|pre|hr)/i.test(trimmed) ||
+              trimmed.startsWith("TOKENCODEBLOCK")
+            ) {
+              return trimmed;
+            }
+            let processedBlock = trimmed.replace(/\n/g, "<br/>");
+            processedBlock = processedBlock.replace(
+              /(<\/h[1-6]>)\s*<br\/>/gi,
+              "$1",
+            );
+            return "<p>" + processedBlock + "</p>";
+          })
+          .join("\n");
+
+        html = html
+          .replace(
+            /!\[(.*?)\]\((.*?)\)/g,
+            '<div class="devlog-image-wrapper"><img src="$2" alt="$1" loading="lazy" /></div>',
+          )
+          .replace(
+            /\[(.*?)\]\((.*?)\)/g,
+            '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+          )
+          .replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>")
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*(.*?)\*/g, "<em>$1</em>")
+          .replace(/__(.*?)__/g, "<strong>$1</strong>")
+          .replace(/_(.*?)_/g, "<em>$1</em>")
+          .replace(/~~(.*?)~~/g, "<del>$1</del>")
+          .replace(/`([^`]+)`/g, "<code>$1</code>");
+
+        codeBlocks.forEach(function (block, i) {
+          html = html.replace("TOKENCODEBLOCK" + i + "TOKEN", block);
+        });
+
+        return html;
+      }
 
       function openSetting() {
         vscode.postMessage({ command: "open-settings", scope: "local" });
