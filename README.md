@@ -2,68 +2,123 @@
 
 # flavorcode README
 
+Flavorcode is a Flavortown VS-Code extension made by Joko26.
+It currently only has limited features as many api routes crucial for this project were removed with out any announcement.
+If those api routes get reintroduced this extension will regain full functionality.  
+
 ## Table of contents
 
 - [Setup](#setup)
 - [Features](#features)
-  - [View Flavortown project stats (WIP)](#view-flavortown-project-stats-wip)
+  - [View Project stats](#view-project-stats)
   - [View Devlogs](#view-devlogs)
-  - [Add and Update Flavortown Projects](#add-and-update-flavortown-projects)
-    - [Create new project](#createproject)
-    - [Update existing Project](#updateproject)
-    - [Add and Update Devlogs (WIP)](#add-and-update-devlogs-wip-missing-important-api-routes)
-  - [Discord Rich Presence](#discord-rich-presence)
+  - [Create and update projects](#create-and-update-projects)
+  - [Discord rich presence](#discord-rich-presence)
+  - [Themes](#themes)
 - [Requirements](#requirements)
 - [Extension Settings](#extension-settings)
 - [Release Notes](#release-notes)
+- [Contribution guide](#contribution-guide)
+- [Credits](#credits)
 
 ## Setup
 
-To setup the Extension use the `setup` command or open the `Flavorcode` tab on the right and hit setup.
+Set the extension up using the UI:
+
+![setup]()
 
 ## Features
 
-- ### View Flavortown project stats (WIP)
+- ### View Project stats
+  
+  View stats for the project your currently working on!
 
-  View stats like `creation time`, `last updated` and `user cookies (WIP)`
+  ![project view]()
 
-- #### view Devlogs
+- ### View Devlogs
 
-  You can view an over view by opening the Flavorcode tab in the activity bar on the right and and full devlog details by clicking on them.
+  View devlogs and devlog stats!
 
-- ### Add and Update Flavortown Projects
+  ![devlog list view]()
+  ![devlog view]()
 
-  - #### `createProject`
+- ### Create and update projects
 
-    Opens a webview form for the user to enter project creation information (the project is set as the workspace project after creation if you dont want that uncheck the option before hitting create) .
+  Create and update projects.
 
-  - #### `updateProject`
+  #### Creating:
 
-    Opens a webview pre-filled with all information from the current project for editing.
+  ![creating projects]()
 
-  - #### GUI
+  #### Updating
 
-  You can also update projects with the `Edit`-button in the project overview page on the right.
+  ![updating projects]()
 
-- ### Add and Update Devlogs (WIP) (Missing important api routes)
+- ### Discord rich presence
 
-  Directly add or Devlogs in your code editor.
+  share infos about the project your working on on discord:
 
-- ### Discord Rich Presence
+  ![discord]()
 
-  Discord Rich presence is activ by default and displays project stats (To disable it simply deactivate it in the settings (`setting>flavorcode>Use Discord`) and refresh the webview (Button in the top left corner))
+- ### Themes
+
+  Flavor code supports multiple different themes and color pallets:
+
+  - #### Default
+
+    This theme is based on the vscode theme you are currently using.
+
+    ![default]()
+
+  - #### Dark
+
+    This theme is based on the color sheme of the flavortown website.
+
+    ![dark]()
+
+  - #### Light
+
+    This theme is a light version of the color sheme of the flavortown website.
+
+    ![light]()
+
+  - #### Midnight
+
+    This theme is inspired by the dark cozy vibe of the darkcula/drakcula color theme
+
+    ![midnight]()
+
+  - #### Orosemo
+
+    This theme is based on my own color pallete which ive also used in my [website](https://orosemo.de).
+
+    ![orosemo]()
 
 ## Requirements
 
-Add your Flavortown API key in the settings or with the set command (WIP).
+Add your Flavortown API key in the settings.
 
 ## Extension Settings
 
-### coming soon
+name|description|scope
+---|---|---
+flavortownApiKey|Set your flavortown api key to use this extension.|application
+hackatimeApiKey|not needed rn, maybe in the future|application
+userId|Your Flavortown user Id used to get user info and projects.|application
+projectId|Your Flavortown project id|workspace
+useDiscord|Connect to discord rich Presence|application
+theme|Set the theme of Flavorcode!|application
 
 ## Release Notes
 
 ### coming soon
+
+## Contribution guide
+
+This project is open for collaboration but please:
+
+- use [Gitmojis](https://gitmoji.dev/) for your commit messages.
+- document your changes in the this readme if neccesary
 
 ## Credits
 
