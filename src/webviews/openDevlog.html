@@ -13,36 +13,54 @@
       <h4 id="meta"></h4>
       <h4 id="duration"></h4>
       <div id="content" class="text-bodies"></div>
-      <div id="devlog-media" class="text-bodies">
-        <div id="media-buttons-container" class="devlog-media-buttons">
-          <button class="" onclick="prevMedia()">
-            <i class="codicon codicon-chevron-left"></i>
-          </button>
-          <div id="dot-container" style="display: flex;" class="devlog-media-buttons">
-            <i id="dot1" style="display: block;" class="codicon codicon-circle-filled"></i>
-            <i id="dot2" style="display: block;" class="codicon codicon-circle-filled"></i>
-            <i id="dot3" style="display: block;" class="codicon codicon-circle-filled"></i>
+      <details>
+        <summary>
+          <i class="codicon codicon-chevron-down" ></i>
+          Comments
+        </summary>
+        <div id="comment-container" class="text-bodies">
+          <div><p></p></div>
+        </div>
+      </details>
+      <details>
+        <summary>
+          <i class="codicon codicon-chevron-down" ></i>
+          Devlog media
+        </summary>
+        <div id="devlog-media" class="text-bodies">
+          <div id="media-buttons-container" class="devlog-media-buttons">
+            <button class="" onclick="prevMedia()">
+              <i class="codicon codicon-chevron-left"></i>
+            </button>
+            <div id="dot-container" style="display: flex;" class="media-dot-container">
+              <i id="dot1" style="display: block;" class="codicon codicon-circle-filled"></i>
+              <i id="dot2" style="display: block;" class="codicon codicon-circle-filled"></i>
+              <i id="dot3" style="display: block;" class="codicon codicon-circle-filled"></i>
+            </div>
+            <button class="" onclick="nextMedia()">
+              <i class="codicon codicon-chevron-right"></i>
+            </button>
           </div>
-          <button class="" onclick="nextMedia()">
-            <i class="codicon codicon-chevron-right"></i>
-          </button>
-        </div class="center">
-        <img
-          id="devlog-img"
-          class="devlog-media center"
-          style="display: block"
-          src=""
-          alt="devlog-media"
-        />
-        <video
-          id="devlog-vid"
-          class="devlog-media center"
-          style="display: none"
-          controls
-          preload="metadata"
-          src=""
-        ></video>
-      </div>
+          <div class="devlog-media-display">
+            <img
+              id="devlog-img"
+              class="devlog-media"
+              style="display: block"
+              src=""
+              alt="devlog-media"
+            />
+            <video
+              id="devlog-vid"
+              class="devlog-media"
+              style="display: none"
+              controls
+              preload="metadata"
+              src=""
+            ></video>
+          </div>
+        </div>        
+      </details>
+
     </div>
 
     <script>
@@ -59,6 +77,7 @@
         devlogMedia = Array.isArray(devlog.media) ? devlog.media : [];
         currentDevlogMedia = 0;
         showMedia(currentDevlogMedia);
+        populateComments(devlog)
         document.getElementById("content").innerHTML = parser(devlog.body);
         document.getElementById("duration").textContent =
           "Logged: " + formatDuration(devlog.duration_seconds);
@@ -285,6 +304,20 @@
         } else {
           document.getElementById("media-buttons-container").style = "display: none;";
         }
+      }
+
+    // comment functions
+      
+      function populateComments (devlog) {
+        const comments = devlog.comments
+        const devlogContainer = document.getElementById("comment-container") 
+        if (comments.length === 0) {
+          devlogContainer.innerHTML = "<p>No comments yet<p>"
+          return
+        }
+        comments.forEach((devlog) => {
+          devlogContainer.innerHTML = `<div><p>${comments.}<p></div>`
+        })
       }
 
     // listens for messages from the extentsion

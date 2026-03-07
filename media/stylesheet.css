@@ -239,6 +239,28 @@ a {
   text-decoration: underline;
 }
 
+details {
+  user-select: none;
+  padding: 2px;
+}
+
+summary {
+  display: flex;
+  cursor: pointer;
+  padding: 6px;
+  text-align: center;
+}
+
+details>summary i {
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s;
+}
+
+details[open] summary i {
+  transform: rotate(180deg);
+}
+
 /* custom classes */
 
 button.button-disabled,
@@ -436,10 +458,8 @@ button.button-disabled,
 }
 
 .devlog-container {
-  width: min(100%, 900px);
+  width: min(calc(100% - 40px), 900px);
   margin: 20px auto;
-  margin-right: 20px;
-  margin-left: 20px;
   box-sizing: border-box;
 }
 
@@ -560,14 +580,31 @@ button.button-disabled,
 
 .devlog-media-buttons {
   display: flex;
-  align-items: first baseline;  
-  width: fit-content;
-  margin: 10px auto;
-  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 10px 0;
   gap: 10px;
   padding: 10px;
   background-origin: padding-box;
   background-clip: padding-box;
+}
+
+.media-dot-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#devlog-media {
+  text-align: center;
+}
+
+.devlog-media-display {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .devlog-media {
