@@ -309,15 +309,25 @@
     // comment functions
       
       function populateComments (devlog) {
-        const comments = devlog.comments
-        const devlogContainer = document.getElementById("comment-container") 
+        const comments = Array.isArray(devlog.comments) ? devlog.comments : [];
+        const devlogContainer = document.getElementById("comment-container");
+
         if (comments.length === 0) {
-          devlogContainer.innerHTML = "<p>No comments yet<p>"
-          return
+          devlogContainer.innerHTML = "<p>No comments yet</p>";
+          return;
         }
-        comments.forEach((devlog) => {
-          devlogContainer.innerHTML = `<div><p>${comments.}<p></div>`
-        })
+
+        devlogContainer.innerHTML = comments
+          .map((comment) => {
+            const authorName = comment?.author?.display_name || "Unknown";
+            const authorId = comment?.author?.id || "Unknown";
+            const authorPfp  = comment?.author?.avatar || "Unknown";
+            const createdAt = comment?.created_at ? formatDate(comment.created_at) : "";
+            const body = parser(comment?.body || "");
+
+            return `<div class="text-bodies"><p><img class="pfp-small" src="${authorPfp}"></img> <strong><a href="https://flavortown.hackclub.com/users/${authorId}">${escapeHtml(authorName)}</a></strong> ${createdAt ? " - " + escapeHtml(createdAt) : ""}</p><p>${body}</p></div>`;
+          })
+          .join("");
       }
 
     // listens for messages from the extentsion
