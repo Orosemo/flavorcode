@@ -81,7 +81,7 @@
         "flavorcode.flavortownApiKey": {
           "type": "string",
           "default": "none",
-          "description": "Set your flavortown api key to use this extension.)",
+          "description": "Set your flavortown api key to use this extension.",
           "scope": "application"
         },
         "flavorcode.hackatimeApiKey": {

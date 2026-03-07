@@ -35,6 +35,12 @@ Set the extension up using the UI:
 
   ![project view]()
 
+- ### View User stats
+
+  View your personal stats any time!
+
+  ![user view]()
+
 - ### View Devlogs
 
   View devlogs and devlog stats!
