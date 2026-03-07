@@ -19,7 +19,15 @@
             placeholder="(from the settings on the website)"
             type="text"
           />
-          <h3 id="api-warning" style="display: none; color: red;">Please enter your api key</h3>
+
+          <h3>Your Hackatime Api-key:</h3>
+          <input
+            id="hackatime-api-key"
+            placeholder="(from settings/access on the website)"
+            type="text"
+          />  
+
+          <h3 id="api-warning" style="display: none; color: red;">Please enter your flavortown and hackatime api key</h3>
         </div>
         <div class="button-row">
           <button id="setup-create" onclick="createNew()">Create new Project</button>
@@ -34,13 +42,20 @@
         </div>
         <h1>Update Settings</h1>
         <div class="text-bodies">
-          <h3>Your Flavortown Api key:</h3>
+          <h3>Your Flavortown Api-key:</h3>
           <input
             id="api-key-settings"
             placeholder="(from the settings on the website)"
             type="text"
           />
-          <h3 id="api-warning-settings" style="display: none; color: red;">Please enter your api key</h3>
+
+          <h3>Your Hackatime Api-key:</h3>
+          <input
+            id="hackatime-api-key-settings"
+            placeholder="(from settings/access on the website)"
+            type="text"
+          />          
+          <h3 id="api-warning-settings" style="display: none; color: red;">Please enter your flavortown and hackatime api key</h3>
         </div>
         <div class="button-row">
           <button id="settings-create" onclick="createNewSettings()">Create new Project</button>
@@ -116,19 +131,19 @@
       <!--display Page-->
       <div id="display" style="display: none">
         <div class="options">
-          <button class="options-button" onclick="reload()">
+          <button title="Refresh" class="options-button" onclick="reload()">
             <i class="codicon codicon-refresh" ></i>
           </button>
-          <button class="options-button" onclick="switchMode('edit')">
+          <button title="Edit project" class="options-button" onclick="switchMode('edit')">
             <i class="codicon codicon-edit" ></i>
           </button>
-          <button class="options-button" onclick="openThemes()">
+          <button title="Themes" class="options-button" onclick="openThemes()">
             <i class="codicon codicon-color-mode"></i>
           </button> 
-          <button class="options-button" onclick="settings()">
+          <button title="Edit extension" class="options-button" onclick="settings()">
             <i class="codicon codicon-list-selection"></i>
           </button>
-          <button class="options-button" onclick="openSetting()">
+          <button title="Open flavorcode in the VS-Code settings" class="options-button" onclick="openSetting()">
             <i class="codicon codicon-gear"></i>
           </button>
         </div>
@@ -190,7 +205,8 @@
           <div class="user-header">
             <div class="user-header-item">
               <h1 id="user-name"></h1>
-              <h2 id="cookies"></h2>              
+              <h2 id="cookies"></h2>
+              <h2 id="streak"></h2>              
             </div>
             <div class="user-header-item">
               <img class="pfp" id="pfp" src="#" alt="">
@@ -369,9 +385,11 @@
 
       function chooseExisting() {
         apiKey = document.getElementById("api-key").value;
-        if (apiKey) {
+        hackatimeApiKey = document.getElementById("hackatime-api-key")
+        if (apiKey && hackatimeApiKey) {
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
+          vscode.postMessage({ command: "hackatime-key", value:hackatimeApiKey, scope: "local"})
         } else {
           document.getElementById("api-warning").style = "display: block; color: red;";
         }
@@ -379,8 +397,10 @@
 
       function createNew() {
         apiKey = document.getElementById("api-key").value;
-        if (apiKey) {
+        hackatimeApiKey = document.getElementById("hackatime-api-key")
+        if (apiKey && hackatimeApiKey) {
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
+          vscode.postMessage({ command: "hackatime-key", value:hackatimeApiKey, scope: "local"})
           switchMode("create");
         } else {
           document.getElementById("api-warning").style = "display: block; color: red;";
@@ -412,10 +432,12 @@
 
       function chooseExistingSettings() {
         apiKey = document.getElementById("api-key-settings").value;
-        if (apiKey) {
+        hackatimeApiKey = document.getElementById("hackatime-api-key")
+        if (apiKey && hackatimeApiKey) {
           disableSettingsButtons();
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
+          vscode.postMessage({ command: "hackatime-key", value:hackatimeApiKey, scope: "local"})
         } else {
           document.getElementById("api-warning-settings").style = "display: block; color: red;";
         }
@@ -423,9 +445,11 @@
 
       function createNewSettings() {
         apiKey = document.getElementById("api-key-settings").value;
-        if (apiKey) {
+        hackatimeApiKey = document.getElementById("hackatime-api-key")
+        if (apiKey && hackatimeApiKey) {
           switchMode("create");
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
+          vscode.postMessage({ command: "hackatime-key", value:hackatimeApiKey, scope: "local"})
         } else {
           document.getElementById("api-warning-settings").style = "display: block; color: red;";
         }
@@ -654,6 +678,11 @@
         document.getElementById("user-link").href = `https://flavortown.hackclub.com/users/${message.id}`
       }
 
+      function populateHackatimeUserSection (message) {
+        const messageData = message.data;
+        document.getElementById("streak").textContent = `🔥 ${messageData.streak}`
+      }
+
       function switchDisplayMode(mode) {
         document.getElementById("user").style = "display: none;"
         document.getElementById("project").style = "display: none;"
@@ -737,6 +766,10 @@
           } 
           case "user-data": {
             populateUserSection(message.value)
+            break;
+          }
+          case "set-hackatime": {
+            populateHackatimeUserSection(message.value)
             break;
           }
         } 

@@ -1,5 +1,7 @@
 ![Flavorcode logo](https://i.ibb.co/VsjHvbX/flavorcode-small.png)
 
+![hackatime](https://hackatime-badge.hackclub.com/U0A5GJ8JP5F/flavorcode)
+
 # flavorcode README
 
 Flavorcode is a Flavortown VS-Code extension made by Joko26.

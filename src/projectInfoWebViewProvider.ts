@@ -9,6 +9,7 @@ import {
   getProjectDevlogs,
   disconnectDiscordGateway,
   getUser,
+  getHackatimeUserStats,
 } from "./apiCalls";
 import { validateHeaderValue } from "http";
 
@@ -102,6 +103,10 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
           value: userInfo,
           scope: "local",
         });
+
+        const hackatimeStats = await getHackatimeUserStats("", String(userId));
+
+        webviewView.webview.postMessage({command: "set-hackatime", value: hackatimeStats, scope:"local"});
         
       } catch (error) {
         const errorMessage =
@@ -129,7 +134,6 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
         });
 
         const userId = await getUserId();
-
         const userInfo = await getUser(String(apiKey), String(userId));
 
         webviewView.webview.postMessage({
@@ -137,6 +141,10 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
           value: userInfo,
           scope: "local",
         });
+
+        const hackatimeStats = await getHackatimeUserStats("", String(userId));
+
+        webviewView.webview.postMessage({command: "set-hackatime", value: hackatimeStats, scope:"local"});
 
       } catch (error) {
         const errorMessage =
@@ -338,6 +346,12 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
             }
             case "set-user": {
               await getUserId();
+              break;
+            }
+            case "hackatime-key": {
+              config = vscode.workspace.getConfiguration("flavorcode");       
+              config.update("hackatimeApiKey", message.value);
+              populateWebview();       
               break;
             }
           }

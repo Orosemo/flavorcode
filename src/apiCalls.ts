@@ -458,7 +458,7 @@ export async function getProjectDevlogs(givenApiKey: string) {
 
   if (!projectId || projectId === 0) {
     vscode.window.showErrorMessage(
-      "No project set: please use the setup command to initialise the exentsion.",
+      "No project set:  please set the extension up before doing that again",
     );
     return;
   }
@@ -537,7 +537,7 @@ export async function getDevlog(givenApiKey: string, id: number) {
 
   if (!projectId || projectId === 0) {
     vscode.window.showErrorMessage(
-      "No project set: please use the setup command to initialise the exentsion.",
+      "No project set: please set the extension up before doing that again.",
     );
     return;
   }
@@ -591,4 +591,66 @@ export async function getDevlog(givenApiKey: string, id: number) {
   }
 
   return (await res.json()) as DevlogsResponse;
+}
+
+
+// hackatime calls
+
+export async function getHackatimeUserStats(givenApiKey: string, userName: string) {
+
+  const config = vscode.workspace.getConfiguration("flavorcode");
+  let apiKey = config.get<string>("hackatimeApiKey");
+
+  if (givenApiKey && givenApiKey !== "") {
+    apiKey = givenApiKey;
+  } else {
+    if (!apiKey) {
+      vscode.window.showErrorMessage("No Hackatime api key set: please set the extension up before doing that again");
+    }
+  }
+
+
+  interface userStatsResponse {
+    data: {
+      total_seconds: number;
+      daily_average: number;
+      languages: {
+        name: string;
+        total_seconds: number;
+        percent: number;
+      }[];
+      projects: {
+        name: string;
+        total_seconds: number;
+        percent: number;
+      }[];
+      editors: {
+        name: string;
+        total_seconds: number;
+        percent: number;
+      }[];
+      streak: number;
+    };
+    trust_factor: {
+      trust_level: string;
+      trust_value: number;
+    };
+  }
+
+  const res = await fetch(
+    `https://hackatime.hackclub.com//api/v1/users/${userName}/stats`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error(`Failed to get Hackatime stats: ${res.status} ${await res.text()}`);
+  }
+
+  return (await res.json()) as userStatsResponse;
 }
