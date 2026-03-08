@@ -116,6 +116,15 @@
       }
     }
   },
+
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/Joko-26/flavorcode.git"
+    },
+    "bugs": {
+      "url": "https://github.com/Joko-26/flavorcode/issues"
+    },
+
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -142,3 +151,5 @@
     "node-emoji": "^2.2.0"
   }
 }
+
+

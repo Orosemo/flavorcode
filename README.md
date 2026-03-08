@@ -35,13 +35,13 @@ Set the extension up using the UI:
   
   View stats for the project your currently working on!
 
-  ![project view]()
+  ![alt text](media/readme/project.png)
 
 - ### View User stats
 
   View your personal stats any time!
 
-  ![user view]()
+  ![user view](media/readme/user.png)
 
 - ### View Devlogs
 
