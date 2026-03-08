@@ -47,8 +47,7 @@ Set the extension up using the UI:
 
   View devlogs and devlog stats!
 
-  ![devlog list view]()
-  ![devlog view]()
+  ![devlog view](https://i.ibb.co/fV3Cnbqr/devlogs.gif)
 
 - ### Create and update projects
 
@@ -72,7 +71,7 @@ Set the extension up using the UI:
 
   Flavor code supports multiple different themes and color pallets:
 
-  ![switch themes]()
+  ![switch themes](https://i.ibb.co/hPspV8q/themes.gif)
 
   - #### Default
 
