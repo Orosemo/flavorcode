@@ -13,7 +13,7 @@
             <!-- Add custom theme here...-->
             <button id="default" class="" onclick="setTheme('')">Default</button>
             <button id="light" class="" onclick="setTheme('light')">Light</button>
-                        <button id="dark" class="" onclick="setTheme('dark')">Dark</button>
+            <button id="dark" class="" onclick="setTheme('dark')">Dark</button>
             <button id="midnight" class="" onclick="setTheme('midnight')">Midnight</button>
             <button id="orosemo" class="" onclick="setTheme('orosemo')">Orsemo</button>
         </div>
@@ -38,13 +38,12 @@
             document.getElementById("light").className = ""
             document.getElementById("dark").className = ""
             document.getElementById("orosemo").className = ""
-            
-""
+
 
             if (theme === "midnight") {
                 document.getElementById("midnight").className = "highlight"
             }else if (theme === "dark") {
-                document.getElementById("vscode").className = "highlight"
+                document.getElementById("dark").className = "highlight"
             }else if (theme === "light") {
                 document.getElementById("light").className = "highlight"
             }else if (theme === "orosemo") {

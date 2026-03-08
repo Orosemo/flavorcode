@@ -72,35 +72,37 @@ Set the extension up using the UI:
 
   Flavor code supports multiple different themes and color pallets:
 
+  ![switch themes]()
+
   - #### Default
 
     This theme is based on the vscode theme you are currently using.
 
-    ![default]()
+    ![default](https://i.ibb.co/LDSd1wGX/Screenshot-2026-03-08-113055.png)
 
   - #### Dark
 
     This theme is based on the color sheme of the flavortown website.
 
-    ![dark]()
+    ![dark](https://i.ibb.co/xqcbB78s/Screenshot-2026-03-08-113334.png)
 
   - #### Light
 
     This theme is a light version of the color sheme of the flavortown website.
 
-    ![light]()
+    ![light](https://i.ibb.co/Nv99wgZ/Screenshot-2026-03-08-113102.png)
 
   - #### Midnight
 
     This theme is inspired by the dark cozy vibe of the darkcula/drakcula color theme
 
-    ![midnight]()
+    ![midnight](https://i.ibb.co/GvT4SFR0/Screenshot-2026-03-08-113120.png)
 
   - #### Orosemo
 
     This theme is based on my own color pallete which ive also used in my [website](https://orosemo.de).
 
-    ![orosemo]()
+    ![orosemo](https://i.ibb.co/Y7qzLsMS/Screenshot-2026-03-08-113342.png)
 
 ## Requirements
 
@@ -111,7 +113,7 @@ Add your Flavortown API key in the settings.
 name|description|scope
 ---|---|---
 flavortownApiKey|Set your flavortown api key to use this extension.|application
-hackatimeApiKey|not needed rn, maybe in the future|application
+hackatimeApiKey|Set your hackatime api key to use this extension.|application
 userId|Your Flavortown user Id used to get user info and projects.|application
 projectId|Your Flavortown project id|workspace
 useDiscord|Connect to discord rich Presence|application

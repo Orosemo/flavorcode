@@ -87,7 +87,7 @@
         "flavorcode.hackatimeApiKey": {
           "type": "string",
           "default": "none",
-          "description": "not needed rn, maybe in the future",
+          "description": "Set your hackatime api key to use this extension.",
           "scope": "application"
         },
         "flavorcode.userId": {
