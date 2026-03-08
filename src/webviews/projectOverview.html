@@ -282,6 +282,7 @@
       const vscode = acquireVsCodeApi();
       let projectId = 0;
       let apiKey = "";
+      let hackatimeApiKey = ""
 
     // general functions
 
@@ -378,14 +379,17 @@
     // functions for the setup page
 
       function fillApiInput() {
-        if (apiKey) {
+        if (apiKey !== "none") {
           document.getElementById("api-key").value = apiKey;
+        }
+        if (hackatimeApiKey !== "none") {
+          document.getElementById("hackatime-api-key").value = hackatimeApiKey;
         }
       }
 
       function chooseExisting() {
         apiKey = document.getElementById("api-key").value;
-        hackatimeApiKey = document.getElementById("hackatime-api-key")
+        hackatimeApiKey = document.getElementById("hackatime-api-key").value; 
         if (apiKey && hackatimeApiKey) {
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
@@ -397,10 +401,10 @@
 
       function createNew() {
         apiKey = document.getElementById("api-key").value;
-        hackatimeApiKey = document.getElementById("hackatime-api-key")
+        hackatimeApiKey = document.getElementById("hackatime-api-key").value;
         if (apiKey && hackatimeApiKey) {
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
-          vscode.postMessage({ command: "hackatime-key", value:hackatimeApiKey, scope: "local"})
+          vscode.postMessage({ command: "hackatime-key", value: hackatimeApiKey, scope: "local"})
           switchMode("create");
         } else {
           document.getElementById("api-warning").style = "display: block; color: red;";
@@ -425,14 +429,17 @@
     // functions for the settings page
 
       function fillSettingsApiInput() {
-        if (apiKey) {
+        if (apiKey !== "none") {
           document.getElementById("api-key-settings").value = apiKey;
+        }
+        if (hackatimeApiKey !== "none") {
+          document.getElementById("hackatime-api-key-settings").value = hackatimeApiKey;
         }
       }
 
       function chooseExistingSettings() {
         apiKey = document.getElementById("api-key-settings").value;
-        hackatimeApiKey = document.getElementById("hackatime-api-key")
+        hackatimeApiKey = document.getElementById("hackatime-api-key-settings").value;
         if (apiKey && hackatimeApiKey) {
           disableSettingsButtons();
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
@@ -445,7 +452,7 @@
 
       function createNewSettings() {
         apiKey = document.getElementById("api-key-settings").value;
-        hackatimeApiKey = document.getElementById("hackatime-api-key")
+        hackatimeApiKey = document.getElementById("hackatime-api-key-settings").value;
         if (apiKey && hackatimeApiKey) {
           switchMode("create");
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
@@ -748,7 +755,8 @@
             passProjectInfo(message.value, message.value?.id);
             break;}
           case "setup":{
-            apiKey = message.value;
+            apiKey = message.value[0];
+            hackatimeApiKey = message.value[1]
             switchMode(" ");
             break;}
           case "existing-projects":{ 
@@ -760,7 +768,8 @@
             break;
           }
           case "settings": {
-            apiKey = message.value;
+            apiKey = message.value[0];
+            hackatimeApiKey = message.value[1]
             switchMode("settings");
             break;
           } 

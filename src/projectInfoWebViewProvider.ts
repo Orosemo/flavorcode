@@ -61,6 +61,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     let projectId = Number(config.get<string>("projectId"));
     let apiKey = config.get<string>("flavortownApiKey");
     let userId = config.get<string>("userId");
+    let hackatimeApiKey = config.get<string>("hackatimeApiKey");
 
     async function getUserId() {
       try {
@@ -85,6 +86,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
       projectId = Number(config.get<number>("projectId"));
       apiKey = config.get<string>("flavortownApiKey");
       userId = String(config.get<string>("userId"));
+      hackatimeApiKey = config.get<string>("hackatimeApiKey");
 
       try {
         const projectInfo = await getProject("", projectId);
@@ -114,7 +116,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
         if (!projectId || errorMessage.includes("404")) {
           webviewView.webview.postMessage({
             command: "setup",
-            value: apiKey,
+            value: [apiKey, hackatimeApiKey],
             scope: "local",
           });
         } else {
@@ -126,6 +128,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     const populateWebviewId = async (id: string) => {
       try {
         const projectInfo = await getProject("", Number(id));
+        hackatimeApiKey = config.get<string>("hackatimeApiKey");
 
         webviewView.webview.postMessage({
           command: "project-info",
@@ -152,7 +155,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
         if (!projectId || errorMessage.includes("404")) {
           webviewView.webview.postMessage({
             command: "setup",
-            value: apiKey,
+            value: [apiKey, hackatimeApiKey],
             scope: "local",
           });
         } else {
@@ -336,10 +339,11 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
             case "open-setup": {
               config = vscode.workspace.getConfiguration("flavorcode");
               apiKey = config.get<string>("flavortownApiKey");
+              hackatimeApiKey = config.get<string>("hackatimeApiKey");
               await getUserId();
               webviewView.webview.postMessage({
                 command: "settings",
-                value: apiKey,
+                value: [apiKey, hackatimeApiKey],
                 scope: "local",
               });
               break;
@@ -349,8 +353,8 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               break;
             }
             case "hackatime-key": {
-              config = vscode.workspace.getConfiguration("flavorcode");       
-              config.update("hackatimeApiKey", message.value);
+              config = vscode.workspace.getConfiguration("flavorcode");    
+              config.update("hackatimeApiKey", message.value, vscode.ConfigurationTarget.Global);
               populateWebview();       
               break;
             }
