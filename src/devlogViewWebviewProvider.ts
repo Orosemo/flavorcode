@@ -74,10 +74,14 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
 
     let config = vscode.workspace.getConfiguration("flavorcode");
     let projectId = Number(config.get<string>("projectId"));
+    let apiKey = config.get<string>("flavortownApiKey");
+    let userId = config.get<string>("userId");
+    let hackatimeApiKey = config.get<string>("hackatimeApiKey");
 
     async function populateWebview() {
       config = vscode.workspace.getConfiguration("flavorcode");
       projectId = Number(config.get<string>("projectId"));
+      
 
       // let devlogs = [];
       try {
@@ -101,7 +105,7 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
         */
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (!projectId || errorMessage.includes("404")) {
+        if (!projectId || errorMessage.includes("404") || apiKey === "none" || hackatimeApiKey  === "none") {
           webviewView.webview.postMessage({ command: "setup", scope: "local" });  
         } else {
           vscode.window.showErrorMessage(errorMessage);

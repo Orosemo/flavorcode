@@ -33,7 +33,7 @@ async function updateActivity() {
   };
   console.log(payload);
   await rpc?.setActivity(payload as any);
-  vscode.window.showInformationMessage("updated Flavortown discord richpresence");
+  vscode.window.showInformationMessage("Updated Flavortown discord richpresence");
 }
 
 export async function connectDiscordGateway(
@@ -71,10 +71,12 @@ export async function connectDiscordGateway(
         );
       });
     };
-
+    
     attemptLogin(0);
     return;
   }
+
+  vscode.window.showInformationMessage("Activated Flavortown discord richpresence");
 
   await updateActivity();
 }
@@ -91,15 +93,16 @@ export async function disconnectDiscordGateway() {
     rpc = null;
     rpcReady = false;
     lastActivity = null;
+    vscode.window.showInformationMessage("Deactivated Flavortown discord richpresence");
   }
 }
 
 // gets api key from the vscode settings
 function getApiKeyFromSettings(): string {
   const config = vscode.workspace.getConfiguration("flavorcode");
-  const apiKey = config.get<string>("flavortownApiKey");
+  const apiKey = String(config.get<string>("flavortownApiKey") ?? "").trim();
 
-  if (!apiKey) {
+  if (!apiKey || apiKey === "none") {
     throw new Error(
       "Flavortown api key not set: please set it in the settings",
     );
@@ -109,8 +112,10 @@ function getApiKeyFromSettings(): string {
 
 // resolves api key: uses given key first, then tries settings
 function resolveApiKey(givenApiKey: string): string {
-  if (givenApiKey && givenApiKey.trim()) {
-    return givenApiKey;
+  const normalizedGivenApiKey = String(givenApiKey ?? "").trim();
+
+  if (normalizedGivenApiKey && normalizedGivenApiKey !== "none") {
+    return normalizedGivenApiKey;
   }
   return getApiKeyFromSettings();
 }

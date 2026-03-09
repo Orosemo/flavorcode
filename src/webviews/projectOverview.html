@@ -65,7 +65,7 @@
 
       <!--choose Page-->
       <div id="choose" style="display: none">
-        <div class="back">
+        <div id="choose-back" class="back">
           <button class="options-button" onclick="switchMode(' ')"><i class="codicon codicon-arrow-left" ></i></button>
         </div>
         <h1>Choose existing project:</h3>
@@ -81,7 +81,7 @@
 
       <!--create Page-->
       <div id="create" style="display: none">
-        <div class="back">
+        <div id="create-back" class="back">
           <button class="options-button" onclick="switchMode(' ')"><i class="codicon codicon-arrow-left" ></i></button>
         </div>
         <h2>Create new Project</h2>
@@ -283,6 +283,7 @@
       let projectId = 0;
       let apiKey = "";
       let hackatimeApiKey = ""
+      let setup = true
 
     // general functions
 
@@ -366,8 +367,14 @@
           document.getElementById("settings").style = "display: block;";
           fillSettingsApiInput();
         } else {
-          document.getElementById("setup").style = "display: block;";    
-          fillApiInput();
+            if (setup) {
+              document.getElementById("setup").style = "display: block;";    
+              fillApiInput();              
+            } else {
+              document.getElementById("settings").style = "display: block;";
+              fillSettingsApiInput();
+            }
+
         }
       }
 
@@ -389,8 +396,11 @@
 
       function chooseExisting() {
         apiKey = document.getElementById("api-key").value;
+        console.log(apiKey)
         hackatimeApiKey = document.getElementById("hackatime-api-key").value; 
         if (apiKey && hackatimeApiKey) {
+          setup = true
+          disableSetupButtons();
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
           vscode.postMessage({ command: "hackatime-key", value:hackatimeApiKey, scope: "local"})
@@ -403,6 +413,7 @@
         apiKey = document.getElementById("api-key").value;
         hackatimeApiKey = document.getElementById("hackatime-api-key").value;
         if (apiKey && hackatimeApiKey) {
+          setup = true
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
           vscode.postMessage({ command: "hackatime-key", value: hackatimeApiKey, scope: "local"})
           switchMode("create");
@@ -441,6 +452,7 @@
         apiKey = document.getElementById("api-key-settings").value;
         hackatimeApiKey = document.getElementById("hackatime-api-key-settings").value;
         if (apiKey && hackatimeApiKey) {
+          setup = false
           disableSettingsButtons();
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
@@ -454,6 +466,7 @@
         apiKey = document.getElementById("api-key-settings").value;
         hackatimeApiKey = document.getElementById("hackatime-api-key-settings").value;
         if (apiKey && hackatimeApiKey) {
+          setup = false
           switchMode("create");
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
           vscode.postMessage({ command: "hackatime-key", value:hackatimeApiKey, scope: "local"})
