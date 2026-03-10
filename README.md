@@ -8,6 +8,8 @@ Flavorcode is a Flavortown VS-Code extension made by Joko26.
 It currently only has limited features as many api routes crucial for this project were removed with out any announcement.
 If those api routes get reintroduced this extension will regain full functionality.  
 
+[Check it out on flavortown!](https://flavortown.hackclub.com/projects/11154)
+
 ## Table of contents
 
 - [Setup](#setup)
