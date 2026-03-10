@@ -2,13 +2,23 @@
   "name": "flavorcode",
   "displayName": "Flavorcode",
   "description": "Manage your Flavortown journey straight from VS-Code with this VS-Code extension made for flavortown. ",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "publisher": "Orosemo",
   "engines": {
     "vscode": "^1.108.1"
   },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "productivity",
+    "tooling"
+  ],
+  "galleryBanner": {
+    "color": "#FF9065",
+    "theme": "dark"
+  },
+  "icon": "media/falvorcode-trans.png",
   "activationEvents": [
     "onStartupFinished",
     "onView:flavorcode.infoView"
@@ -51,7 +61,7 @@
         {
           "id": "projectInfo",
           "title": "Flavorcode",
-          "icon": "media/chef-hat (2).svg"
+          "icon": "media/chef-hat-2.svg"
         }
       ]
     },
@@ -108,23 +118,22 @@
           "scope": "application"
         },
         "flavorcode.theme": {
-          "type":"string",
-          "default":" ",
+          "type": "string",
+          "default": " ",
           "description": "Set the theme of Flavorcode!",
           "scope": "application"
         }
       }
     }
   },
-
   "repository": {
-      "type": "git",
-      "url": "https://github.com/Joko-26/flavorcode.git"
-    },
-    "bugs": {
-      "url": "https://github.com/Joko-26/flavorcode/issues"
-    },
-
+    "type": "git",
+    "url": "https://github.com/Joko-26/flavorcode.git"
+  },
+  "homepage": "https://github.com/Joko-26/flavorcode",
+  "bugs": {
+    "url": "https://github.com/Joko-26/flavorcode/issues"
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -151,5 +160,3 @@
     "node-emoji": "^2.2.0"
   }
 }
-
-
