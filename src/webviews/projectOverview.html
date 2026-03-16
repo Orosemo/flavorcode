@@ -345,6 +345,8 @@
         document.getElementById("demoInput").value = projectInfo?.demo_url;
         document.getElementById("repoInput").value = projectInfo?.repo_url;
         document.getElementById("aiInput").value = projectInfo?.ai_declaration;
+
+        switchMode("display")
       }
 
       function switchMode(mode) {
@@ -375,6 +377,14 @@
               fillSettingsApiInput();
             }
 
+        }
+      }
+
+      function parseUrl(url) {
+        if (!url.includes("https://")) {
+          return "https://" + url
+        } else {
+          return url
         }
       }
 
@@ -524,6 +534,7 @@
       // sent infos of new project to extension
 
       function Create() {
+        clearProjectCreation()
         const name = document.getElementById("create-name").value;
         const description = document.getElementById("create-description").value;
         const demo = document.getElementById("create-demo").value;
@@ -535,16 +546,14 @@
         const createData = {
           name: name,
           description: description,
-          demo: demo,
-          repo: repo,
+          demo: parseUrl(demo),
+          repo: parseUrl(repo),
           ai: ai,
           currenProject: currenProject,
           apiKey: apiKey,
         };
 
-        if (currenProject) {
-          switchMode("display");
-        } else {
+        if (!currenProject){
           switchMode("create");
           clearProjectCreation();
         }
@@ -745,8 +754,8 @@
         const createData = {
           name: name,
           description: description,
-          demo: demo,
-          repo: repo,
+          demo: parseUrl(demo),
+          repo: parseUrl(repo),
           ai: ai,
         };
         vscode.postMessage({ command: "update", value: createData, scope: "local" });
