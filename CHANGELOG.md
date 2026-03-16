@@ -15,3 +15,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.0.2]
 
 - removed `src/**` from `.vscodeignore` so  the webview files get bundled and are accesible to the extension.
+
+## [1.0.3]
+
+- fixed bug that broke the extension on failed project creation and added a url parser that fixes Urls missing the `https://`
