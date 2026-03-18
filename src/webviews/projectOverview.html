@@ -381,6 +381,9 @@
       }
 
       function parseUrl(url) {
+        if (!url || url === "") {
+          return ""
+        }
         if (!url.includes("https://")) {
           return "https://" + url
         } else {

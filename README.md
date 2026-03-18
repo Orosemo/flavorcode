@@ -1,6 +1,6 @@
 # flavorcode README
 
-![Flavorcode logo](https://i.ibb.co/VsjHvbX/flavorcode-small.png)
+![Flavorcode logo](media/logo.png)
 
 ![hackatime](https://hackatime-badge.hackclub.com/U0A5GJ8JP5F/flavorcode)
 

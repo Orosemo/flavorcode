@@ -19,3 +19,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.0.3]
 
 - fixed bug that broke the extension on failed project creation and added a url parser that fixes Urls missing the `https://`
+
+## [1.0.4]
+
+- added new extension Logo
+- fixed bug: empty Urls where replaced with `https://` instead of being `""` which caused the extension to display all link button at any time.
