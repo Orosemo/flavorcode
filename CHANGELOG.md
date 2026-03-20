@@ -24,3 +24,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - added new extension Logo
 - fixed bug: empty Urls where replaced with `https://` instead of being `""` which caused the extension to display all link button at any time.
+
+## [1.0.5]
+
+- fixed bug in project creation that cleared all fields before they where read 

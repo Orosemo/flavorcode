@@ -537,7 +537,6 @@
       // sent infos of new project to extension
 
       function Create() {
-        clearProjectCreation()
         const name = document.getElementById("create-name").value;
         const description = document.getElementById("create-description").value;
         const demo = document.getElementById("create-demo").value;
@@ -562,6 +561,7 @@
         }
 
         vscode.postMessage({ command: "create", value: createData, scope: "local" });
+        clearProjectCreation()
       }
 
     // functions for the display page
