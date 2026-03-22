@@ -724,9 +724,11 @@
         if (mode === "user") {
           document.getElementById("user").style = "display: block;"
           document.getElementById("display-switch-user").className = "display-switch-selected"
+          reload()
         } else {
           document.getElementById("project").style = "display: block;"
           document.getElementById("display-switch-project").className = "display-switch-selected"
+          reload()
         }
       }
 
