@@ -28,3 +28,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.0.5]
 
 - fixed bug in project creation that cleared all fields before they where read 
+
+## [1.0.6]
+
+- added refresh call in `switchDisplayMode`
