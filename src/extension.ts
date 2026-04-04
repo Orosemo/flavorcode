@@ -1,5 +1,3 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import {
   getUserSelf,
@@ -155,47 +153,24 @@ export function activate(context: vscode.ExtensionContext) {
         config.update("userId", userSelf.id, vscode.ConfigurationTarget.Global);
       }
 
-      // ask if user wants to choose a existing project or create a new one
-      const projectCreationOptions: Options[] = [
-        { label: "create new Project", value: "new" },
-        { label: "choose existing Project", value: "existing" },
-      ];
+      // get projects by user
+      const userProjects: Options[] = [];
+      for (const projectId of userSelf.project_ids) {
+        const project = await getProject(enteredApiKey, projectId);
+        userProjects.push({ label: project.title, value: project.id });
+      }
 
-      const projectCreationChoice = await vscode.window.showQuickPick(
-        projectCreationOptions,
-        {
-          placeHolder:
-            "Do you want to create a new project or an existing one?",
-        },
+      const selectProjectId = await vscode.window.showQuickPick(
+        userProjects,
+        { placeHolder: "Choose Flavortown project" },
       );
 
-      // if user wants to choose new one fetch all projects and show them in a selection
-      if (projectCreationChoice?.value === "existing") {
-        vscode.window.showInformationMessage(
-          `Fetching projects for ${userSelf.display_name}, this may take a while.`,
-        );
-
-        const userProjects: Options[] = [];
-
-        for (const projectId of userSelf.project_ids) {
-          const project = await getProject(enteredApiKey, projectId);
-          userProjects.push({ label: project.title, value: project.id });
-        }
-
-        const selectProjectId = await vscode.window.showQuickPick(
-          userProjects,
-          { placeHolder: "Choose Flavortown project" },
-        );
-
-        if (!selectProjectId) {
-          return;
-        }
-
-        // set in vscode settings
-        config.update("projectId", selectProjectId.value);
-      } else {
-        vscode.commands.executeCommand("flavorcode.createProject");
+      if (!selectProjectId) {
+        return;
       }
+
+      // set in vscode settings
+      config.update("projectId", selectProjectId.value);
     },
   );
 
