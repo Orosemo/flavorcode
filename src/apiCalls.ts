@@ -33,7 +33,9 @@ async function updateActivity() {
   };
   console.log(payload);
   await rpc?.setActivity(payload as any);
-  vscode.window.showInformationMessage("Updated Flavortown discord richpresence");
+  vscode.window.showInformationMessage(
+    "Updated Flavortown discord richpresence",
+  );
 }
 
 export async function connectDiscordGateway(
@@ -71,12 +73,14 @@ export async function connectDiscordGateway(
         );
       });
     };
-    
+
     attemptLogin(0);
     return;
   }
 
-  vscode.window.showInformationMessage("Activated Flavortown discord richpresence");
+  vscode.window.showInformationMessage(
+    "Activated Flavortown discord richpresence",
+  );
 
   await updateActivity();
 }
@@ -93,7 +97,9 @@ export async function disconnectDiscordGateway() {
     rpc = null;
     rpcReady = false;
     lastActivity = null;
-    vscode.window.showInformationMessage("Deactivated Flavortown discord richpresence");
+    vscode.window.showInformationMessage(
+      "Deactivated Flavortown discord richpresence",
+    );
   }
 }
 
@@ -208,14 +214,17 @@ export async function getUser(givenApiKey: string, userID: string) {
     devlog_seconds_today: Number;
   }
 
-  const res = await fetch(`https://flavortown.hackclub.com/api/v1/users/${userID}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-      [`X-Flavortown-Ext-${11154}`]: "true",
+  const res = await fetch(
+    `https://flavortown.hackclub.com/api/v1/users/${userID}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        [`X-Flavortown-Ext-${11154}`]: "true",
+      },
     },
-  });
+  );
 
   if (!res.ok) {
     throw new Error(`Failed to get Users: ${res.status} ${await res.text()}`);
@@ -557,12 +566,12 @@ export async function getDevlog(givenApiKey: string, id: number) {
     created_at: string;
     updated_at: string;
     comments: DevlogComment[];
-    media: DevlogMedia[]
+    media: DevlogMedia[];
   }
 
   interface DevlogMedia {
-    content_type: string,
-    url: string
+    content_type: string;
+    url: string;
   }
 
   interface DevlogComment {
@@ -598,11 +607,12 @@ export async function getDevlog(givenApiKey: string, id: number) {
   return (await res.json()) as DevlogsResponse;
 }
 
-
 // hackatime calls
 
-export async function getHackatimeUserStats(givenApiKey: string, userName: string) {
-
+export async function getHackatimeUserStats(
+  givenApiKey: string,
+  userName: string,
+) {
   const config = vscode.workspace.getConfiguration("flavorcode");
   let apiKey = config.get<string>("hackatimeApiKey");
 
@@ -610,10 +620,11 @@ export async function getHackatimeUserStats(givenApiKey: string, userName: strin
     apiKey = givenApiKey;
   } else {
     if (!apiKey) {
-      vscode.window.showErrorMessage("No Hackatime api key set: please set the extension up before doing that again");
+      vscode.window.showErrorMessage(
+        "No Hackatime api key set: please set the extension up before doing that again",
+      );
     }
   }
-
 
   interface userStatsResponse {
     data: {
@@ -654,8 +665,88 @@ export async function getHackatimeUserStats(givenApiKey: string, userName: strin
   );
 
   if (!res.ok) {
-    throw new Error(`Failed to get Hackatime stats: ${res.status} ${await res.text()}`);
+    throw new Error(
+      `Failed to get Hackatime stats: ${res.status} ${await res.text()}`,
+    );
   }
 
   return (await res.json()) as userStatsResponse;
+}
+
+// store calls
+
+export async function getAllStoreItems(givenApiKey: string) {
+  // get api key
+  const apiKey = resolveApiKey(givenApiKey);
+
+  // get project id
+  const config = vscode.workspace.getConfiguration("flavorcode");
+  const projectId = config.get<Number>("projectId");
+
+  if (!projectId || projectId === 0) {
+    vscode.window.showErrorMessage(
+      "No project set: please set the extension up before doing that again.",
+    );
+    return;
+  }
+
+  interface storeItemResponse {
+    id: number;
+    name: string;
+    description: string;
+    old_prices: [];
+    limited: boolean;
+    stock: number;
+    type: string;
+    show_in_carousel: boolean;
+    accessory_tag: string;
+    agh_contents: string;
+    attached_shop_item_ids: [];
+    buyable_by_self: boolean;
+    long_description: string;
+    max_qty: number;
+    one_per_person_ever: boolean;
+    sale_percentage: number;
+    image_url: string;
+    enabled: enabled;
+    ticket_cost: ticket_cost;
+  }
+
+  interface enabled {
+    enabled_au: boolean;
+    enabled_ca: boolean;
+    enabled_eu: boolean;
+    enabled_in: boolean;
+    enabled_uk: boolean;
+    enabled_us: boolean;
+    enabled_xx: boolean;
+  }
+
+  interface ticket_cost {
+    base_cost: number;
+    au: number;
+    ca: number;
+    eu: number;
+    in: number;
+    uk: number;
+    us: number;
+    xx: number;
+  }
+
+  const res = await fetch(`https://flavortown.hackclub.com/api/v1/store`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      [`X-Flavortown-Ext-${11154}`]: "true",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to get storeItems: ${res.status} ${await res.text()}`,
+    );
+  }
+
+  return (await res.json()) as storeItemResponse;
 }

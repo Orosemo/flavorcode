@@ -7,6 +7,131 @@
     <link rel="stylesheet" href="${styleUri}" />
     <link rel="stylesheet" href="${codiconUri}" />
   </head>
-  <body>
-    
+  <body class="devlog-body">
+
+    <div>
+      <h1>Explore</h1>
+        <div class="display-switch-container">
+          <button id="display-switch-shop" class="display-switch-selected" onclick="switchMode('shop')">Shop</button>
+          <button id="display-switch-projects" class="" onclick="switchMode('user-explore')">Users</button>
+          <button id="display-switch-users" class="" onclick="switchMode('project-explore')">Projects</button>
+        </div>
+    </div>
+
+    <div id="shop">
+      <p>hello (shop)</p>
+    </div> 
+    <div id="shop-item" style="display: none;"></div>
+    <div id="user-explore" style="display: none;">
+      <p>hello (users)</p>
+    </div>
+    <div id="user" style="display: none;"></div>
+    <div id="project-explore" style="display: none;">
+      <p>hello (proejcts)</p>
+    </div>
+    <div id="project" style="display: none;"></div>
+
+    <script>
+      // vars
+      // shop
+      var shopItems = {};
+
+      // user
+      var users = {};
+
+      // project
+      var projects = {};
+
+      // general functions
+
+      function setTheme(theme) {
+        document.getElementById("html").classList = theme;
+      }
+
+      function switchMode(mode) {
+        document.getElementById("shop").style = "display: none;";
+        document.getElementById("shop-item").style = "display: none;";
+        document.getElementById("user-explore").style = "display: none;";
+        document.getElementById("user").style = "display: none;";
+        document.getElementById("project-explore").style = "display: none;";
+        document.getElementById("project").style = "display: none;";
+
+        document.getElementById("display-switch-shop").class=""
+        document.getElementById("display-switch-users").class=""
+        document.getElementById("display-switch-projects").class=""
+
+        if (mode == "shop") {
+          document.getElementById("shop").style = "display: block;";
+          document.getElementById("display-switch-shop").class="display-switch-selected"
+        } else if (mode == "shop-item") {
+          document.getElementById("shop").style = "display: block;";
+        } else if (mode == "user-explore") {
+          document.getElementById("shop").style = "display: block;";
+          document.getElementById("display-switch-users").class="display-switch-selected"
+        } else if (mode == "user") {
+          document.getElementById("shop").style = "display: block;";
+        } else if (mode == "project-explore") {
+          document.getElementById("shop").style = "display: block;";
+          document.getElementById("display-switch-projects").class="display-switch-selected"
+        } else if (mode == "project") {
+          document.getElementById("shop").style = "display: block;";
+        }
+      }
+
+      // functions for the shop page
+
+      function populateShop() {
+
+      }
+
+      function openShopItem(id) {
+
+        switchMode("shop-item")
+      }
+
+      // functions for the user page
+
+      function populateUsers() {}
+
+      function openUser(id) {
+
+        switchMode("user")
+      }
+
+      // functions for the project page
+
+      function populateProjects() {
+
+      }
+
+      function openProject(id) {
+
+        switchMode("project")
+      }
+
+      // listens for messages from the extentsion
+      window.addEventListener("message", (event) => {
+        const message = event.data;
+
+        switch (message.command) {
+          case "set-theme": {
+            setTheme(message.value);
+            break;
+          }
+          case "storeItems": {
+            shopItems = message;
+            populateShop();
+          }
+          case "projects": {
+            projects = message
+            populateProjects()
+          }
+          case "users": {
+            projects = message
+            populateUsers()
+          }
+        }
+      });
+    </script>
   </body>
+</html>

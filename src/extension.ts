@@ -7,6 +7,7 @@ import {
   disconnectDiscordGateway,
   getAllProjects,
   getAllUsers,
+  getAllStoreItems,
 } from "./apiCalls";
 import { openDevlogHtml } from "./webviews/openDevlog";
 import * as emoji from "node-emoji";
@@ -71,8 +72,23 @@ export function activate(context: vscode.ExtensionContext) {
     currentExploreViewPanel.webview.postMessage({comamnd:"current-theme", value:getCurrentTheme()});
 
     const rawProjects = await getAllProjects("");
+    const projects = rawProjects?.projects?.reduce((acc: { [key: string]: any }, project: any) => {
+      acc[project.id] = project;
+      return acc;
+    }, {}) ?? {};
+
+    currentExploreViewPanel.webview.postMessage({command:"projects", value:projects});
 
     const rawUsers = await getAllUsers("");
+    const users = rawUsers?.users?.reduce((acc: { [key: string]: any }, project: any) => {
+      acc[project.id] = project;
+      return acc;
+    }, {}) ?? {}; 
+
+    currentExploreViewPanel.webview.postMessage({command:"users", value:users});
+
+    const storeItems = await getAllStoreItems("");
+    currentExploreViewPanel.webview.postMessage({command:"storeItems", value:users});
 
   }
 
