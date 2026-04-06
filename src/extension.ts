@@ -130,72 +130,6 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
-  const setupProject = vscode.commands.registerCommand(
-    "flavorcode.setupProject",
-    async () => {
-      // get config (vscode settigs)
-      const config = vscode.workspace.getConfiguration("flavorcode");
-
-      let enteredApiKey = "";
-
-      // inteface for quickpick choices
-      interface Options extends vscode.QuickPickItem {
-        value: number | string;
-      }
-
-      // ask the user to set or confirm their api key
-
-      const currentApiKey = config.get<string>("flavortownApiKey");
-
-      enteredApiKey = String(
-        await vscode.window.showInputBox({
-          placeHolder: "your Flavortown api key from the website",
-          prompt: "Go into the Flavortown settings and copy your api key",
-          value: currentApiKey,
-        }),
-      );
-
-      if (!enteredApiKey) {
-        return;
-      }
-
-      config.update(
-        "flavortownApiKey",
-        enteredApiKey,
-        vscode.ConfigurationTarget.Global,
-      );
-
-      // get user by api key
-      const userSelf = await getUserSelf(enteredApiKey);
-      // set in vscode settings if not set
-      if (
-        config.get<string>("userId") === "your username" ||
-        config.get<string>("userId") === ""
-      ) {
-        config.update("userId", userSelf.id, vscode.ConfigurationTarget.Global);
-      }
-
-      // get projects by user
-      const userProjects: Options[] = [];
-      for (const projectId of userSelf.project_ids) {
-        const project = await getProject(enteredApiKey, projectId);
-        userProjects.push({ label: project.title, value: project.id });
-      }
-
-      const selectProjectId = await vscode.window.showQuickPick(
-        userProjects,
-        { placeHolder: "Choose Flavortown project" },
-      );
-
-      if (!selectProjectId) {
-        return;
-      }
-
-      // set in vscode settings
-      config.update("projectId", selectProjectId.value);
-    },
-  );
-
   /*
   // delete current Project
   const deleteCurrentProject = vscode.commands.registerCommand(
@@ -433,7 +367,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     disposable,
-    setupProject,
     explore,
     openDevlog,
     projectInfo,

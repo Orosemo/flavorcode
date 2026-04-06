@@ -31,11 +31,6 @@
         "title": "Hello World"
       },
       {
-        "command": "flavorcode.setupProject",
-        "title": "Setup Flavorcode",
-        "category": "Flavorcode"
-      },
-      {
         "command": "flavorcode.createProject",
         "category": "Flavorcode",
         "title": "create new Project"
