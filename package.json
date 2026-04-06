@@ -54,6 +54,11 @@
         "command": "flavorcode.theme",
         "category": "flavorcode",
         "title": "set Flavorcode theme"
+      },
+      {
+        "command": "flavorcode.explore",
+        "category": "flavorcode",
+        "title": "explore users and the shop"
       }
     ],
     "viewsContainers": {

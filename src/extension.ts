@@ -7,18 +7,22 @@ import {
   createProject,
   updateProject,
   disconnectDiscordGateway,
+  getAllProjects,
+  getAllUsers,
 } from "./apiCalls";
 import { openDevlogHtml } from "./webviews/openDevlog";
 import * as emoji from "node-emoji";
 import { projectInfoProvider } from "./projectInfoWebViewProvider";
 import { viewDevlogProvider } from "./devlogViewWebviewProvider";
 import { chooseThemeHtml } from "./webviews/chooseTheme";
+import { exploretHtml } from "./webviews/explore";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   let currentDevlogViewPanel: vscode.WebviewPanel | undefined = undefined;
   let currentThemeViewPanel: vscode.WebviewPanel | undefined = undefined;
+  let currentExploreViewPanel: vscode.WebviewPanel | undefined = undefined;
 
   // functions to refresh the devlog and themes page when the user clicks back into them
   let lastOpenedDevlog: any;
@@ -53,6 +57,25 @@ export function activate(context: vscode.ExtensionContext) {
           media: normalizedMedia,
         }
       : devlog;
+  }
+
+  async function refreshExplore() {
+    if (!currentExploreViewPanel) {
+      return;
+    }
+
+    currentExploreViewPanel.webview.html = exploretHtml(
+      currentExploreViewPanel.webview, 
+      context.extensionUri
+    );
+
+    // send current theme
+    currentExploreViewPanel.webview.postMessage({comamnd:"current-theme", value:getCurrentTheme()});
+
+    const rawProjects = await getAllProjects("");
+
+    const rawUsers = await getAllUsers("");
+
   }
 
   function refreshOpenDevlogWebview() {
@@ -95,8 +118,7 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "flavorcode" is now active!');
+  // This line of code will only be executed once when your extension is activates
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
@@ -242,6 +264,49 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
   */
+
+  // opens webview to explore users, projects and the ft shop
+
+  const explore = vscode.commands.registerCommand(
+    "flavorcode.explore",
+    () => {
+      const columToShowIn = vscode.window.activeTextEditor
+        ? vscode.window.activeTextEditor.viewColumn
+        : undefined;
+
+      if (currentExploreViewPanel) {
+        currentExploreViewPanel.reveal(columToShowIn);
+      } else {
+        currentExploreViewPanel = vscode.window.createWebviewPanel(
+          "explore",
+          "Explore",
+          columToShowIn || vscode.ViewColumn.One,
+          {
+            // permissions
+            enableScripts: true,
+            localResourceRoots: [
+              vscode.Uri.joinPath(context.extensionUri, "media"),
+              vscode.Uri.joinPath(
+                context.extensionUri,
+                "node_modules",
+                "@vscode",
+                "codicons",
+                "dist",
+              ),
+            ],
+          },
+        );
+        currentExploreViewPanel.webview.html = exploretHtml(
+          currentExploreViewPanel.webview,
+          context.extensionUri,
+        );
+
+        currentExploreViewPanel.onDidDispose(() => {
+          currentExploreViewPanel = undefined;
+        });
+      }
+    },
+  );
 
   // opens webview with devlog details
   const openDevlog = vscode.commands.registerCommand(
@@ -394,6 +459,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     disposable,
     setupProject,
+    explore,
     openDevlog,
     projectInfo,
     devlogView,
