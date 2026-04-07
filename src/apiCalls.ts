@@ -318,6 +318,54 @@ export async function getAllProjects(givenApiKey: string) {
   return (await res.json()) as ProjectsResponse;
 }
 
+// get a list with all project of the current user
+export async function getAllUserProjects(givenApiKey: string) {
+  const apiKey = resolveApiKey(givenApiKey);
+
+  interface ProjectsResponse {
+    projects: Project[];
+    pagination: Pagination;
+  }
+
+  interface Project {
+    id: number;
+    title: string;
+    description: string;
+    repo_url: string;
+    demo_url: string;
+    readme_url: string;
+    ai_declaration: string;
+    ship_status: string;
+    devlog_ids: number[];
+    created_at: string; // ISO date string
+    updated_at: string; // ISO date string
+  }
+
+  interface Pagination {
+    current_page: number;
+    total_pages: number;
+    total_count: number;
+    next_page: number | null;
+  }
+
+  const res = await fetch(`https://flavortown.hackclub.com/api/v1/users/me/projects`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      [`X-Flavortown-Ext-${11154}`]: "true",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to get Projects for current user: ${res.status} ${await res.text()}`,
+    );
+  }
+
+  return (await res.json()) as ProjectsResponse;
+}
+
 // create new project with passed data
 export async function createProject(
   givenApiKey: string,
@@ -385,7 +433,7 @@ export async function createProject(
 
   // set project id in the config
   if (setAsCurrent) {
-    config.update("projectId", newProject.id);
+    config.update("projectId", String(newProject.id));
   }
 
   return newProject;
@@ -468,9 +516,9 @@ export async function getProjectDevlogs(givenApiKey: string) {
 
   // get project id
   const config = vscode.workspace.getConfiguration("flavorcode");
-  const projectId = config.get<Number>("projectId");
+  const projectId = config.get<string>("projectId");
 
-  if (!projectId || projectId === 0) {
+  if (!projectId || projectId === "0") {
     vscode.window.showErrorMessage(
       "No project set:  please set the extension up before doing that again",
     );
@@ -547,9 +595,9 @@ export async function getDevlog(givenApiKey: string, id: number) {
 
   // get project id
   const config = vscode.workspace.getConfiguration("flavorcode");
-  const projectId = config.get<Number>("projectId");
+  const projectId = config.get<string>("projectId");
 
-  if (!projectId || projectId === 0) {
+  if (!projectId || projectId === "0") {
     vscode.window.showErrorMessage(
       "No project set: please set the extension up before doing that again.",
     );
@@ -681,9 +729,9 @@ export async function getAllStoreItems(givenApiKey: string) {
 
   // get project id
   const config = vscode.workspace.getConfiguration("flavorcode");
-  const projectId = config.get<Number>("projectId");
+  const projectId = config.get<string>("projectId");
 
-  if (!projectId || projectId === 0) {
+  if (!projectId || projectId === "0") {
     vscode.window.showErrorMessage(
       "No project set: please set the extension up before doing that again.",
     );

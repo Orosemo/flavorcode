@@ -81,6 +81,18 @@ export class viewDevlogProvider implements vscode.WebviewViewProvider {
     async function populateWebview() {
       config = vscode.workspace.getConfiguration("flavorcode");
       projectId = Number(config.get<string>("projectId"));
+      apiKey = config.get<string>("flavortownApiKey");
+      userId = String(config.get<string>("userId"));
+      hackatimeApiKey = config.get<string>("hackatimeApiKey");
+      
+      if (!apiKey || !hackatimeApiKey || apiKey === "none" || hackatimeApiKey === "none") {
+        webviewView.webview.postMessage({
+          command: "setup",
+          value: [apiKey, hackatimeApiKey],
+          scope: "local",
+        });
+        return;
+      }
       
 
       // let devlogs = [];

@@ -94,7 +94,6 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   async function refreshExplore() {
-    console.log("test")
     if (!currentExploreViewPanel) {
       return;
     }
@@ -212,15 +211,15 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       if (
-        config.get<number>("projectId") === 0 ||
-        config.get<number>("projectId") === undefined
+        config.get<string>("projectId") === "0" ||
+        config.get<string>("projectId") === undefined
       ) {
         vscode.window.showErrorMessage(
           "Flavortown Project not set properly please use the setup command to set it.",
         );
       }
 
-      const currentProject = await getProject("", Number(config.get<number>("projectId")));
+      const currentProject = await getProject("", Number(config.get<string>("projectId")));
 
       const enteredName = await vscode.window.showInputBox({placeHolder:`"${currentProject.title}"`, prompt: `Please enter ${currentProject.title} to confirm`});
 

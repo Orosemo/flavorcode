@@ -10,6 +10,7 @@ import {
   disconnectDiscordGateway,
   getUser,
   getHackatimeUserStats,
+  getAllUserProjects,
 } from "./apiCalls";
 import { validateHeaderValue } from "http";
 
@@ -75,20 +76,28 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
         return userId;
       } catch (error) {
         const errorMessage =
-        error instanceof Error ? error.message : String(error);
+          error instanceof Error ? error.message : String(error);
         vscode.window.showErrorMessage(errorMessage);
       }
-
-    };
+    }
 
     const populateWebview = async () => {
       config = vscode.workspace.getConfiguration("flavorcode");
-      projectId = Number(config.get<number>("projectId"));
+      projectId = Number(config.get<string>("projectId"));
       apiKey = config.get<string>("flavortownApiKey");
       userId = String(config.get<string>("userId"));
       hackatimeApiKey = config.get<string>("hackatimeApiKey");
 
       try {
+        if (!apiKey || !hackatimeApiKey || apiKey === "none" || hackatimeApiKey === "none") {
+          webviewView.webview.postMessage({
+            command: "setup",
+            value: [apiKey, hackatimeApiKey],
+            scope: "local",
+          });
+          return;
+        }
+
         const projectInfo = await getProject("", projectId);
 
         webviewView.webview.postMessage({
@@ -108,12 +117,20 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
 
         const hackatimeStats = await getHackatimeUserStats("", String(userId));
 
-        webviewView.webview.postMessage({command: "set-hackatime", value: hackatimeStats, scope:"local"});
-        
+        webviewView.webview.postMessage({
+          command: "set-hackatime",
+          value: hackatimeStats,
+          scope: "local",
+        });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        if (!projectId || errorMessage.includes("404") || apiKey === "none" || hackatimeApiKey  === "none") {
+        if (
+          !projectId ||
+          errorMessage.includes("404") ||
+          apiKey === "none" ||
+          hackatimeApiKey === "none"
+        ) {
           webviewView.webview.postMessage({
             command: "setup",
             value: [apiKey, hackatimeApiKey],
@@ -126,9 +143,23 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     };
 
     const populateWebviewId = async (id: string) => {
+      config = vscode.workspace.getConfiguration("flavorcode");
+      projectId = Number(config.get<string>("projectId"));
+      apiKey = config.get<string>("flavortownApiKey");
+      userId = String(config.get<string>("userId"));
+      hackatimeApiKey = config.get<string>("hackatimeApiKey");
+
       try {
+        if (!apiKey || !hackatimeApiKey || apiKey === "none" || hackatimeApiKey === "none") {
+          webviewView.webview.postMessage({
+            command: "setup",
+            value: [apiKey, hackatimeApiKey],
+            scope: "local",
+          });
+          return;
+        }
+
         const projectInfo = await getProject("", Number(id));
-        hackatimeApiKey = config.get<string>("hackatimeApiKey");
 
         webviewView.webview.postMessage({
           command: "project-info",
@@ -147,12 +178,20 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
 
         const hackatimeStats = await getHackatimeUserStats("", String(userId));
 
-        webviewView.webview.postMessage({command: "set-hackatime", value: hackatimeStats, scope:"local"});
-
+        webviewView.webview.postMessage({
+          command: "set-hackatime",
+          value: hackatimeStats,
+          scope: "local",
+        });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        if (!projectId || errorMessage.includes("404") || apiKey === "none" || hackatimeApiKey  === "none") {
+        if (
+          !projectId ||
+          errorMessage.includes("404") ||
+          apiKey === "none" ||
+          hackatimeApiKey === "none"
+        ) {
           webviewView.webview.postMessage({
             command: "setup",
             value: [apiKey, hackatimeApiKey],
@@ -178,8 +217,10 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     populateWebview();
 
     webviewView.onDidChangeVisibility(async () => {
-      setTheme();
-      populateWebview();
+      if (webviewView.visible) {
+        setTheme();
+        populateWebview();        
+      }
     });
 
     try {
@@ -198,7 +239,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.onDidReceiveMessage(async (message) => {
       config = vscode.workspace.getConfiguration("flavorcode");
-      projectId = Number(config.get<number>("projectId"));
+      projectId = Number(config.get<string>("projectId"));
       apiKey = config.get<string>("flavortownApiKey");
       this.messageCallback?.(message);
       try {
@@ -261,7 +302,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
                   await getUserId();
                   await config.update(
                     "projectId",
-                    newProject.id,
+                    String(newProject.id),
                     vscode.ConfigurationTarget.Workspace,
                   );
 
@@ -280,34 +321,37 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               break;
             }
             case "get-projects": {
-              const userSelf = await getUserSelf(messageContent);
-
-              vscode.window.showInformationMessage(
-                `Fetching projects for ${userSelf.display_name}, this may take a while.`,
+              const userProjects = await getAllUserProjects(
+                String(messageContent ?? ""),
               );
+              const projects = Array.isArray((userProjects as any)?.projects)
+                ? (userProjects as any).projects
+                : [];
 
-              
+              const projectOptions = projects.map((project: any) => ({
+                value: String(project.id),
+                label: project.title,
+              }));
 
-              const userProjects = [];
+              console.log(userProjects)
+              console.log(projectOptions);
 
-              for (const projectId of userSelf.project_ids) {
-                const project = await getProject(
-                  messageContent,
-                  projectId,
+              if (projectOptions.length === 0) {
+                vscode.window.showErrorMessage(
+                  "No projects found for this account. Please verify your API key.",
                 );
-                userProjects.push({ label: project.title, value: project.id });
               }
 
               webviewView.webview.postMessage({
                 command: "existing-projects",
-                value: userProjects,
+                value: projectOptions,
                 scope: "local",
               });
 
               break;
             }
             case "selected": {
-              const selectedProjectId = messageContent;
+              const selectedProjectId = String(messageContent);
               await getUserId();
               await config.update(
                 "projectId",
@@ -371,7 +415,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               break;
             }
             case "hackatime-key": {
-              config = vscode.workspace.getConfiguration("flavorcode");    
+              config = vscode.workspace.getConfiguration("flavorcode");
               await config.update(
                 "hackatimeApiKey",
                 String(message.value ?? "").trim(),

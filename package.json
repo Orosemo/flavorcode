@@ -107,8 +107,8 @@
           "scope": "application"
         },
         "flavorcode.projectId": {
-          "type": "integer",
-          "default": " ",
+          "type": "string",
+          "default": "0",
           "description": "Your Flavortown project id"
         },
         "flavorcode.useDiscord": {
