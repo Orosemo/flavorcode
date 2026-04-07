@@ -31,6 +31,112 @@ export function activate(context: vscode.ExtensionContext) {
     return config.get<string>("theme");
   }
 
+  // explore
+  async function sendAllProjects(query:string) {
+    if (!currentExploreViewPanel) {
+      return;
+    }
+
+    currentExploreViewPanel.webview.html = exploretHtml(
+      currentExploreViewPanel.webview, 
+      context.extensionUri
+    );
+
+    const rawProjects = await getAllProjects("");
+    const projects = rawProjects?.projects?.reduce((acc: { [key: string]: any }, project: any) => {
+      acc[project.id] = project;
+      return acc;
+    }, {}) ?? {};
+
+    currentExploreViewPanel.webview.postMessage({command:"projects", value:projects});
+  }
+
+  async function sendAllUsers(query:string) {
+    if (!currentExploreViewPanel) {
+      return;
+    }
+
+    currentExploreViewPanel.webview.html = exploretHtml(
+      currentExploreViewPanel.webview, 
+      context.extensionUri
+    );
+
+    const rawUsers = await getAllUsers("");
+    const users = rawUsers?.users?.reduce((acc: { [key: string]: any }, project: any) => {
+      acc[project.id] = project;
+      return acc;
+    }, {}) ?? {}; 
+
+    currentExploreViewPanel.webview.postMessage({command:"users", value:users});
+  }
+
+  async function sendStoreItems() {
+    if (!currentExploreViewPanel) {
+      return;
+    }
+
+    currentExploreViewPanel.webview.html = exploretHtml(
+      currentExploreViewPanel.webview, 
+      context.extensionUri
+    );
+
+    const rawstoreItems = await getAllStoreItems("");
+    const storeItemList = Array.isArray((rawstoreItems as any)?.storeItems)
+      ? (rawstoreItems as any).storeItems
+      : Array.isArray(rawstoreItems)
+        ? rawstoreItems
+        : [];
+    const storeItems = storeItemList.reduce((acc: { [key: string]: any }, project: any) => {
+      acc[project.id] = project;
+      return acc;
+    }, {}) ?? {}; 
+    currentExploreViewPanel.webview.postMessage({command:"storeItems", value:storeItems});
+  }
+
+  async function refreshExplore() {
+    console.log("test")
+    if (!currentExploreViewPanel) {
+      return;
+    }
+
+    currentExploreViewPanel.webview.html = exploretHtml(
+      currentExploreViewPanel.webview, 
+      context.extensionUri
+    );
+
+    // send current theme
+    currentExploreViewPanel.webview.postMessage({command:"set-theme", value:getCurrentTheme()});
+
+    sendAllProjects("");
+    sendAllUsers("");
+    sendStoreItems();
+
+  }
+
+  // devlog
+  function refreshOpenDevlogWebview() {
+    if (!currentDevlogViewPanel) {
+      return;
+    }
+
+    currentDevlogViewPanel.webview.html = openDevlogHtml(
+      currentDevlogViewPanel.webview,
+      context.extensionUri,
+    );
+
+    if (lastOpenedDevlog) {
+      currentDevlogViewPanel.webview.postMessage({
+        command: "devlog-info",
+        value: lastOpenedDevlog,
+      });
+    }
+
+    currentDevlogViewPanel.webview.postMessage({
+      command: "set-theme",
+      value: getCurrentTheme(),
+    });
+  }
+
   function prepareDevlogRecord(devlog: any) {
     const recordBody = devlog?.body ?? "";
     const mediaBaseUrl = "https://flavortown.hackclub.com";
@@ -58,63 +164,7 @@ export function activate(context: vscode.ExtensionContext) {
       : devlog;
   }
 
-  async function refreshExplore() {
-    if (!currentExploreViewPanel) {
-      return;
-    }
-
-    currentExploreViewPanel.webview.html = exploretHtml(
-      currentExploreViewPanel.webview, 
-      context.extensionUri
-    );
-
-    // send current theme
-    currentExploreViewPanel.webview.postMessage({comamnd:"current-theme", value:getCurrentTheme()});
-
-    const rawProjects = await getAllProjects("");
-    const projects = rawProjects?.projects?.reduce((acc: { [key: string]: any }, project: any) => {
-      acc[project.id] = project;
-      return acc;
-    }, {}) ?? {};
-
-    currentExploreViewPanel.webview.postMessage({command:"projects", value:projects});
-
-    const rawUsers = await getAllUsers("");
-    const users = rawUsers?.users?.reduce((acc: { [key: string]: any }, project: any) => {
-      acc[project.id] = project;
-      return acc;
-    }, {}) ?? {}; 
-
-    currentExploreViewPanel.webview.postMessage({command:"users", value:users});
-
-    const storeItems = await getAllStoreItems("");
-    currentExploreViewPanel.webview.postMessage({command:"storeItems", value:users});
-
-  }
-
-  function refreshOpenDevlogWebview() {
-    if (!currentDevlogViewPanel) {
-      return;
-    }
-
-    currentDevlogViewPanel.webview.html = openDevlogHtml(
-      currentDevlogViewPanel.webview,
-      context.extensionUri,
-    );
-
-    if (lastOpenedDevlog) {
-      currentDevlogViewPanel.webview.postMessage({
-        command: "devlog-info",
-        value: lastOpenedDevlog,
-      });
-    }
-
-    currentDevlogViewPanel.webview.postMessage({
-      command: "set-theme",
-      value: getCurrentTheme(),
-    });
-  }
-
+  // theme
   function refreshThemeWebview() {
     if (!currentThemeViewPanel) {
       return;
@@ -131,17 +181,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activates
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
   const disposable = vscode.commands.registerCommand(
     "flavorcode.helloWorld",
     async () => {
-      // The code you place here will be executed every time your command is executed
-      // Display a message box to the user
       vscode.window.showInformationMessage("Hello World from Flavorcode!");
     },
   );
@@ -226,6 +269,13 @@ export function activate(context: vscode.ExtensionContext) {
           context.extensionUri,
         );
 
+        refreshExplore();
+
+        currentExploreViewPanel.onDidChangeViewState((event) => {
+          if (event.webviewPanel.visible) {
+            refreshExplore();  
+          }
+        });
         currentExploreViewPanel.onDidDispose(() => {
           currentExploreViewPanel = undefined;
         });

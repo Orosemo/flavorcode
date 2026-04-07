@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="${styleUri}" />
     <link rel="stylesheet" href="${codiconUri}" />
   </head>
-  <body class="devlog-body">
+  <body>
 
     <div>
       <h1>Explore</h1>
         <div class="display-switch-container">
           <button id="display-switch-shop" class="display-switch-selected" onclick="switchMode('shop')">Shop</button>
-          <button id="display-switch-projects" class="" onclick="switchMode('user-explore')">Users</button>
-          <button id="display-switch-users" class="" onclick="switchMode('project-explore')">Projects</button>
+          <button id="display-switch-users" class="" onclick="switchMode('user-explore')">Users</button>
+          <button id="display-switch-projects" class="" onclick="switchMode('project-explore')">Projects</button>
         </div>
     </div>
 
@@ -45,7 +45,7 @@
       // general functions
 
       function setTheme(theme) {
-        document.getElementById("html").classList = theme;
+        document.getElementById("html").className = theme;
       }
 
       function switchMode(mode) {
@@ -56,25 +56,25 @@
         document.getElementById("project-explore").style = "display: none;";
         document.getElementById("project").style = "display: none;";
 
-        document.getElementById("display-switch-shop").class=""
-        document.getElementById("display-switch-users").class=""
-        document.getElementById("display-switch-projects").class=""
+        document.getElementById("display-switch-shop").className=""
+        document.getElementById("display-switch-users").className=""
+        document.getElementById("display-switch-projects").className=""
 
         if (mode == "shop") {
           document.getElementById("shop").style = "display: block;";
-          document.getElementById("display-switch-shop").class="display-switch-selected"
+          document.getElementById("display-switch-shop").className="display-switch-selected"
         } else if (mode == "shop-item") {
-          document.getElementById("shop").style = "display: block;";
+          document.getElementById("shop-item").style = "display: block;";
         } else if (mode == "user-explore") {
-          document.getElementById("shop").style = "display: block;";
-          document.getElementById("display-switch-users").class="display-switch-selected"
+          document.getElementById("user-explore").style = "display: block;";
+          document.getElementById("display-switch-users").className="display-switch-selected"
         } else if (mode == "user") {
-          document.getElementById("shop").style = "display: block;";
+          document.getElementById("user").style = "display: block;";
         } else if (mode == "project-explore") {
-          document.getElementById("shop").style = "display: block;";
-          document.getElementById("display-switch-projects").class="display-switch-selected"
+          document.getElementById("project-explore").style = "display: block;";
+          document.getElementById("display-switch-projects").className="display-switch-selected"
         } else if (mode == "project") {
-          document.getElementById("shop").style = "display: block;";
+          document.getElementById("project").style = "display: block;";
         }
       }
 
@@ -97,6 +97,29 @@
 
         switchMode("user")
       }
+
+      // listen for messages from the extension
+      window.addEventListener("message", (event) => {
+        const message = event.data;
+        switch (message.command) {
+          case "set-theme": {
+            setTheme(message.value);
+            break;
+          }
+          case "projects": {
+            shopItems = message.value;
+            break;
+          }
+          case "users": {
+            users = message.value;
+            break;
+          }
+          case "storeItems": {
+            projects = message.value;
+            break;
+          }
+        }
+      });
 
       // functions for the project page
 

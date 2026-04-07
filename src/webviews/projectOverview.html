@@ -134,6 +134,9 @@
           <button title="Refresh" class="options-button" onclick="reload()">
             <i class="codicon codicon-refresh" ></i>
           </button>
+          <button title="Explore Users, Projects and the Shop" class="options-button" onclick="explore()">
+            <i class="codicon codicon-telescope"></i>
+          </button>
           <button title="Edit project" class="options-button" onclick="switchMode('edit')">
             <i class="codicon codicon-edit" ></i>
           </button>
@@ -685,6 +688,10 @@
       
       function reload() {
         vscode.postMessage({command: "reload", scope:"local"})
+      }
+
+      function explore() {
+        vscode.postMessage({command: "explore", scope:"local"})
       }
 
       // functions for the project overview section

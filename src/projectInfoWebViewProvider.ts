@@ -379,6 +379,10 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               );
               break;
             }
+            case "explore": {
+              vscode.commands.executeCommand("flavorcode.explore");
+              break;
+            }
           }
         }
       } catch (error) {
