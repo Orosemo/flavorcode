@@ -106,6 +106,9 @@ export function activate(context: vscode.ExtensionContext) {
     // send current theme
     currentExploreViewPanel.webview.postMessage({command:"set-theme", value:getCurrentTheme()});
 
+    // send current user
+    currentExploreViewPanel.webview.postMessage({command:"user-data", value:getUserSelf("")});
+
     sendAllProjects("");
     sendAllUsers("");
     sendStoreItems();

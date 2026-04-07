@@ -8,31 +8,77 @@
     <link rel="stylesheet" href="${codiconUri}" />
   </head>
   <body>
-
-    <div>
+    <div id="header" class="explore-header">
       <h1>Explore</h1>
-        <div class="display-switch-container">
-          <button id="display-switch-shop" class="display-switch-selected" onclick="switchMode('shop')">Shop</button>
-          <button id="display-switch-users" class="" onclick="switchMode('user-explore')">Users</button>
-          <button id="display-switch-projects" class="" onclick="switchMode('project-explore')">Projects</button>
-        </div>
+      <div class="display-switch-container">
+        <button
+          id="display-switch-shop"
+          class="display-switch-selected"
+          onclick="switchMode('shop')"
+        >
+          Shop
+        </button>
+        <button
+          id="display-switch-users"
+          class=""
+          onclick="switchMode('user-explore')"
+        >
+          Users
+        </button>
+        <button
+          id="display-switch-projects"
+          class=""
+          onclick="switchMode('project-explore')"
+        >
+          Projects
+        </button>
+      </div>
     </div>
 
-    <div id="shop">
-      <p>hello (shop)</p>
-    </div> 
-    <div id="shop-item" style="display: none;"></div>
-    <div id="user-explore" style="display: none;">
+    <div id="shop" class="explore-shop">
+      <div>
+        <input type="text" placeholder="search shop item" />
+
+        <select name="region" id="region-select">
+          <option value="eu">Eu</option>
+          <option value="au">Au</option>
+          <option value="ca">Ca</option>
+          <option value="in">In</option>
+          <option value="uk">Uk</option>
+          <option value="us">Us</option>
+          <option value="xx">World</option>
+        </select>
+
+        <select name="price" id="region-price">
+          <option value="max">my balance</option>
+          <option value="100">0 - 100 🍪</option>
+          <option value="100">100 - 500 🍪</option>
+          <option value="100">500 - 1000 🍪</option>
+          <option value="100">>1000 🍪</option>
+        </select>
+
+        <div>
+          <input type="checkbox">   
+          <p>Show out of Stock items</p>
+        </div>
+        
+
+      </div>
+    </div>
+    <div id="shop-item" style="display: none"></div>
+    <div id="user-explore" style="display: none">
       <p>hello (users)</p>
     </div>
-    <div id="user" style="display: none;"></div>
-    <div id="project-explore" style="display: none;">
+    <div id="user" style="display: none"></div>
+    <div id="project-explore" style="display: none">
       <p>hello (proejcts)</p>
     </div>
-    <div id="project" style="display: none;"></div>
+    <div id="project" style="display: none"></div>
 
     <script>
       // vars
+      var userData = {};
+
       // shop
       var shopItems = {};
 
@@ -55,24 +101,31 @@
         document.getElementById("user").style = "display: none;";
         document.getElementById("project-explore").style = "display: none;";
         document.getElementById("project").style = "display: none;";
+        document.getElementById("header").style = "display: none;";
 
-        document.getElementById("display-switch-shop").className=""
-        document.getElementById("display-switch-users").className=""
-        document.getElementById("display-switch-projects").className=""
+        document.getElementById("display-switch-shop").className = "";
+        document.getElementById("display-switch-users").className = "";
+        document.getElementById("display-switch-projects").className = "";
 
         if (mode == "shop") {
           document.getElementById("shop").style = "display: block;";
-          document.getElementById("display-switch-shop").className="display-switch-selected"
+          document.getElementById("display-switch-shop").className =
+            "display-switch-selected";
+          document.getElementById("header").style = "display: block;";
         } else if (mode == "shop-item") {
           document.getElementById("shop-item").style = "display: block;";
         } else if (mode == "user-explore") {
           document.getElementById("user-explore").style = "display: block;";
-          document.getElementById("display-switch-users").className="display-switch-selected"
+          document.getElementById("display-switch-users").className =
+            "display-switch-selected";
+          document.getElementById("header").style = "display: block;";
         } else if (mode == "user") {
           document.getElementById("user").style = "display: block;";
         } else if (mode == "project-explore") {
           document.getElementById("project-explore").style = "display: block;";
-          document.getElementById("display-switch-projects").className="display-switch-selected"
+          document.getElementById("display-switch-projects").className =
+            "display-switch-selected";
+          document.getElementById("header").style = "display: block;";
         } else if (mode == "project") {
           document.getElementById("project").style = "display: block;";
         }
@@ -80,13 +133,10 @@
 
       // functions for the shop page
 
-      function populateShop() {
-
-      }
+      function populateShop() {}
 
       function openShopItem(id) {
-
-        switchMode("shop-item")
+        switchMode("shop-item");
       }
 
       // functions for the user page
@@ -94,8 +144,7 @@
       function populateUsers() {}
 
       function openUser(id) {
-
-        switchMode("user")
+        switchMode("user");
       }
 
       // listen for messages from the extension
@@ -123,13 +172,10 @@
 
       // functions for the project page
 
-      function populateProjects() {
-
-      }
+      function populateProjects() {}
 
       function openProject(id) {
-
-        switchMode("project")
+        switchMode("project");
       }
 
       // listens for messages from the extentsion
@@ -146,12 +192,15 @@
             populateShop();
           }
           case "projects": {
-            projects = message
-            populateProjects()
+            projects = message;
+            populateProjects();
           }
           case "users": {
-            projects = message
-            populateUsers()
+            projects = message;
+            populateUsers();
+          }
+          case "user-data": {
+            userData = message;
           }
         }
       });

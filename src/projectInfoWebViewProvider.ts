@@ -332,10 +332,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
                 value: String(project.id),
                 label: project.title,
               }));
-
-              console.log(userProjects)
-              console.log(projectOptions);
-
+              
               if (projectOptions.length === 0) {
                 vscode.window.showErrorMessage(
                   "No projects found for this account. Please verify your API key.",
