@@ -37,11 +37,6 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    currentExploreViewPanel.webview.html = exploretHtml(
-      currentExploreViewPanel.webview, 
-      context.extensionUri
-    );
-
     const rawProjects = await getAllProjects("");
     const projects = rawProjects?.projects?.reduce((acc: { [key: string]: any }, project: any) => {
       acc[project.id] = project;
@@ -56,11 +51,6 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    currentExploreViewPanel.webview.html = exploretHtml(
-      currentExploreViewPanel.webview, 
-      context.extensionUri
-    );
-
     const rawUsers = await getAllUsers("");
     const users = rawUsers?.users?.reduce((acc: { [key: string]: any }, project: any) => {
       acc[project.id] = project;
@@ -74,11 +64,6 @@ export function activate(context: vscode.ExtensionContext) {
     if (!currentExploreViewPanel) {
       return;
     }
-
-    currentExploreViewPanel.webview.html = exploretHtml(
-      currentExploreViewPanel.webview, 
-      context.extensionUri
-    );
 
     const rawstoreItems = await getAllStoreItems("");
     const storeItemList = Array.isArray((rawstoreItems as any)?.storeItems)
@@ -107,11 +92,18 @@ export function activate(context: vscode.ExtensionContext) {
     currentExploreViewPanel.webview.postMessage({command:"set-theme", value:getCurrentTheme()});
 
     // send current user
-    currentExploreViewPanel.webview.postMessage({command:"user-data", value:getUserSelf("")});
+    try {
+      const currentUser = await getUserSelf("");
+      currentExploreViewPanel.webview.postMessage({command:"user-data", value: currentUser});
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      vscode.window.showErrorMessage(errorMessage);
+      currentExploreViewPanel.webview.postMessage({command:"user-data", value: {}});
+    }
 
-    sendAllProjects("");
-    sendAllUsers("");
-    sendStoreItems();
+    await sendAllProjects("");
+    await sendAllUsers("");
+    await sendStoreItems();
 
   }
 

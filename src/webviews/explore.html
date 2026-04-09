@@ -37,34 +37,76 @@
 
     <div id="shop" class="explore-shop">
       <div>
-        <input type="text" placeholder="search shop item" />
-
-        <select name="region" id="region-select">
-          <option value="eu">Eu</option>
-          <option value="au">Au</option>
-          <option value="ca">Ca</option>
-          <option value="in">In</option>
-          <option value="uk">Uk</option>
-          <option value="us">Us</option>
-          <option value="xx">World</option>
-        </select>
-
-        <select name="price" id="region-price">
-          <option value="max">my balance</option>
-          <option value="100">0 - 100 🍪</option>
-          <option value="100">100 - 500 🍪</option>
-          <option value="100">500 - 1000 🍪</option>
-          <option value="100">>1000 🍪</option>
-        </select>
-
         <div>
-          <input type="checkbox">   
-          <p>Show out of Stock items</p>
+          <input
+            type="text"
+            placeholder="search shop item"
+            class="explore-shop-input"
+            oninput="updateQuery(this)"
+          />
         </div>
-        
 
+        <div class="explore-shop-filters">
+          <div class="explore-shop-filter-boxes accent-red-bg">
+            <p>select region</p>
+            <select
+              name="region"
+              id="region-select"
+              onchange="updateRegion(this)"
+            >
+              <option value="xx">World</option>
+              <option value="eu">Eu</option>
+              <option value="au">Au</option>
+              <option value="ca">Ca</option>
+              <option value="in">In</option>
+              <option value="uk">Uk</option>
+              <option value="us">Us</option>
+            </select>
+          </div>
+
+          <div class="explore-shop-filter-boxes accent-pink-bg">
+            <p>select price range</p>
+            <select
+              name="price"
+              id="region-price"
+              onchange="updatePriceRange(this)"
+            >
+              <option value="all">all</option>
+              <option value="100">0 - 100 🍪</option>
+              <option value="500">100 - 500 🍪</option>
+              <option value="1000">500 - 1000 🍪</option>
+              <option value="max">>1000 🍪</option>
+            </select>
+          </div>
+
+          <div class="explore-shop-filter-boxes accent-green-bg">
+            <p>sort by</p>
+            <select name="sort" id="sort-by" onchange="updateSortBy(this)">
+              <option value="low-high">price (low-high)</option>
+              <option value="high-low">price (high-low)</option>
+              <option value="alphabetical">alphabetical</option>
+            </select>
+          </div>
+
+          <div class="explore-shop-filter-boxes accent-blue-bg">
+            <p>display</p>
+            <select
+              name="display"
+              id="display-items"
+              onchange="updateDisplay(this)"
+            >
+              <option value="all">all</option>
+              <option value="affordable">all affordable</option>
+              <option value="in-stock">all in stock</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="shop-items" class="shop-item-box">
       </div>
     </div>
+
     <div id="shop-item" style="display: none"></div>
     <div id="user-explore" style="display: none">
       <p>hello (users)</p>
@@ -80,7 +122,14 @@
       var userData = {};
 
       // shop
-      var shopItems = {};
+      const shopContainer = document.getElementById("shop-items");
+      var shopItems = [];
+      var goals = {};
+      var shopQuery = "";
+      var region = "xx";
+      var priceRange = "all";
+      var sortBy = "low-high";
+      var display = "all";
 
       // user
       var users = {};
@@ -133,10 +182,156 @@
 
       // functions for the shop page
 
-      function populateShop() {}
+      function populateShop() {
+        console.log(userData.cookies)
+        const normalizedQuery = shopQuery.trim().toLowerCase();
+        const shopItemsArray = Object.values(shopItems);
+
+        const filteredItems = shopItemsArray
+          // filters all color options
+          .filter((item) => {
+            const price =
+              item.ticket_cost?.[region] ?? item.ticket_cost?.base_cost ?? 0;
+            if (price === 0) {
+              return false;
+            } else {
+              return true;
+            }
+          })
+
+          .filter((item) => {
+            if (item.attached_shop_item_ids.length === 1 && item.attached_shop_item_ids[0] === null) {
+              return true
+            } else {
+              return false
+            }
+          })
+
+          // filters for query
+          .filter((item) => {
+            if (!normalizedQuery) {
+              return true;
+            }
+
+            return (
+              item.name.toLowerCase().includes(normalizedQuery) ||
+              (item.description ?? "").toLowerCase().includes(normalizedQuery)
+            );
+          })
+
+          // filters enabled
+          .filter((item) => item.enabled?.[`enabled_${region}`])
+
+          // filters after cost
+          .filter((item) => {
+            const price =
+              item.ticket_cost?.[region] ?? item.ticket_cost?.base_cost ?? 0;
+
+            if (priceRange === "100") {
+              return price <= 100;
+            } else if (priceRange === "500") {
+              return price > 100 && price <= 500;
+            } else if (priceRange === "1000") {
+              return price > 500 && price <= 1000;
+            } else if (priceRange === "max") {
+              return price > 1000;
+            }
+
+            return true;
+          })
+
+          // filters display
+          .filter((item) => {
+            if (display === "all") {
+              return true;
+            }
+
+            if (
+              display === "affordable" &&
+              item.ticket_cost?.[region] <= (userData.cookies ?? 0)
+            ) {
+              return true;
+            }
+
+            if (display === "in-stock" && (item.stock ?? 0) >= 1) {
+              return true;
+            }
+
+            return false;
+          });
+
+        // sort
+        filteredItems.sort((leftItem, rightItem) => {
+          const leftPrice =
+            leftItem.ticket_cost?.[region] ??
+            leftItem.ticket_cost?.base_cost ??
+            0;
+          const rightPrice =
+            rightItem.ticket_cost?.[region] ??
+            rightItem.ticket_cost?.base_cost ??
+            0;
+
+          if (sortBy === "high-low") {
+            return rightPrice - leftPrice;
+          }
+
+          if (sortBy === "alphabetical") {
+            return leftItem.name.localeCompare(rightItem.name);
+          }
+
+          return leftPrice - rightPrice;
+        });
+
+        // render
+        shopContainer.innerHTML = filteredItems
+          .map((item) => {
+            const price =
+              item.ticket_cost?.[region] ?? item.ticket_cost?.base_cost;
+
+            return `
+          <div class="shop-item">
+          <img
+            class="shop-item-img"
+            src="${item.image_url}"
+            alt="shop item image"
+          />
+          <div class="shop-item-desc">
+            <h2>${item.name}</h2>
+            <p>${price} 🍪 (~${price / 10}hr)</p>
+          </div>
+          <button onclick="openShopItem('${item.id}')">Buy</button>
+        </div>`;
+          })
+          .join("");
+      }
 
       function openShopItem(id) {
         switchMode("shop-item");
+      }
+
+      function updateRegion(event) {
+        region = event.value;
+        populateShop();
+      }
+
+      function updatePriceRange(event) {
+        priceRange = event.value;
+        populateShop();
+      }
+
+      function updateSortBy(event) {
+        sortBy = event.value;
+        populateShop();
+      }
+
+      function updateDisplay(event) {
+        display = event.value;
+        populateShop();
+      }
+
+      function updateQuery(event) {
+        shopQuery = event.value;
+        populateShop();
       }
 
       // functions for the user page
@@ -147,29 +342,6 @@
         switchMode("user");
       }
 
-      // listen for messages from the extension
-      window.addEventListener("message", (event) => {
-        const message = event.data;
-        switch (message.command) {
-          case "set-theme": {
-            setTheme(message.value);
-            break;
-          }
-          case "projects": {
-            shopItems = message.value;
-            break;
-          }
-          case "users": {
-            users = message.value;
-            break;
-          }
-          case "storeItems": {
-            projects = message.value;
-            break;
-          }
-        }
-      });
-
       // functions for the project page
 
       function populateProjects() {}
@@ -178,29 +350,31 @@
         switchMode("project");
       }
 
-      // listens for messages from the extentsion
+      // listen for messages from the extension
       window.addEventListener("message", (event) => {
         const message = event.data;
-
         switch (message.command) {
           case "set-theme": {
             setTheme(message.value);
             break;
           }
           case "storeItems": {
-            shopItems = message;
+            shopItems = message.value;
             populateShop();
-          }
-          case "projects": {
-            projects = message;
-            populateProjects();
+            break;
           }
           case "users": {
-            projects = message;
-            populateUsers();
+            users = message.value;
+            break;
+          }
+          case "projects": {
+            projects = message.value;
+            break;
           }
           case "user-data": {
-            userData = message;
+            userData = message.value;
+            console.log(message.value)
+            break;
           }
         }
       });

@@ -17,6 +17,10 @@
   --devlog-media-boder: var(--vscode-panel-border, var(--vscode-input-border));
   --warning: var(--vscode-errorForeground);
   --warning-hover: var(--vscode-errorForeground);
+  --accent-red: var(--vscode-charts-orange);
+  --accent-pink: var(--vscode-charts-pink);
+  --accent-blue: var(--vscode-charts-blue);
+  --accent-green: var(--vscode-charts-green);
 }
 
 .dark {
@@ -37,6 +41,10 @@
   --devlog-media-boder: #472826;
   --warning: #ff0000;
   --warning-hover: #a30000;
+  --accent-red: #fab387;
+  --accent-pink: #f5c2e7;
+  --accent-blue: #89b4fa;
+  --accent-green: #a6e3a1;
 }
 
 .light {
@@ -57,6 +65,10 @@
   --devlog-media-boder: #c99473;
   --warning: #d30000;
   --warning-hover: #ff0000;
+  --accent-red: #c77c54;
+  --accent-pink: #c88ab7;
+  --accent-blue: #6a93d9;
+  --accent-green: #8dbb77;
 }
 
 .midnight {
@@ -77,6 +89,10 @@
   --devlog-media-boder: #575a6e;
   --warning: #ff0000;
   --warning-hover: #a30000;
+  --accent-red: #ffb86c;
+  --accent-pink: #ff92d0;
+  --accent-blue: #8be9fd;
+  --accent-green: #69f0ae;
 }
 
 .orosemo {
@@ -97,6 +113,10 @@
   --devlog-media-boder: #226d58;
   --warning: #ff0000;
   --warning-hover: #a30000;
+  --accent-red: #f2a86b;
+  --accent-pink: #e8a6d9;
+  --accent-blue: #7fb8d8;
+  --accent-green: #8cd9b0;
 }
 
 /* native classes */
@@ -262,6 +282,42 @@ details[open] summary i {
 }
 
 /* custom classes */
+
+.accent-red {
+  color: var(--accent-red);
+}
+
+.accent-pink {
+  color: var(--accent-pink);
+}
+
+.accent-blue {
+  color: var(--accent-blue);
+}
+
+.accent-green {
+  color: var(--accent-green);
+}
+
+.accent-red-bg {
+  background-color: var(--accent-red);
+  color: var(--background);
+}
+
+.accent-pink-bg {
+  background-color: var(--accent-pink);
+  color: var(--background);
+}
+
+.accent-blue-bg {
+  background-color: var(--accent-blue);
+  color: var(--background);
+}
+
+.accent-green-bg {
+  background-color: var(--accent-green);
+  color: var(--background);
+}
 
 button.button-disabled,
 .button-disabled {
@@ -644,11 +700,8 @@ button.button-disabled,
 
 .explore-header {
   display: block;
-  width: 100%;
-  margin: 0 auto;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
+  width: auto;
+  margin: 0 20px 10px;
   text-align: left;
   box-sizing: border-box;
   padding: 10px;
@@ -656,12 +709,112 @@ button.button-disabled,
 
 .explore-shop {
   display: block;
-  width: 100%;
-  margin: 0 auto;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
+  width: auto;
+  margin: 0 20px 10px;
   text-align: center;
   box-sizing: border-box;
   padding: 10px;
+}
+
+.explore-shop-filters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  margin: 0 0 10px;
+  text-align: center;
+  padding: 10px 0;
+  align-self: center;
+}
+
+.explore-shop-filter-boxes {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 10px;
+  min-height: 100px;
+}
+
+.explore-shop-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 10px;
+  box-sizing: border-box;
+}
+
+.shop-item-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  justify-content: center;
+  align-items: stretch;
+  gap: 20px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--border-highlight);
+  box-sizing: border-box;
+  padding: 20px;
+  background-color: var(--textbox-background);
+}
+
+.shop-item {
+  min-height: 220px;
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin: 0 auto;
+  border-radius: 10px;
+  border-width: 3px;
+  border-style: solid;
+  border-color: var(--border);
+  box-sizing: border-box;
+  background-color: var(--background);
+
+}
+
+.shop-item-desc {
+  background-color: var(--border-highlight);
+  border-radius: 10px;
+  border-style: hidden;
+  margin: 8px 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.shop-item-img {
+  display: block;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  margin: 0 auto 8px;
+}
+
+
+@media (min-width: 1200px) {
+  .shop-item-box {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+
+  .shop-item {
+    max-width: 420px;
+    min-height: 300px;
+    padding: 16px;
+  }
+
+  .shop-item-img {
+    width: 96px;
+    height: 96px;
+  }
 }
