@@ -20,6 +20,10 @@ export function exploretHtml(
     ),
   );
 
+  const chartJsUri = webview.asWebviewUri(
+  vscode.Uri.joinPath(extensionUri, 'node_modules', 'chart.js', 'dist', 'chart.umd.js')
+);
+
   const htmlPath = vscode.Uri.joinPath(
     extensionUri,
     "src",
@@ -28,6 +32,8 @@ export function exploretHtml(
   );
 
   const rawHtml = fs.readFileSync(htmlPath.fsPath, "utf8");
-  const iconHtml = rawHtml.replace("${codiconUri}", String(codiconUri));
+  const iconHtml = rawHtml
+    .replace("${codiconUri}", String(codiconUri))
+    .replace("${chartUri}", String(chartJsUri));
   return iconHtml.replace("${styleUri}", String(styleUri));
 }

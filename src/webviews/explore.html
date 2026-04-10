@@ -35,19 +35,19 @@
       </div>
     </div>
 
-    <div id="shop" class="explore-shop">
+    <div id="shop" class="explore-box">
       <div>
         <div>
           <input
             type="text"
             placeholder="search shop item"
-            class="explore-shop-input"
+            class="explore-input"
             oninput="updateQuery(this)"
           />
         </div>
 
-        <div class="explore-shop-filters">
-          <div class="explore-shop-filter-boxes accent-red-bg">
+        <div class="explore-filters">
+          <div class="explore-filter-boxes accent-red-bg">
             <p>select region</p>
             <select
               name="region"
@@ -64,7 +64,7 @@
             </select>
           </div>
 
-          <div class="explore-shop-filter-boxes accent-pink-bg">
+          <div class="explore-filter-boxes accent-pink-bg">
             <p>select price range</p>
             <select
               name="price"
@@ -79,7 +79,7 @@
             </select>
           </div>
 
-          <div class="explore-shop-filter-boxes accent-green-bg">
+          <div class="explore-filter-boxes accent-green-bg">
             <p>sort by</p>
             <select name="sort" id="sort-by" onchange="updateSortBy(this)">
               <option value="low-high">price (low-high)</option>
@@ -88,7 +88,7 @@
             </select>
           </div>
 
-          <div class="explore-shop-filter-boxes accent-blue-bg">
+          <div class="explore-filter-boxes accent-blue-bg">
             <p>display</p>
             <select
               name="display"
@@ -103,11 +103,56 @@
         </div>
       </div>
 
-      <div id="shop-items" class="shop-item-box">
-      </div>
+      <div id="shop-items" class="shop-item-box"></div>
     </div>
 
-    <div id="shop-item" style="display: none"></div>
+    <div id="shop-item" style="display: none">
+      <div class="explore-box">
+        <div class="back">
+          <button class="options-button" onclick="switchMode('shop')">
+            <i class="codicon codicon-arrow-left"></i>
+          </button>
+        </div>
+        <div class="opened-shop-item-box">
+          <div class="">
+            <h1 id="shop-item-name" class="opened-shop-item-name">sdaf</h1>
+            <img
+              id="shop-item-img"
+              class="opened-shop-item-image"
+              src=""
+              alt=""
+            />
+            <p id="stock" class="opened-shop-item-stock"></p>
+            <p id="shop-item-desc" class="opened-shop-item-desc"></p>
+            <div
+              id="shop-item-desc-long"
+              class="opened-shop-item-desc-left"
+            ></div>
+          </div>
+          <div id="price-history">
+            <h3>price history</h3>
+            <canvas id="price-graph" class="opened-shop-item-graph"></canvas>
+          </div>
+          <div>
+            <div id="shop-extensions" class="shop-extension">
+              <div class="shop-extension-item">
+                <img class="shop-extension-item-img" src="" alt="" />
+                <p>black</p>
+                <p>10🍪</p>
+                <i class="codicon codicon-circle-large"></i>
+              </div>
+            </div>
+            <p id="shop-price" class="opened-shop-item-price"></p>
+          </div>
+          <a
+            class="link-button center text-center project-link-button opened-shop-item-buy"
+            id="open-real-shop"
+            href=""
+            >Buy</a
+          >
+        </div>
+      </div>
+    </div>
     <div id="user-explore" style="display: none">
       <p>hello (users)</p>
     </div>
@@ -117,6 +162,7 @@
     </div>
     <div id="project" style="display: none"></div>
 
+    <script src="${chartUri}"></script>
     <script>
       // vars
       var userData = {};
@@ -125,11 +171,13 @@
       const shopContainer = document.getElementById("shop-items");
       var shopItems = [];
       var goals = {};
+      var currentPrice = 0;
       var shopQuery = "";
       var region = "xx";
       var priceRange = "all";
       var sortBy = "low-high";
       var display = "all";
+      var chart = null;
 
       // user
       var users = {};
@@ -160,6 +208,7 @@
           document.getElementById("shop").style = "display: block;";
           document.getElementById("display-switch-shop").className =
             "display-switch-selected";
+          populateShop();
           document.getElementById("header").style = "display: block;";
         } else if (mode == "shop-item") {
           document.getElementById("shop-item").style = "display: block;";
@@ -168,6 +217,7 @@
           document.getElementById("display-switch-users").className =
             "display-switch-selected";
           document.getElementById("header").style = "display: block;";
+          populateUsers();
         } else if (mode == "user") {
           document.getElementById("user").style = "display: block;";
         } else if (mode == "project-explore") {
@@ -175,15 +225,120 @@
           document.getElementById("display-switch-projects").className =
             "display-switch-selected";
           document.getElementById("header").style = "display: block;";
+          populateProjects();
         } else if (mode == "project") {
           document.getElementById("project").style = "display: block;";
         }
       }
 
+      function escapeHtml(value) {
+        if (!value) return "";
+
+        return value
+          .replace(/&(?!(?:[a-zA-Z]+|#\d+|#x[a-fA-F0-9]+);)/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      // credit to sabioOfficial
+      function parser(text) {
+        if (!text) return "";
+
+        let html = escapeHtml(text);
+
+        const codeBlocks = [];
+        html = html.replace(
+          /\`\`\`(\w*)\n([\s\S]*?)\`\`\`/g,
+          function (_, language, code) {
+            const id = "TOKENCODEBLOCK" + codeBlocks.length + "TOKEN";
+            codeBlocks.push(
+              '<pre><code class="' +
+                language +
+                '"><span>' +
+                code.trim() +
+                "</span></code></pre>",
+            );
+            return "\n\n" + id + "\n\n";
+          },
+        );
+
+        html = html
+          .replace(/^### (.*$)/gim, "<h6>$1</h6>")
+          .replace(/^## (.*$)/gim, "<h5>$1</h5>")
+          .replace(/^# (.*$)/gim, "<h4>$1</h4>")
+          .replace(/^---$/gim, "<hr/>")
+          .replace(/^\s*[-*]\s+(.*)(\n)?/gim, "<ubli>$1</ubli>")
+          .replace(/^\s*\d+\.\s+(.*)(\n)?/gim, "<obli>$1</obli>")
+          .replace(/^&gt;[ ]?(.*)$/gim, "<bq>$1</bq>");
+
+        html = html
+          .replace(/(<ubli>.*<\/ubli>\s*)+/g, function (m) {
+            return (
+              "<ul>" + m.replace(/ubli/g, "li").replace(/\n/g, "") + "</ul>"
+            );
+          })
+          .replace(/(<obli>.*<\/obli>\s*)+/g, function (m) {
+            return (
+              "<ol>" + m.replace(/obli/g, "li").replace(/\n/g, "") + "</ol>"
+            );
+          })
+          .replace(/(<bq>.*<\/bq>\s*)+/g, function (m) {
+            const content = m.replace(/<\/?bq>/g, "").trim();
+            return (
+              "<blockquote><p>" +
+              content.split("\n").join("</p><p>") +
+              "</p></blockquote>"
+            );
+          });
+
+        html = html
+          .split(/\n\n+/)
+          .map(function (block) {
+            const trimmed = block.trim();
+            if (
+              /^<(h[1-6]|ul|ol|blockquote|pre|hr)/i.test(trimmed) ||
+              trimmed.startsWith("TOKENCODEBLOCK")
+            ) {
+              return trimmed;
+            }
+            let processedBlock = trimmed.replace(/\n/g, "<br/>");
+            processedBlock = processedBlock.replace(
+              /(<\/h[1-6]>)\s*<br\/>/gi,
+              "$1",
+            );
+            return "<p>" + processedBlock + "</p>";
+          })
+          .join("\n");
+
+        html = html
+          .replace(
+            /!\[(.*?)\]\((.*?)\)/g,
+            '<div class="devlog-image-wrapper"><img src="$2" alt="$1" loading="lazy" /></div>',
+          )
+          .replace(
+            /\[(.*?)\]\((.*?)\)/g,
+            '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+          )
+          .replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>")
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*(.*?)\*/g, "<em>$1</em>")
+          .replace(/__(.*?)__/g, "<strong>$1</strong>")
+          .replace(/_(.*?)_/g, "<em>$1</em>")
+          .replace(/~~(.*?)~~/g, "<del>$1</del>")
+          .replace(/`([^`]+)`/g, "<code>$1</code>");
+
+        codeBlocks.forEach(function (block, i) {
+          html = html.replace("TOKENCODEBLOCK" + i + "TOKEN", block);
+        });
+
+        return html;
+      }
+
       // functions for the shop page
 
       function populateShop() {
-        console.log(userData.cookies)
         const normalizedQuery = shopQuery.trim().toLowerCase();
         const shopItemsArray = Object.values(shopItems);
 
@@ -200,10 +355,13 @@
           })
 
           .filter((item) => {
-            if (item.attached_shop_item_ids.length === 1 && item.attached_shop_item_ids[0] === null) {
-              return true
+            if (
+              item.attached_shop_item_ids.length === 1 &&
+              item.attached_shop_item_ids[0] === null
+            ) {
+              return true;
             } else {
-              return false
+              return false;
             }
           })
 
@@ -305,7 +463,130 @@
           .join("");
       }
 
+      function normalizePriceHistory(oldPrices) {
+        if (!Array.isArray(oldPrices)) {
+          return [];
+        }
+
+        return oldPrices
+          .map((entry) => {
+            if (typeof entry === "number") {
+              return entry;
+            }
+
+            if (typeof entry === "string") {
+              const parsed = Number(entry);
+              return Number.isFinite(parsed) ? parsed : null;
+            }
+
+            if (entry && typeof entry === "object") {
+              const candidate = entry.base_cost;
+              const parsed = Number(candidate);
+              return Number.isFinite(parsed) ? parsed : null;
+            }
+
+            return null;
+          })
+          .filter((price) => Number.isFinite(price));
+      }
+
       function openShopItem(id) {
+        // vars
+        const shopItem = shopItems[id];
+        const shopItemsArray = Object.values(shopItems);
+
+        if (chart !== null) {
+          chart.destroy();
+          chart = null;
+        }
+
+        const extensions = shopItemsArray.filter((item) => {
+          if (item.attached_shop_item_ids.includes(shopItem.id)) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+
+        currentPrice = Number(
+          shopItem.ticket_cost?.[region] ?? shopItem.ticket_cost?.base_cost,
+        );
+
+        if (!Number.isFinite(currentPrice)) {
+          currentPrice = 0;
+        }
+
+        const history = [
+          ...normalizePriceHistory(shopItem.old_prices),
+          ...(Number.isFinite(currentPrice) ? [currentPrice] : []),
+        ];
+
+        // make previosly hidden elements visble
+        document.getElementById("stock").style = "display: block";
+        document.getElementById("price-history").style = "display: block";
+
+        // fill all fields
+        document.getElementById("shop-item-name").textContent = shopItem.name;
+        document.getElementById("shop-item-img").src = shopItem.image_url;
+        document.getElementById("shop-item-desc").textContent =
+          shopItem.description;
+        document.getElementById("shop-price").textContent =
+          `Price for selected region: ${currentPrice}🍪`;
+        document.getElementById("open-real-shop").href =
+          `https://flavortown.hackclub.com/shop/order?shop_item_id=${shopItem.id}`;
+
+        document.getElementById("shop-item-desc-long").innerHTML = "";
+        parser(shopItem.long_description || "")
+          .split("\n")
+          .forEach((line) => {
+            document.getElementById("shop-item-desc-long").innerHTML +=
+              `${line}<br>`;
+          });
+
+        if (!shopItem.limited) {
+          document.getElementById("stock").style = "display: none";
+        } else {
+          document.getElementById("stock").textContent =
+            `${shopItem.stock} left`;
+        }
+
+        if (typeof Chart === "undefined") {
+          document
+            .getElementById("shop-price")
+            .insertAdjacentHTML(
+              "beforeend",
+              "<p>Chart library was not loaded.</p>",
+            );
+        } else if (history.length >= 2) {
+          const labels = history.map((_, index) => `P${index + 1}`);
+          chart = new Chart(document.getElementById("price-graph"), {
+            type: "line",
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: "Prices",
+                  data: history,
+                },
+              ],
+            },
+          });
+        } else {
+          document.getElementById("price-history").style = "display: none";
+        }
+
+        document.getElementById("shop-extensions").innerHTML = extensions
+          .map((extension) => {
+            return `
+              <div onclick="updateExtension('extension-circle${extension.id}', 'extension-container${extension.id}', '${extension.ticket_cost.base_cost}')" id="extension-container${extension.id}" class="shop-extension-item">
+                <img class="shop-extension-item-img" src="${extension.image_url}" alt="">
+                <p >${extension.name}</p>
+                <p>${extension.ticket_cost.base_cost}🍪</p>
+                <i id="extension-circle${extension.id}" class="codicon codicon-circle-large"></i>
+              </div>`;
+          })
+          .join("");
+
         switchMode("shop-item");
       }
 
@@ -332,6 +613,34 @@
       function updateQuery(event) {
         shopQuery = event.value;
         populateShop();
+      }
+
+      function updateExtension(circleId, containerId, price) {
+        const container = document.getElementById(containerId);
+        const circle = document.getElementById(circleId);
+        const extensionPrice = Number(price);
+
+        if (!container || !circle || !Number.isFinite(extensionPrice)) {
+          return;
+        }
+
+        const isActive = container.classList.contains(
+          "shop-extension-item-active",
+        );
+
+        if (isActive) {
+          currentPrice -= extensionPrice;
+        } else {
+          currentPrice += extensionPrice;
+        }
+
+
+        container.classList.toggle("shop-extension-item-active", !isActive);
+        circle.classList.toggle("codicon-circle-large-filled", !isActive);
+        circle.classList.toggle("codicon-circle-large", isActive);
+        
+        document.getElementById("shop-price").textContent =
+          `Price for selected region: ${currentPrice}🍪`;
       }
 
       // functions for the user page
@@ -373,7 +682,7 @@
           }
           case "user-data": {
             userData = message.value;
-            console.log(message.value)
+            console.log(message.value);
             break;
           }
         }

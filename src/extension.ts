@@ -251,6 +251,12 @@ export function activate(context: vscode.ExtensionContext) {
               vscode.Uri.joinPath(
                 context.extensionUri,
                 "node_modules",
+                "chart.js",
+                "dist",
+              ),
+              vscode.Uri.joinPath(
+                context.extensionUri,
+                "node_modules",
                 "@vscode",
                 "codicons",
                 "dist",
