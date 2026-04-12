@@ -98,6 +98,7 @@
               <option value="all">all</option>
               <option value="affordable">all affordable</option>
               <option value="in-stock">all in stock</option>
+              <option value="sale">all on sale</option>
             </select>
           </div>
         </div>
@@ -163,9 +164,11 @@
     <div id="project" style="display: none"></div>
 
     <script src="${chartUri}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
     <script>
       // vars
       var userData = {};
+      var fuseReady = false;
 
       // shop
       const shopContainer = document.getElementById("shop-items");
@@ -339,8 +342,19 @@
       // functions for the shop page
 
       function populateShop() {
+        
         const normalizedQuery = shopQuery.trim().toLowerCase();
         const shopItemsArray = Object.values(shopItems);
+        const shopItemsNameArray = shopItemsArray.map((item) => {
+          return item.name;
+        });
+
+        const fuse = new Fuse(shopItemsNameArray, { includeScore: true });
+
+        // Get matching names once
+        const matchingNames = new Set(
+          fuse.search(normalizedQuery).map(r => shopItemsNameArray[r.refIndex])
+        );
 
         const filteredItems = shopItemsArray
           // filters all color options
@@ -371,10 +385,7 @@
               return true;
             }
 
-            return (
-              item.name.toLowerCase().includes(normalizedQuery) ||
-              (item.description ?? "").toLowerCase().includes(normalizedQuery)
-            );
+            return matchingNames.has(item.name);
           })
 
           // filters enabled
@@ -415,6 +426,19 @@
               return true;
             }
 
+            if (display === "sale") {
+              if (
+                Number.isFinite(Number(item.sale_percentage)) &&
+                item.sale_percentage > 0
+              ) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return true;
+            }
+
             return false;
           });
 
@@ -446,8 +470,41 @@
             const price =
               item.ticket_cost?.[region] ?? item.ticket_cost?.base_cost;
 
+            var sale = "";
+            if (
+              Number.isFinite(item.sale_percentage) &&
+              item.sale_percentage > 0
+            ) {
+              sale = `<p class="warning-bg shop-badge">${item.sale_percentage}% sale</p>`;
+            }
+
+            var stock = "";
+            const stockValue = Number(item.stock);
+            if (
+              Number.isFinite(stockValue) &&
+              stockValue <= 30 &&
+              item.limited
+            ) {
+              if (stockValue >= 16) {
+                stock = `<p class="accent-green-bg shop-badge">${stockValue} left</p>`;
+              } else if (stockValue >= 9) {
+                stock = `<p class="accent-red-bg shop-badge">${stockValue} left</p>`;
+              } else {
+                stock = `<p class="accent-pink-bg shop-badge">${stockValue} left</p>`;
+              }
+            }
+
             return `
           <div class="shop-item">
+          <div class="shop-badge-top-right">
+            <button class="favourite">
+              <i class="codicon codicon-star-empty"></i>
+            </button>
+          </div>
+          <div class="shop-badge-top-left">
+            ${sale}
+            ${stock}
+          </div>
           <img
             class="shop-item-img"
             src="${item.image_url}"
@@ -521,6 +578,16 @@
           ...(Number.isFinite(currentPrice) ? [currentPrice] : []),
         ];
 
+        var buyButtonText = "";
+        const cookies = Number(userData.cookies);
+        const remaining = cookies - currentPrice;
+
+        if (remaining >= 0) {
+          buyButtonText = `Buy (${remaining}🍪 remaining)`;
+        } else {
+          buyButtonText = `Buy (${Math.abs(remaining)}🍪 more cookies needed)`;
+        }
+
         // make previosly hidden elements visble
         document.getElementById("stock").style = "display: block";
         document.getElementById("price-history").style = "display: block";
@@ -534,6 +601,7 @@
           `Price for selected region: ${currentPrice}🍪`;
         document.getElementById("open-real-shop").href =
           `https://flavortown.hackclub.com/shop/order?shop_item_id=${shopItem.id}`;
+        document.getElementById("open-real-shop").textContent = buyButtonText;
 
         document.getElementById("shop-item-desc-long").innerHTML = "";
         parser(shopItem.long_description || "")
@@ -634,13 +702,24 @@
           currentPrice += extensionPrice;
         }
 
+        var buyButtonText = "";
+        const cookies = Number(userData.cookies);
+        const remaining = cookies - currentPrice;
+
+        if (remaining >= 0) {
+          buyButtonText = `Buy (${remaining}🍪 remaining)`;
+        } else {
+          buyButtonText = `Buy (${Math.abs(remaining)}🍪 more cookies needed)`;
+        }
 
         container.classList.toggle("shop-extension-item-active", !isActive);
         circle.classList.toggle("codicon-circle-large-filled", !isActive);
         circle.classList.toggle("codicon-circle-large", isActive);
-        
+
         document.getElementById("shop-price").textContent =
           `Price for selected region: ${currentPrice}🍪`;
+
+        document.getElementById("open-real-shop").textContent = buyButtonText;
       }
 
       // functions for the user page

@@ -21,6 +21,9 @@
   --accent-pink: var(--vscode-charts-pink);
   --accent-blue: var(--vscode-charts-blue);
   --accent-green: var(--vscode-charts-green);
+  --accent-gold: var(--vscode-charts-yellow, #d9b64f);
+  --accent-gold-active: var(--vscode-charts-orange, #dbcdaf);
+  
 }
 
 .dark {
@@ -45,6 +48,8 @@
   --accent-pink: #f5c2e7;
   --accent-blue: #89b4fa;
   --accent-green: #a6e3a1;
+  --accent-gold: var(--border);
+  --accent-gold-active: var(--border-highlight);
 }
 
 .light {
@@ -69,6 +74,8 @@
   --accent-pink: #c88ab7;
   --accent-blue: #6a93d9;
   --accent-green: #8dbb77;
+  --accent-gold: var(--border);
+  --accent-gold-active: var(--border-highlight);
 }
 
 .midnight {
@@ -93,6 +100,8 @@
   --accent-pink: #ff92d0;
   --accent-blue: #8be9fd;
   --accent-green: #69f0ae;
+  --accent-gold: var(--border);
+  --accent-gold-active: var(--border-highlight);
 }
 
 .orosemo {
@@ -117,6 +126,8 @@
   --accent-pink: #e8a6d9;
   --accent-blue: #7fb8d8;
   --accent-green: #8cd9b0;
+  --accent-gold: var(--border);
+  --accent-gold-active: var(--border-highlight);
 }
 
 /* native classes */
@@ -317,6 +328,32 @@ details[open] summary i {
 .accent-green-bg {
   background-color: var(--accent-green);
   color: var(--background);
+}
+
+.favourite {
+  color: var(--accent-gold);
+  background-color: var(--accent-gold-active);
+  border-style: none;
+  border-radius: 360px
+}
+
+.favourite:hover {
+  color: var(--accent-gold-active);
+  background-color: var(--accent-gold);
+}
+
+.favourite-active.favourite{
+  color: var(--accent-gold-active);
+  background-color: var(--accent-gold);
+}
+
+.favourite-active.favourite:hover {
+  color: var(--accent-gold);
+  background-color: var(--accent-gold-active);
+}
+
+.warning-bg {
+  background-color: var(--warning);
 }
 
 button.button-disabled,
@@ -762,6 +799,8 @@ button.button-disabled,
 }
 
 .shop-item {
+  position: relative;
+  z-index: 1;
   min-height: 220px;
   width: 100%;
   max-width: 300px;
@@ -777,7 +816,6 @@ button.button-disabled,
   border-color: var(--border);
   box-sizing: border-box;
   background-color: var(--background);
-
 }
 
 .shop-item-desc {
@@ -798,6 +836,26 @@ button.button-disabled,
   height: 72px;
   object-fit: contain;
   margin: 0 auto 8px;
+}
+
+.shop-badge-top-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.shop-badge-top-left {
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  z-index: 10;
+}
+
+.shop-badge {
+  border-radius: 40px;
+  border-style: none;
+  padding: 5px;
 }
 
 .opened-shop-item-box {
@@ -927,7 +985,6 @@ button.button-disabled,
 
 @media (min-width: 900px) {
   .opened-shop-item-box {
-    grid-template-columns: 1fr 1fr;
     align-items: stretch;
   }
 
@@ -950,7 +1007,6 @@ button.button-disabled,
 
 @media (min-width: 1200px) {
   .shop-item-box {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 24px;
   }
 

@@ -32,32 +32,43 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   // explore
-  async function sendAllProjects(query:string) {
+  async function sendAllProjects(query: string) {
     if (!currentExploreViewPanel) {
       return;
     }
 
     const rawProjects = await getAllProjects("");
-    const projects = rawProjects?.projects?.reduce((acc: { [key: string]: any }, project: any) => {
-      acc[project.id] = project;
-      return acc;
-    }, {}) ?? {};
+    const projects =
+      rawProjects?.projects?.reduce(
+        (acc: { [key: string]: any }, project: any) => {
+          acc[project.id] = project;
+          return acc;
+        },
+        {},
+      ) ?? {};
 
-    currentExploreViewPanel.webview.postMessage({command:"projects", value:projects});
+    currentExploreViewPanel.webview.postMessage({
+      command: "projects",
+      value: projects,
+    });
   }
 
-  async function sendAllUsers(query:string) {
+  async function sendAllUsers(query: string) {
     if (!currentExploreViewPanel) {
       return;
     }
 
     const rawUsers = await getAllUsers("");
-    const users = rawUsers?.users?.reduce((acc: { [key: string]: any }, project: any) => {
-      acc[project.id] = project;
-      return acc;
-    }, {}) ?? {}; 
+    const users =
+      rawUsers?.users?.reduce((acc: { [key: string]: any }, project: any) => {
+        acc[project.id] = project;
+        return acc;
+      }, {}) ?? {};
 
-    currentExploreViewPanel.webview.postMessage({command:"users", value:users});
+    currentExploreViewPanel.webview.postMessage({
+      command: "users",
+      value: users,
+    });
   }
 
   async function sendStoreItems() {
@@ -71,11 +82,15 @@ export function activate(context: vscode.ExtensionContext) {
       : Array.isArray(rawstoreItems)
         ? rawstoreItems
         : [];
-    const storeItems = storeItemList.reduce((acc: { [key: string]: any }, project: any) => {
-      acc[project.id] = project;
-      return acc;
-    }, {}) ?? {}; 
-    currentExploreViewPanel.webview.postMessage({command:"storeItems", value:storeItems});
+    const storeItems =
+      storeItemList.reduce((acc: { [key: string]: any }, project: any) => {
+        acc[project.id] = project;
+        return acc;
+      }, {}) ?? {};
+    currentExploreViewPanel.webview.postMessage({
+      command: "storeItems",
+      value: storeItems,
+    });
   }
 
   async function refreshExplore() {
@@ -84,27 +99,36 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     currentExploreViewPanel.webview.html = exploretHtml(
-      currentExploreViewPanel.webview, 
-      context.extensionUri
+      currentExploreViewPanel.webview,
+      context.extensionUri,
     );
 
     // send current theme
-    currentExploreViewPanel.webview.postMessage({command:"set-theme", value:getCurrentTheme()});
+    currentExploreViewPanel.webview.postMessage({
+      command: "set-theme",
+      value: getCurrentTheme(),
+    });
 
     // send current user
     try {
       const currentUser = await getUserSelf("");
-      currentExploreViewPanel.webview.postMessage({command:"user-data", value: currentUser});
+      currentExploreViewPanel.webview.postMessage({
+        command: "user-data",
+        value: currentUser,
+      });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       vscode.window.showErrorMessage(errorMessage);
-      currentExploreViewPanel.webview.postMessage({command:"user-data", value: {}});
+      currentExploreViewPanel.webview.postMessage({
+        command: "user-data",
+        value: {},
+      });
     }
 
     await sendAllProjects("");
     await sendAllUsers("");
     await sendStoreItems();
-
   }
 
   // devlog
@@ -175,7 +199,6 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
-
   const disposable = vscode.commands.registerCommand(
     "flavorcode.helloWorld",
     async () => {
@@ -229,59 +252,56 @@ export function activate(context: vscode.ExtensionContext) {
 
   // opens webview to explore users, projects and the ft shop
 
-  const explore = vscode.commands.registerCommand(
-    "flavorcode.explore",
-    () => {
-      const columToShowIn = vscode.window.activeTextEditor
-        ? vscode.window.activeTextEditor.viewColumn
-        : undefined;
+  const explore = vscode.commands.registerCommand("flavorcode.explore", () => {
+    const columToShowIn = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.viewColumn
+      : undefined;
 
-      if (currentExploreViewPanel) {
-        currentExploreViewPanel.reveal(columToShowIn);
-      } else {
-        currentExploreViewPanel = vscode.window.createWebviewPanel(
-          "explore",
-          "Explore",
-          columToShowIn || vscode.ViewColumn.One,
-          {
-            // permissions
-            enableScripts: true,
-            localResourceRoots: [
-              vscode.Uri.joinPath(context.extensionUri, "media"),
-              vscode.Uri.joinPath(
-                context.extensionUri,
-                "node_modules",
-                "chart.js",
-                "dist",
-              ),
-              vscode.Uri.joinPath(
-                context.extensionUri,
-                "node_modules",
-                "@vscode",
-                "codicons",
-                "dist",
-              ),
-            ],
-          },
-        );
-        currentExploreViewPanel.webview.html = exploretHtml(
-          currentExploreViewPanel.webview,
-          context.extensionUri,
-        );
+    if (currentExploreViewPanel) {
+      currentExploreViewPanel.reveal(columToShowIn);
+    } else {
+      currentExploreViewPanel = vscode.window.createWebviewPanel(
+        "explore",
+        "Explore",
+        columToShowIn || vscode.ViewColumn.One,
+        {
+          // permissions
+          enableScripts: true,
+          localResourceRoots: [
+            vscode.Uri.joinPath(context.extensionUri, "media"),
+            vscode.Uri.joinPath(
+              context.extensionUri,
+              "node_modules",
+              "chart.js",
+              "dist",
+            ),
+            vscode.Uri.joinPath(
+              context.extensionUri,
+              "node_modules",
+              "@vscode",
+              "codicons",
+              "dist",
+            ),
+          ],
+        },
+      );
+      currentExploreViewPanel.webview.html = exploretHtml(
+        currentExploreViewPanel.webview,
+        context.extensionUri,
+      );
 
-        refreshExplore();
+      refreshExplore();
 
-        currentExploreViewPanel.onDidChangeViewState((event) => {
-          if (event.webviewPanel.visible) {
-            refreshExplore();  
-          }
-        });
-        currentExploreViewPanel.onDidDispose(() => {
-          currentExploreViewPanel = undefined;
-        });
-      }
-    },
-  );
+      currentExploreViewPanel.onDidChangeViewState((event) => {
+        if (event.webviewPanel.visible) {
+          refreshExplore();
+        }
+      });
+      currentExploreViewPanel.onDidDispose(() => {
+        currentExploreViewPanel = undefined;
+      });
+    }
+  });
 
   // opens webview with devlog details
   const openDevlog = vscode.commands.registerCommand(
@@ -369,67 +389,80 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  const chooseTheme = vscode.commands.registerCommand(
+    "flavorcode.theme",
+    () => {
+      let config = vscode.workspace.getConfiguration("flavorcode");
 
-  const chooseTheme = vscode.commands.registerCommand("flavorcode.theme", () => {
-    let config = vscode.workspace.getConfiguration("flavorcode");
-    
-    const columToShowIn = vscode.window.activeTextEditor
+      const columToShowIn = vscode.window.activeTextEditor
         ? vscode.window.activeTextEditor.viewColumn
         : undefined;
 
-    if (currentThemeViewPanel) {
-      currentThemeViewPanel.reveal(columToShowIn);
-    } else {
-      currentThemeViewPanel = vscode.window.createWebviewPanel(
-        "ChooseTheme",
-        "choose Theme",
-        columToShowIn || vscode.ViewColumn.One,
-        {
-          // permissions
-          enableScripts: true,
-          localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, "media"),
-            vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts"),
-            vscode.Uri.joinPath(
-              context.extensionUri,
-              "node_modules",
-              "@vscode",
-              "codicons",
-              "dist",
-            ),
-          ],
-        },
-      );
-      currentThemeViewPanel.webview.html = chooseThemeHtml(
-        currentThemeViewPanel.webview,
-        context.extensionUri,
-      );
+      if (currentThemeViewPanel) {
+        currentThemeViewPanel.reveal(columToShowIn);
+      } else {
+        currentThemeViewPanel = vscode.window.createWebviewPanel(
+          "ChooseTheme",
+          "choose Theme",
+          columToShowIn || vscode.ViewColumn.One,
+          {
+            // permissions
+            enableScripts: true,
+            localResourceRoots: [
+              vscode.Uri.joinPath(context.extensionUri, "media"),
+              vscode.Uri.joinPath(context.extensionUri, "devlogProvider.ts"),
+              vscode.Uri.joinPath(
+                context.extensionUri,
+                "node_modules",
+                "@vscode",
+                "codicons",
+                "dist",
+              ),
+            ],
+          },
+        );
+        currentThemeViewPanel.webview.html = chooseThemeHtml(
+          currentThemeViewPanel.webview,
+          context.extensionUri,
+        );
 
-      currentThemeViewPanel.onDidChangeViewState((event) => {
-        if (event.webviewPanel.visible) {
-          refreshThemeWebview();
-        }
-      });
-
-      currentThemeViewPanel.webview.onDidReceiveMessage((message) => {
-        switch (message.command) {
-          case "set-theme": {
-            config = vscode.workspace.getConfiguration("flavorcode");
-            config.update("theme", message.value, vscode.ConfigurationTarget.Global);
-            devlogProvider.postmessage({command: "set-theme", value:message.value, scope:"global"});
-            projectProvider.postmessage({command: "set-theme", value:message.value, scope:"global"});
+        currentThemeViewPanel.onDidChangeViewState((event) => {
+          if (event.webviewPanel.visible) {
+            refreshThemeWebview();
           }
-        }
-      });
+        });
 
-      currentThemeViewPanel.onDidDispose(() => {
-        currentThemeViewPanel = undefined;
-      });
-    }
+        currentThemeViewPanel.webview.onDidReceiveMessage((message) => {
+          switch (message.command) {
+            case "set-theme": {
+              config = vscode.workspace.getConfiguration("flavorcode");
+              config.update(
+                "theme",
+                message.value,
+                vscode.ConfigurationTarget.Global,
+              );
+              devlogProvider.postmessage({
+                command: "set-theme",
+                value: message.value,
+                scope: "global",
+              });
+              projectProvider.postmessage({
+                command: "set-theme",
+                value: message.value,
+                scope: "global",
+              });
+            }
+          }
+        });
 
-    refreshThemeWebview();
-  });
+        currentThemeViewPanel.onDidDispose(() => {
+          currentThemeViewPanel = undefined;
+        });
+      }
 
+      refreshThemeWebview();
+    },
+  );
 
   context.subscriptions.push(
     disposable,
