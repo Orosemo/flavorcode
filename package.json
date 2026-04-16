@@ -122,6 +122,18 @@
           "default": " ",
           "description": "Set the theme of Flavorcode!",
           "scope": "application"
+        },
+        "flavorcode.useLocalGoals": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Dont sync your goals to logpheus",
+          "scope": "application"
+        },
+        "flavorcode.localGoals": {
+          "type": "array",
+          "default": "",
+          "description": "local goals",
+          "scope": "application"
         }
       }
     }

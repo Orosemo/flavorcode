@@ -751,6 +751,7 @@ button.button-disabled,
   text-align: center;
   box-sizing: border-box;
   padding: 10px;
+  position: relative;
 }
 
 .explore-filters {
@@ -779,14 +780,28 @@ button.button-disabled,
   display: block;
   width: 100%;
   max-width: 100%;
-  margin: 0 0 10px;
+  margin: 20px 0 10px;
   box-sizing: border-box;
 }
 
+.cookie-display {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 999;
+  background-color: var(--border-highlight);
+  border-radius: 20px;
+  border-width: 5px;
+  border-style: none;
+  padding: 5px;
+  padding-bottom: 3px;
+  padding-top: 3px;
+}
 .shop-item-box {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   justify-content: center;
+  justify-items: center;
   align-items: stretch;
   gap: 20px;
   border-radius: 10px;
@@ -796,6 +811,14 @@ button.button-disabled,
   box-sizing: border-box;
   padding: 20px;
   background-color: var(--textbox-background);
+}
+
+.shop-items-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 300px));
+}
+
+.goals-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 460px));
 }
 
 .shop-item {
@@ -982,6 +1005,138 @@ button.button-disabled,
   font-size: 18px;
   opacity: 0.9;
 }
+
+.goal-item {
+  z-index: 1;
+  width: min(100%, 460px);
+  min-height: 116px;
+  display: grid;
+  grid-template-columns: auto minmax(130px, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin: 0 auto;
+  border-radius: 12px;
+  border-width: 3px;
+  border-style: solid;
+  border-color: var(--border);
+  box-sizing: border-box;
+  background-color: color-mix(in srgb, var(--background) 85%, var(--border-highlight) 15%);
+}
+
+.goal-item-img {
+  display: block;
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin: 0;
+}
+
+.goal-item-desc {
+  background-color: color-mix(in srgb, var(--border-highlight) 70%, var(--textbox-background) 30%);
+  border-radius: 10px;
+  border-style: hidden;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  text-align: left;
+  overflow: hidden;
+  object-fit: contain;
+}
+
+.goal-item-desc p {
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.goal-item-desc p:first-child {
+  font-weight: 700;
+}
+
+.goal-item-desc p:last-child {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.goal-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0;
+}
+
+.goal-amount p {
+  margin: 0;
+  min-width: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.goal-amount-button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--button-background-focus);
+  border-style: none;
+  border-radius: 360px;
+}
+
+.goal-delete-button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--warning);
+  color: var(--warning-hover);
+  border-style: none;
+  border-radius: 360px;
+}
+
+.goal-delete-button:hover {
+  background-color: var(--warning-hover);
+  color: var(--warning);
+}
+
+@media (max-width: 600px) {
+  .goal-item {
+    width: 100%;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "image desc delete"
+      "amount amount amount";
+  }
+
+  .goal-item-img {
+    grid-area: image;
+  }
+
+  .goal-item-desc {
+    grid-area: desc;
+  }
+
+  .goal-amount {
+    grid-area: amount;
+    flex-direction: row;
+  }
+
+  .goal-delete-button {
+    grid-area: delete;
+    align-self: start;
+  }
+}
+
 
 @media (min-width: 900px) {
   .opened-shop-item-box {

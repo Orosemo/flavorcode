@@ -8,6 +8,8 @@ import {
   getAllProjects,
   getAllUsers,
   getAllStoreItems,
+  getGoals,
+  putGoals,
 } from "./apiCalls";
 import { openDevlogHtml } from "./webviews/openDevlog";
 import * as emoji from "node-emoji";
@@ -23,8 +25,10 @@ export function activate(context: vscode.ExtensionContext) {
   let currentThemeViewPanel: vscode.WebviewPanel | undefined = undefined;
   let currentExploreViewPanel: vscode.WebviewPanel | undefined = undefined;
 
-  // functions to refresh the devlog and themes page when the user clicks back into them
+  // handler functions for the webview commands 
   let lastOpenedDevlog: any;
+
+  let settigs = vscode.workspace.getConfiguration("flavorcode");
 
   function getCurrentTheme() {
     const config = vscode.workspace.getConfiguration("flavorcode");
@@ -93,10 +97,60 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
+  async function getGoalsHandler() {
+    if (!currentExploreViewPanel) {
+      return;
+    }
+
+    const useLocalGoals = settigs.get("flavorcode.useLocalGoals", vscode.ConfigurationTarget.Global);
+    
+    if (!useLocalGoals) {
+      const goals = settigs.get("flavorcode.localGoals", vscode.ConfigurationTarget.Global);
+      currentExploreViewPanel.webview.postMessage({
+        command: "goals",
+        value: goals,
+      });      
+    } else {
+      const goals = await getGoals("");
+      currentExploreViewPanel.webview.postMessage({
+        command: "goals",
+        value: goals.goals,
+      });      
+    }
+  }
+
+  async function putGoalsHandler(giveGoals: []) {
+    if (!currentExploreViewPanel) {
+      return;
+    }
+    
+    const useLocalGoals = settigs.get("flavorcode.useLocalGoals", vscode.ConfigurationTarget.Global);
+
+    if (!useLocalGoals) {
+      let goals = settigs.get<[]>("flavorcode.localGoals");
+      if (goals) {
+        goals.push(...giveGoals);
+        settigs.update("flavorcode.localGoals", goals, vscode.ConfigurationTarget.Global);
+      }
+
+    } else {
+      const goals = await putGoals("", giveGoals);
+
+      currentExploreViewPanel.webview.postMessage({
+        command: "goals",
+        value: goals.goals,
+      });      
+    }
+
+
+  }
+
   async function refreshExplore() {
     if (!currentExploreViewPanel) {
       return;
     }
+
+    console.log("refresh")
 
     currentExploreViewPanel.webview.html = exploretHtml(
       currentExploreViewPanel.webview,
@@ -108,6 +162,7 @@ export function activate(context: vscode.ExtensionContext) {
       command: "set-theme",
       value: getCurrentTheme(),
     });
+
 
     // send current user
     try {
@@ -129,6 +184,7 @@ export function activate(context: vscode.ExtensionContext) {
     await sendAllProjects("");
     await sendAllUsers("");
     await sendStoreItems();
+    await getGoalsHandler();
   }
 
   // devlog
@@ -297,6 +353,19 @@ export function activate(context: vscode.ExtensionContext) {
           refreshExplore();
         }
       });
+
+      currentDevlogViewPanel?.webview.onDidReceiveMessage((message) => {
+        switch (message.command) {
+          case "get-goals":{ 
+            getGoalsHandler()
+            break;
+          } case "put-goal": {
+            putGoalsHandler(message.value);
+            break;
+          }
+        } 
+      })
+
       currentExploreViewPanel.onDidDispose(() => {
         currentExploreViewPanel = undefined;
       });

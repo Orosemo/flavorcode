@@ -36,6 +36,10 @@
     </div>
 
     <div id="shop" class="explore-box">
+      <div class="cookie-display">
+        <p>Current Balance: 100🍪</p>
+      </div>
+      <div id="goals" class="shop-item-box goals-grid"></div>
       <div>
         <div>
           <input
@@ -104,7 +108,7 @@
         </div>
       </div>
 
-      <div id="shop-items" class="shop-item-box"></div>
+      <div id="shop-items" class="shop-item-box shop-items-grid"></div>
     </div>
 
     <div id="shop-item" style="display: none">
@@ -168,12 +172,13 @@
     <script>
       // vars
       var userData = {};
-      var fuseReady = false;
+      const vscode = acquireVsCodeApi();
 
       // shop
       const shopContainer = document.getElementById("shop-items");
-      var shopItems = [];
-      var goals = {};
+      const goalContainer = document.getElementById("goals");
+
+      var shopItems = {};
       var currentPrice = 0;
       var shopQuery = "";
       var region = "xx";
@@ -181,6 +186,8 @@
       var sortBy = "low-high";
       var display = "all";
       var chart = null;
+      var goals = [];
+      var goalAmounts = {};
 
       // user
       var users = {};
@@ -211,8 +218,8 @@
           document.getElementById("shop").style = "display: block;";
           document.getElementById("display-switch-shop").className =
             "display-switch-selected";
-          populateShop();
           document.getElementById("header").style = "display: block;";
+          handleShopLoad();
         } else if (mode == "shop-item") {
           document.getElementById("shop-item").style = "display: block;";
         } else if (mode == "user-explore") {
@@ -341,8 +348,14 @@
 
       // functions for the shop page
 
+      function handleShopLoad() {
+        if (shopItems && goals && userData) {
+          populateShop();
+          populateGoals();
+        }
+      }
+
       function populateShop() {
-        
         const normalizedQuery = shopQuery.trim().toLowerCase();
         const shopItemsArray = Object.values(shopItems);
         const shopItemsNameArray = shopItemsArray.map((item) => {
@@ -353,7 +366,9 @@
 
         // Get matching names once
         const matchingNames = new Set(
-          fuse.search(normalizedQuery).map(r => shopItemsNameArray[r.refIndex])
+          fuse
+            .search(normalizedQuery)
+            .map((r) => shopItemsNameArray[r.refIndex]),
         );
 
         const filteredItems = shopItemsArray
@@ -494,12 +509,15 @@
               }
             }
 
+            var goal = `<button id='favourite-${item.id}' class="favourite" onclick="handleAddGoal('${item.id}')"><i id='favourite-icon-${item.id}' class="codicon codicon-star-empty"></i></button>`;
+            if (goals.includes(Number(item.id))) {
+              goal = `<button id='favourite-${item.id}' class="favourite-active favourite" onclick="handleAddGoal('${item.id}')"><i id='favourite-icon-${item.id}' class="codicon codicon-star-full"></i></button>`;
+            }
+
             return `
           <div class="shop-item">
           <div class="shop-badge-top-right">
-            <button class="favourite">
-              <i class="codicon codicon-star-empty"></i>
-            </button>
+            ${goal}
           </div>
           <div class="shop-badge-top-left">
             ${sale}
@@ -646,7 +664,7 @@
         document.getElementById("shop-extensions").innerHTML = extensions
           .map((extension) => {
             return `
-              <div onclick="updateExtension('extension-circle${extension.id}', 'extension-container${extension.id}', '${extension.ticket_cost.base_cost}')" id="extension-container${extension.id}" class="shop-extension-item">
+              <div onclick="updateExtension('${extension.id}', '${extension.id}', '${extension.ticket_cost.base_cost}')" id="extension-container${extension.id}" class="shop-extension-item">
                 <img class="shop-extension-item-img" src="${extension.image_url}" alt="">
                 <p >${extension.name}</p>
                 <p>${extension.ticket_cost.base_cost}🍪</p>
@@ -684,8 +702,10 @@
       }
 
       function updateExtension(circleId, containerId, price) {
-        const container = document.getElementById(containerId);
-        const circle = document.getElementById(circleId);
+        const container = document.getElementById(
+          `extension-container${containerId}`,
+        );
+        const circle = document.getElementById(`extension-circle${circleId}`);
         const extensionPrice = Number(price);
 
         if (!container || !circle || !Number.isFinite(extensionPrice)) {
@@ -722,6 +742,144 @@
         document.getElementById("open-real-shop").textContent = buyButtonText;
       }
 
+      function updateGoal(goal) {}
+
+      function populateGoals() {
+        const uniqueGoals = [
+          ...new Set(goals.map((goal) => Number(goal))),
+        ].filter((goal) => Number.isFinite(goal));
+
+        goalContainer.innerHTML = uniqueGoals
+          .map((goal) => {
+            if (shopItems[goal]) {
+              const amount = goals.filter((item) => Number(item) === goal).length;
+              goalAmounts[goal] = amount;
+              const item = shopItems[goal];
+              const price =
+                item.ticket_cost?.[region] ?? item.ticket_cost?.base_cost ?? 0;
+
+              var down = "";
+              if (amount === 1) {
+                down = `<button id="down-${goal}" onclick="decreaseGoalAmount('${goal}')" style="display: none" class="goal-amount-button"><i class="codicon codicon-triangle-down"></i></button>`;
+              } else {
+                down = `<button id="down-${goal}" onclick="decreaseGoalAmount('${goal}')" style="display: block" class="goal-amount-button"><i class="codicon codicon-triangle-down"></i></button>`;
+              }
+
+              return `
+            <div class="goal-item"">
+            <img class="goal-item-img" src="${item.image_url}" alt="" onclick="openShopItem(${goal})">
+            <div class="goal-item-desc"  onclick="openShopItem(${goal})">
+              <p>${item.name}</p>
+              <p>${price}🍪</p>
+            </div>
+            <div class="goal-amount">
+              <button id="up-${goal}" onclick="increaseGoalAmount('${goal}')" class="goal-amount-button"><i class="codicon codicon-triangle-up"></i></button>
+              <p>${amount}</p>
+              ${down}
+            </div>
+            <button class="goal-delete-button" onclick='deleteGoal(${goal})'><i class="codicon codicon-trash"></i></button>
+          </div>`;
+            }
+          })
+          .join("");
+      }
+
+      function handleAddGoal(id) {
+        const goalId = Number(id);
+
+        if (!Number.isFinite(goalId)) {
+          return;
+        }
+
+        if (goals.includes(goalId)) {
+          goals = goals.filter((goal) => Number(goal) !== goalId);
+          document.getElementById(`favourite-${id}`).className = "favourite";
+          document.getElementById(`favourite-icon-${id}`).className =
+            "codicon codicon-star-empty";
+        } else {
+          goals.push(goalId);
+          document.getElementById(`favourite-${id}`).className =
+            "favourite-active favourite";
+          document.getElementById(`favourite-icon-${id}`).className =
+            "codicon codicon-star-full";
+        }
+
+        vscode.postMessage({ command: "put-goal", value: goals });
+        populateGoals();
+      }
+
+      function deleteGoal(id) {
+        const goalId = Number(id);
+
+        if (!Number.isFinite(goalId)) {
+          return;
+        }
+
+        goals = goals.filter((goal) => Number(goal) !== goalId);
+        vscode.postMessage({ command: "put-goal", value: goals });
+        populateGoals();
+        populateShop();
+      }
+
+      function removeLastGoalOccurrence(goal) {
+        const goalId = Number(goal);
+
+        if (!Number.isFinite(goalId)) {
+          return false;
+        }
+
+        const indexFromEnd = [...goals]
+          .reverse()
+          .findIndex((g) => Number(g) === goalId);
+
+        if (indexFromEnd === -1) {
+          return false;
+        }
+
+        const index = goals.length - 1 - indexFromEnd;
+        goals.splice(index, 1);
+        return true;
+      }
+
+      function syncGoalsState() {
+        vscode.postMessage({ command: "put-goal", value: goals });
+        populateGoals();
+        populateShop();
+      }
+
+      function increaseGoalAmount(id) {
+        const goalId = Number(id);
+
+        if (!Number.isFinite(goalId)) {
+          return;
+        }
+
+        const amount = goalAmounts[goalId] ?? 0;
+        if (amount >= 100) {
+          return;
+        }
+
+        goals.push(goalId);
+        syncGoalsState();
+      }
+
+      function decreaseGoalAmount(id) {
+        const goalId = Number(id);
+
+        if (!Number.isFinite(goalId)) {
+          return;
+        }
+
+        const amount = goalAmounts[goalId] ?? 0;
+        if (amount <= 1) {
+          return;
+        }
+
+        if (removeLastGoalOccurrence(goalId)) {
+          syncGoalsState();
+        }
+      }
+
       // functions for the user page
 
       function populateUsers() {}
@@ -748,7 +906,7 @@
           }
           case "storeItems": {
             shopItems = message.value;
-            populateShop();
+            handleShopLoad();
             break;
           }
           case "users": {
@@ -761,7 +919,11 @@
           }
           case "user-data": {
             userData = message.value;
-            console.log(message.value);
+            break;
+          }
+          case "goals": {
+            goals = message.value;
+            handleShopLoad();
             break;
           }
         }

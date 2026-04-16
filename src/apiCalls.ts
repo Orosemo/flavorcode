@@ -798,3 +798,67 @@ export async function getAllStoreItems(givenApiKey: string) {
 
   return (await res.json()) as storeItemResponse;
 }
+
+
+// logpheus
+
+export async function getGoals(givenApiKey: string) {
+  // get api key
+  const apiKey = resolveApiKey(givenApiKey);
+
+  // get project id
+  const config = vscode.workspace.getConfiguration("flavorcode");
+
+  interface goalsResponse {
+    goals: []
+  }
+
+  const res = await fetch(`https://logpheus.gizzy.gay/api/v1/goals`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to get goals: ${res.status} ${await res.text()}`,
+    );
+  }
+
+  return (await res.json()) as goalsResponse;
+}
+
+export async function putGoals(givenApiKey: string, givenGoals: []) {
+  // get api key
+  const apiKey = resolveApiKey(givenApiKey);
+
+  // get project id
+  const config = vscode.workspace.getConfiguration("flavorcode");
+
+  interface goalsResponse {
+    goals: []
+  }
+
+  const body = new URLSearchParams({
+    goals: givenGoals
+  });
+
+  const res = await fetch(`https://logpheus.gizzy.gay/api/v1/goals`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body,
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to put goals: ${res.status} ${await res.text()}`,
+    );
+  }
+
+  return (await res.json()) as goalsResponse;
+}

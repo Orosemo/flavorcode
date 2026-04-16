@@ -89,7 +89,12 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
       hackatimeApiKey = config.get<string>("hackatimeApiKey");
 
       try {
-        if (!apiKey || !hackatimeApiKey || apiKey === "none" || hackatimeApiKey === "none") {
+        if (
+          !apiKey ||
+          !hackatimeApiKey ||
+          apiKey === "none" ||
+          hackatimeApiKey === "none"
+        ) {
           webviewView.webview.postMessage({
             command: "setup",
             value: [apiKey, hackatimeApiKey],
@@ -150,7 +155,12 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
       hackatimeApiKey = config.get<string>("hackatimeApiKey");
 
       try {
-        if (!apiKey || !hackatimeApiKey || apiKey === "none" || hackatimeApiKey === "none") {
+        if (
+          !apiKey ||
+          !hackatimeApiKey ||
+          apiKey === "none" ||
+          hackatimeApiKey === "none"
+        ) {
           webviewView.webview.postMessage({
             command: "setup",
             value: [apiKey, hackatimeApiKey],
@@ -219,7 +229,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
     webviewView.onDidChangeVisibility(async () => {
       if (webviewView.visible) {
         setTheme();
-        populateWebview();        
+        populateWebview();
       }
     });
 
@@ -332,7 +342,7 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
                 value: String(project.id),
                 label: project.title,
               }));
-              
+
               if (projectOptions.length === 0) {
                 vscode.window.showErrorMessage(
                   "No projects found for this account. Please verify your API key.",
@@ -422,6 +432,14 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
             }
             case "explore": {
               vscode.commands.executeCommand("flavorcode.explore");
+              break;
+            }
+            case "local-goals": {
+              await config.update(
+                "flavorcode.useLocalGoals",
+                message.value,
+                vscode.ConfigurationTarget.Global,
+              );
               break;
             }
           }

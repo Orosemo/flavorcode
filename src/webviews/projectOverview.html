@@ -27,6 +27,9 @@
             type="text"
           />  
 
+          <h3>Sync goals data to logpheus</h3>
+          <input id="sync-goals" type="checkbox">
+
           <h3 id="api-warning" style="display: none; color: red;">Please enter your flavortown and hackatime api key</h3>
         </div>
         <div class="button-row">
@@ -413,6 +416,11 @@
       function chooseExisting() {
         apiKey = document.getElementById("api-key").value;
         hackatimeApiKey = document.getElementById("hackatime-api-key").value; 
+
+        // logpheusSync
+        logpheusSync = document.getElementById("sync-goals").checked;
+        vscode.postMessage({command:"local-goals", value: logpheusSync})
+
         if (apiKey && hackatimeApiKey) {
           setup = true
           vscode.postMessage({ command: "get-projects", value: apiKey, scope: "local" });
@@ -426,6 +434,11 @@
       function createNew() {
         apiKey = document.getElementById("api-key").value;
         hackatimeApiKey = document.getElementById("hackatime-api-key").value;
+
+        // logpheusSync
+        logpheusSync = document.getElementById("sync-goals").checked;
+        vscode.postMessage({command:"local-goals", value: logpheusSync})
+
         if (apiKey && hackatimeApiKey) {
           setup = true
           vscode.postMessage({ command: "set-user", value: apiKey, scope: "local" });
