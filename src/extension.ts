@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
     return config.get<string>("theme");
   }
 
-  // explore
+  // handler functions for the explore webview
   async function sendAllProjects(query: string) {
     if (!currentExploreViewPanel) {
       return;
@@ -97,6 +97,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
+  // get goals from logpheus or local
   async function getGoalsHandler() {
     if (!currentExploreViewPanel) {
       return;
@@ -126,6 +127,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   }
 
+  // send goals to logpheus or save locally
   async function putGoalsHandler(giveGoals: number[]) {
     if (!currentExploreViewPanel) {
       return;
@@ -203,7 +205,7 @@ export function activate(context: vscode.ExtensionContext) {
     await getGoalsHandler();
   }
 
-  // devlog
+  //  handler functions for the devlog webview
   function refreshOpenDevlogWebview() {
     if (!currentDevlogViewPanel) {
       return;
@@ -254,7 +256,7 @@ export function activate(context: vscode.ExtensionContext) {
       : devlog;
   }
 
-  // theme
+  //  handler functions for the them webview
   function refreshThemeWebview() {
     if (!currentThemeViewPanel) {
       return;
@@ -270,6 +272,8 @@ export function activate(context: vscode.ExtensionContext) {
       value: getCurrentTheme(),
     });
   }
+
+  // Commands
 
   const disposable = vscode.commands.registerCommand(
     "flavorcode.helloWorld",
@@ -374,12 +378,10 @@ export function activate(context: vscode.ExtensionContext) {
         switch (message.command) {
           case "get-goals": {
             getGoalsHandler();
-            console.log("get");
             break;
           }
           case "post-goals": {
             putGoalsHandler(message.value);
-            console.log("post");
             break;
           }
         }

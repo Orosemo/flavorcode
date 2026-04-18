@@ -819,6 +819,7 @@ export async function getGoals(givenApiKey: string) {
   });
 
   if (!res.ok) {
+    vscode.window.showErrorMessage(`Failed to get goals: ${res.status} ${await res.text()}`);
     throw new Error(
       `Failed to get goals: ${res.status} ${await res.text()}`,
     );
@@ -850,6 +851,7 @@ export async function postGoals(givenApiKey: string, givenGoals: number[]) {
   });
 
   if (!res.ok) {
+    vscode.window.showErrorMessage(`Failed to post goals: ${res.status} ${await res.text()}`)
     throw new Error(
       `Failed to post goals: ${res.status} ${await res.text()}`,
     );

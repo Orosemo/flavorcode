@@ -45,13 +45,13 @@
       <div id="goals" class="shop-item-box goals-grid"></div>
       <div>
         <div class="explore-input-box">
-            <input
-              id="shop-query"
-              type="text"
-              placeholder="search shop item"
-              class="explore-input"
-              oninput="updateQuery(this)"
-            />
+          <input
+            id="shop-query"
+            type="text"
+            placeholder="search shop item"
+            class="explore-input"
+            oninput="updateQuery(this)"
+          />
           <button
             class="explore-clear-query"
             type="button"
@@ -159,7 +159,11 @@
                 <i class="codicon codicon-circle-large"></i>
               </div>
             </div>
-            <p id="shop-price" class="opened-shop-item-price"></p>
+            <div class="shop-price-summary-box">
+              <p id="shop-price" class="opened-shop-item-price"></p>
+              <div class="shop-price-summary-item-box" id="shop-price-summary"></div>
+              <p class="opened-shop-item-price" id="shop-final-price"></p>              
+            </div>
           </div>
           <a
             class="link-button center text-center project-link-button opened-shop-item-buy"
@@ -619,6 +623,11 @@
         const shopItem = shopItems[id];
         const shopItemsArray = Object.values(shopItems);
 
+        const itemPrice =
+          shopItem.ticket_cost?.[region] ??
+          shopItem.ticket_cost?.base_cost ??
+          0;
+
         if (chart !== null) {
           chart.destroy();
           chart = null;
@@ -633,7 +642,7 @@
         });
 
         currentPrice = Number(
-          shopItem.ticket_cost?.[region] ?? shopItem.ticket_cost?.base_cost,
+          itemPrice,
         );
 
         if (!Number.isFinite(currentPrice)) {
@@ -664,8 +673,10 @@
         document.getElementById("shop-item-img").src = shopItem.image_url;
         document.getElementById("shop-item-desc").textContent =
           shopItem.description;
+        document.getElementById("shop-final-price").textContent =
+          `Final price: ${currentPrice}🍪`;
         document.getElementById("shop-price").textContent =
-          `Price for selected region: ${currentPrice}🍪`;
+          `Base price for selected region: ${itemPrice}🍪`
         document.getElementById("open-real-shop").href =
           `https://flavortown.hackclub.com/shop/order?shop_item_id=${shopItem.id}`;
         document.getElementById("open-real-shop").textContent = buyButtonText;
@@ -678,6 +689,7 @@
               `${line}<br>`;
           });
 
+        // render stock
         if (!shopItem.limited) {
           document.getElementById("stock").style = "display: none";
         } else {
@@ -685,6 +697,7 @@
             `${shopItem.stock} left`;
         }
 
+        // render chart if price history
         if (typeof Chart === "undefined") {
           document
             .getElementById("shop-price")
@@ -710,10 +723,11 @@
           document.getElementById("price-history").style = "display: none";
         }
 
+        // render extensions
         document.getElementById("shop-extensions").innerHTML = extensions
           .map((extension) => {
             return `
-              <div onclick="updateExtension('${extension.id}', '${extension.id}', '${extension.ticket_cost.base_cost}')" id="extension-container${extension.id}" class="shop-extension-item">
+              <div onclick="updateExtension('${extension.id}', '${extension.ticket_cost.base_cost}', '${id}')" id="extension-container${extension.id}" class="shop-extension-item">
                 <img class="shop-extension-item-img" src="${extension.image_url}" alt="">
                 <p >${extension.name}</p>
                 <p>${extension.ticket_cost.base_cost}🍪</p>
@@ -722,6 +736,7 @@
           })
           .join("");
 
+        // switch to page
         switchMode("shop-item");
       }
 
@@ -762,30 +777,45 @@
         input.focus();
       }
 
-      function updateExtension(circleId, containerId, price) {
-        const container = document.getElementById(
-          `extension-container${containerId}`,
-        );
-        const circle = document.getElementById(`extension-circle${circleId}`);
+      function updateExtension(id, price, itemId) {
+        const container = document.getElementById(`extension-container${id}`);
+        const circle = document.getElementById(`extension-circle${id}`);
         const extensionPrice = Number(price);
 
         if (!container || !circle || !Number.isFinite(extensionPrice)) {
           return;
         }
 
+        var buyButtonText = "";
+
         const isActive = container.classList.contains(
           "shop-extension-item-active",
         );
 
-        if (isActive) {
-          currentPrice -= extensionPrice;
-        } else {
-          currentPrice += extensionPrice;
-        }
+        const itemPrice =
+          shopItems[itemId].ticket_cost?.[region] ??
+          shopItems[itemId].ticket_cost?.base_cost ??
+          0;
 
-        var buyButtonText = "";
+        const priceSummaryElement = document.createElement("p");
+        priceSummaryElement.id = `price-summary-${id}`;
+        priceSummaryElement.textContent = `    + ${shopItems[id].name} (${price}🍪)`;
+
         const cookies = Number(userData.cookies);
         const remaining = cookies - currentPrice;
+
+        // update price and summary elemets
+        if (isActive) {
+          currentPrice -= extensionPrice;
+          document
+            .getElementById("shop-price-summary")
+            .removeChild(document.getElementById(`price-summary-${id}`));
+        } else {
+          currentPrice += extensionPrice;
+          document
+            .getElementById("shop-price-summary")
+            .appendChild(priceSummaryElement);
+        }
 
         if (remaining >= 0) {
           buyButtonText = `Buy (${remaining}🍪 remaining)`;
@@ -793,12 +823,16 @@
           buyButtonText = `Buy (${Math.abs(remaining)}🍪 more cookies needed)`;
         }
 
+        // update all fields
         container.classList.toggle("shop-extension-item-active", !isActive);
         circle.classList.toggle("codicon-circle-large-filled", !isActive);
         circle.classList.toggle("codicon-circle-large", isActive);
 
         document.getElementById("shop-price").textContent =
-          `Price for selected region: ${currentPrice}🍪`;
+          `Base price for selected region: ${itemPrice}🍪`;
+
+        document.getElementById("shop-final-price").textContent =
+          `Final price: ${currentPrice}🍪`;
 
         document.getElementById("open-real-shop").textContent = buyButtonText;
       }
@@ -814,7 +848,9 @@
               const amount = goals.filter(
                 (item) => Number(item) === goal,
               ).length;
+
               goalAmounts[goal] = amount;
+
               const item = shopItems[goal];
               const price =
                 item.ticket_cost?.[region] ?? item.ticket_cost?.base_cost ?? 0;
@@ -826,11 +862,11 @@
                 down = `<button id="down-${goal}" onclick="decreaseGoalAmount('${goal}')" style="display: block" class="goal-amount-button"><i class="codicon codicon-triangle-down"></i></button>`;
               }
 
-              var goalPrice = ""
-              if (price <= userData.cookies) {
-                goalPrice = `<p>${price}🍪 ✅</p>`
+              var goalPrice = "";
+              if (price <= (userData?.cookies ?? 0) * amount) {
+                goalPrice = `<p>${price * amount}🍪 ✅</p>`;
               } else {
-                goalPrice = `<p>${userData.cookies}🍪/${price}🍪</p>`
+                goalPrice = `<p>${userData.cookies}🍪/${price * amount}🍪</p>`;
               }
 
               return `
@@ -838,7 +874,7 @@
             <img class="goal-item-img" src="${item.image_url}" alt="" onclick="openShopItem(${goal})">
             <div class="goal-item-desc"  onclick="openShopItem(${goal})">
               <p>${item.name}</p>
-              <p>${price}🍪</p>
+              ${goalPrice}
             </div>
             <div class="goal-amount">
               <button id="up-${goal}" onclick="increaseGoalAmount('${goal}')" class="goal-amount-button"><i class="codicon codicon-triangle-up"></i></button>
@@ -847,7 +883,6 @@
             </div>
             <button class="goal-delete-button" onclick='deleteGoal(${goal})'><i class="codicon codicon-trash"></i></button>
           </div>`;
-
             }
           })
           .join("");
@@ -883,7 +918,7 @@
             "codicon codicon-star-full";
         }
 
-        vscode.postMessage({ command: "post-goals", value:  goals});
+        syncGoalsState();
       }
 
       function deleteGoal(id) {
@@ -894,8 +929,7 @@
         }
 
         goals = goals.filter((goal) => Number(goal) !== goalId);
-        console.log("delete")
-        vscode.postMessage({ command: "post-goals", value: goals });
+        syncGoalsState();
       }
 
       function removeLastGoalOccurrence(goal) {
@@ -920,8 +954,10 @@
 
       function syncGoalsState() {
         vscode.postMessage({ command: "post-goals", value: goals });
+        handleShopLoad();
       }
 
+      // increase goal ammount
       function increaseGoalAmount(id) {
         const goalId = Number(id);
 
@@ -935,9 +971,10 @@
         }
 
         goals.push(goalId);
-        syncGoalsState()
+        syncGoalsState();
       }
 
+      // decrease goal amount
       function decreaseGoalAmount(id) {
         const goalId = Number(id);
 

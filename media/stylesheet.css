@@ -1035,6 +1035,34 @@ button.button-disabled,
   opacity: 0.9;
 }
 
+.shop-price-summary-box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 10px;
+  text-align: center;
+  box-sizing: border-box;
+  border-color: var(--border);
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  background-color: var(--textbox-background);
+  background-origin: padding-box;
+  background-clip: padding-box;
+  align-items: center;
+  justify-content: center;
+}
+
+.shop-price-summary-item-box {
+  background-color: var(--border);
+  text-align: left;
+  border-radius: 7px;
+  border-style: none;
+  width: fit-content;
+}
+
 .goal-item {
   z-index: 1;
   width: min(100%, 460px);
