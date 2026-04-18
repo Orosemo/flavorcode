@@ -113,7 +113,7 @@
         },
         "flavorcode.useDiscord": {
           "type": "boolean",
-          "default": "true",
+          "default": true,
           "description": "Connect to discord rich Presence",
           "scope": "application"
         },
@@ -125,13 +125,13 @@
         },
         "flavorcode.useLocalGoals": {
           "type": "boolean",
-          "default": "false",
+          "default": false,
           "description": "Dont sync your goals to logpheus",
           "scope": "application"
         },
         "flavorcode.localGoals": {
           "type": "array",
-          "default": "",
+          "default": [],
           "description": "local goals",
           "scope": "application"
         }

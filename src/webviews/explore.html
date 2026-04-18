@@ -803,8 +803,6 @@
         document.getElementById("open-real-shop").textContent = buyButtonText;
       }
 
-      function updateGoal(goal) {}
-
       function populateGoals() {
         const uniqueGoals = [
           ...new Set(goals.map((goal) => Number(goal))),
@@ -826,6 +824,13 @@
                 down = `<button id="down-${goal}" onclick="decreaseGoalAmount('${goal}')" style="display: none" class="goal-amount-button"><i class="codicon codicon-triangle-down"></i></button>`;
               } else {
                 down = `<button id="down-${goal}" onclick="decreaseGoalAmount('${goal}')" style="display: block" class="goal-amount-button"><i class="codicon codicon-triangle-down"></i></button>`;
+              }
+
+              var goalPrice = ""
+              if (price <= userData.cookies) {
+                goalPrice = `<p>${price}🍪 ✅</p>`
+              } else {
+                goalPrice = `<p>${userData.cookies}🍪/${price}🍪</p>`
               }
 
               return `
@@ -866,18 +871,19 @@
         }
 
         if (goals.includes(goalId)) {
+          goals = goals.filter((goal) => Number(goal) !== goalId);
           document.getElementById(`favourite-${id}`).className = "favourite";
           document.getElementById(`favourite-icon-${id}`).className =
             "codicon codicon-star-empty";
         } else {
+          goals.push(goalId);
           document.getElementById(`favourite-${id}`).className =
             "favourite-active favourite";
           document.getElementById(`favourite-icon-${id}`).className =
             "codicon codicon-star-full";
         }
 
-        vscode.postMessage({ command: "put-goal", value:  });
-        populateGoals();
+        vscode.postMessage({ command: "post-goals", value:  goals});
       }
 
       function deleteGoal(id) {
@@ -888,9 +894,8 @@
         }
 
         goals = goals.filter((goal) => Number(goal) !== goalId);
-        vscode.postMessage({ command: "put-goal", value: goals });
-        populateGoals();
-        populateShop();
+        console.log("delete")
+        vscode.postMessage({ command: "post-goals", value: goals });
       }
 
       function removeLastGoalOccurrence(goal) {
@@ -914,9 +919,7 @@
       }
 
       function syncGoalsState() {
-        vscode.postMessage({ command: "put-goal", value: goals });
-        populateGoals();
-        populateShop();
+        vscode.postMessage({ command: "post-goals", value: goals });
       }
 
       function increaseGoalAmount(id) {
@@ -932,7 +935,7 @@
         }
 
         goals.push(goalId);
-        syncGoalsState();
+        syncGoalsState()
       }
 
       function decreaseGoalAmount(id) {

@@ -9,7 +9,7 @@ import {
   getAllUsers,
   getAllStoreItems,
   getGoals,
-  putGoals,
+  postGoals,
 } from "./apiCalls";
 import { openDevlogHtml } from "./webviews/openDevlog";
 import * as emoji from "node-emoji";
@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
   // handler functions for the webview commands 
   let lastOpenedDevlog: any;
 
-  let settigs = vscode.workspace.getConfiguration("flavorcode");
+  let settings = vscode.workspace.getConfiguration("flavorcode");
 
   function getCurrentTheme() {
     const config = vscode.workspace.getConfiguration("flavorcode");
@@ -102,47 +102,63 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const useLocalGoals = settigs.get("flavorcode.useLocalGoals", vscode.ConfigurationTarget.Global);
-    
-    if (!useLocalGoals) {
-      const goals = settigs.get("flavorcode.localGoals", vscode.ConfigurationTarget.Global);
+    settings = vscode.workspace.getConfiguration("flavorcode");
+    const rawUseLocalGoals = settings.get<boolean | string>(
+      "useLocalGoals",
+      false,
+    );
+    const useLocalGoals =
+      rawUseLocalGoals === true || rawUseLocalGoals === "true";
+
+    if (useLocalGoals) {
+      const rawLocalGoals = settings.get<number[] | unknown>("localGoals", []);
+      const goals = Array.isArray(rawLocalGoals) ? rawLocalGoals : [];
       currentExploreViewPanel.webview.postMessage({
         command: "goals",
-        value: goals,
-      });      
+        value: goals ?? [],
+      });
     } else {
       const goals = await getGoals("");
       currentExploreViewPanel.webview.postMessage({
         command: "goals",
-        value: goals.goals,
-      });      
+        value: goals?.goals ?? [],
+      });
     }
   }
 
-  async function putGoalsHandler(giveGoals: []) {
+  async function putGoalsHandler(giveGoals: number[]) {
     if (!currentExploreViewPanel) {
       return;
     }
-    
-    const useLocalGoals = settigs.get("flavorcode.useLocalGoals", vscode.ConfigurationTarget.Global);
 
-    if (!useLocalGoals) {
-      let goals = settigs.get<[]>("flavorcode.localGoals");
-      if (goals) {
-        goals.push(...giveGoals);
-        settigs.update("flavorcode.localGoals", goals, vscode.ConfigurationTarget.Global);
-      }
+    settings = vscode.workspace.getConfiguration("flavorcode");
+    const rawUseLocalGoals = settings.get<boolean | string>(
+      "useLocalGoals",
+      false,
+    );
+    const useLocalGoals =
+      rawUseLocalGoals === true || rawUseLocalGoals === "true";
 
-    } else {
-      const goals = await putGoals("", giveGoals);
+    if (useLocalGoals) {
+      const nextGoals = Array.isArray(giveGoals) ? giveGoals : [];
+      await settings.update(
+        "localGoals",
+        nextGoals,
+        vscode.ConfigurationTarget.Global,
+      );
 
       currentExploreViewPanel.webview.postMessage({
         command: "goals",
-        value: goals.goals,
-      });      
+        value: nextGoals,
+      });
+    } else {
+      const goals = await postGoals("", giveGoals);
+
+      currentExploreViewPanel.webview.postMessage({
+        command: "goals",
+        value: goals?.goals ?? [],
+      });
     }
-
-
   }
 
   async function refreshExplore() {
@@ -150,7 +166,7 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    console.log("refresh")
+    console.log("refresh");
 
     currentExploreViewPanel.webview.html = exploretHtml(
       currentExploreViewPanel.webview,
@@ -354,17 +370,20 @@ export function activate(context: vscode.ExtensionContext) {
         }
       });
 
-      currentDevlogViewPanel?.webview.onDidReceiveMessage((message) => {
+      currentExploreViewPanel.webview.onDidReceiveMessage((message) => {
         switch (message.command) {
-          case "get-goals":{ 
-            getGoalsHandler()
-            break;
-          } case "put-goal": {
-            putGoalsHandler(message.value);
+          case "get-goals": {
+            getGoalsHandler();
+            console.log("get");
             break;
           }
-        } 
-      })
+          case "post-goals": {
+            putGoalsHandler(message.value);
+            console.log("post");
+            break;
+          }
+        }
+      });
 
       currentExploreViewPanel.onDidDispose(() => {
         currentExploreViewPanel = undefined;

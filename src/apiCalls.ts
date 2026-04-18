@@ -806,18 +806,15 @@ export async function getGoals(givenApiKey: string) {
   // get api key
   const apiKey = resolveApiKey(givenApiKey);
 
-  // get project id
-  const config = vscode.workspace.getConfiguration("flavorcode");
-
   interface goalsResponse {
-    goals: []
+    goals: number[];
   }
 
   const res = await fetch(`https://logpheus.gizzy.gay/api/v1/goals`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/json",
     },
   });
 
@@ -830,7 +827,7 @@ export async function getGoals(givenApiKey: string) {
   return (await res.json()) as goalsResponse;
 }
 
-export async function putGoals(givenApiKey: string, givenGoal: string) {
+export async function postGoals(givenApiKey: string, givenGoals: number[]) {
   // get api key
   const apiKey = resolveApiKey(givenApiKey);
 
@@ -838,58 +835,23 @@ export async function putGoals(givenApiKey: string, givenGoal: string) {
   const config = vscode.workspace.getConfiguration("flavorcode");
 
   interface goalsResponse {
-    goals: []
+    goals: number[];
   }
 
-  const body = new URLSearchParams({
-    goals: givenGoal
-  });
-
   const res = await fetch(`https://logpheus.gizzy.gay/api/v1/goals`, {
-    method: "PUT",
+    method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/json",
     },
-    body,
+    body: JSON.stringify({
+        goals: givenGoals
+    }),
   });
 
   if (!res.ok) {
     throw new Error(
-      `Failed to put goal: ${res.status} ${await res.text()}`,
-    );
-  }
-
-  return (await res.json()) as goalsResponse;
-}
-
-export async function deleteGoals(givenApiKey: string, givenGoal: string) {
-  // get api key
-  const apiKey = resolveApiKey(givenApiKey);
-
-  // get project id
-  const config = vscode.workspace.getConfiguration("flavorcode");
-
-  interface goalsResponse {
-    goals: []
-  }
-
-  const body = new URLSearchParams({
-    goals: givenGoal
-  });
-
-  const res = await fetch(`https://logpheus.gizzy.gay/api/v1/goals`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body,
-  });
-
-  if (!res.ok) {
-    throw new Error(
-      `Failed to delete goal: ${res.status} ${await res.text()}`,
+      `Failed to post goals: ${res.status} ${await res.text()}`,
     );
   }
 
