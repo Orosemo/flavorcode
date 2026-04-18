@@ -37,17 +37,29 @@
 
     <div id="shop" class="explore-box">
       <div class="cookie-display">
-        <p>Current Balance: 100🍪</p>
+        <p id="cookie-display">Current Balance: 100🍪</p>
+      </div>
+      <div class="goal-toggle">
+        <button onclick="toggleGoals()">Toggle goals</button>
       </div>
       <div id="goals" class="shop-item-box goals-grid"></div>
       <div>
-        <div>
-          <input
-            type="text"
-            placeholder="search shop item"
-            class="explore-input"
-            oninput="updateQuery(this)"
-          />
+        <div class="explore-input-box">
+            <input
+              id="shop-query"
+              type="text"
+              placeholder="search shop item"
+              class="explore-input"
+              oninput="updateQuery(this)"
+            />
+          <button
+            class="explore-clear-query"
+            type="button"
+            aria-label="Clear search"
+            onclick="clearQuery()"
+          >
+            <i class="codicon codicon-close"></i>
+          </button>
         </div>
 
         <div class="explore-filters">
@@ -188,12 +200,17 @@
       var chart = null;
       var goals = [];
       var goalAmounts = {};
+      var goalsHidden = false;
 
       // user
       var users = {};
 
       // project
       var projects = {};
+
+      // retrive cache
+      retriveCacheState();
+      handleShopLoad();
 
       // general functions
 
@@ -239,6 +256,19 @@
         } else if (mode == "project") {
           document.getElementById("project").style = "display: block;";
         }
+      }
+
+      // cache functions
+      function cacheState(state) {
+        vscode.setState({ cache: state });
+      }
+
+      function retriveCacheState() {
+        const state = vscode.getState();
+        shopItems = state?.cache?.shopItems;
+        userData = state?.cache?.userData;
+        goals = state?.cache?.goals;
+        goalsHidden = state?.cache?.goalsHidden;
       }
 
       function escapeHtml(value) {
@@ -350,6 +380,14 @@
 
       function handleShopLoad() {
         if (shopItems && goals && userData) {
+          // cache state
+          cacheState({
+            shopItems: shopItems,
+            userData: userData,
+            goals: goals,
+            goalsHidden: goalsHidden,
+          });
+
           populateShop();
           populateGoals();
         }
@@ -361,6 +399,9 @@
         const shopItemsNameArray = shopItemsArray.map((item) => {
           return item.name;
         });
+
+        document.getElementById("cookie-display").textContent =
+          `Current Balance: ${userData.cookies ?? 0}🍪`;
 
         const fuse = new Fuse(shopItemsNameArray, { includeScore: true });
 
@@ -426,19 +467,27 @@
 
           // filters display
           .filter((item) => {
+            const price =
+              item.ticket_cost?.[region] ?? item.ticket_cost?.base_cost ?? 0;
+
             if (display === "all") {
               return true;
             }
 
-            if (
-              display === "affordable" &&
-              item.ticket_cost?.[region] <= (userData.cookies ?? 0)
-            ) {
-              return true;
+            if (display === "affordable") {
+              if (price <= (userData.cookies ?? 0)) {
+                return true;
+              } else {
+                return false;
+              }
             }
 
-            if (display === "in-stock" && (item.stock ?? 0) >= 1) {
-              return true;
+            if (display === "in-stock") {
+              if ((item.stock ?? 0) >= 1 || !item.limited) {
+                return true;
+              } else {
+                return false;
+              }
             }
 
             if (display === "sale") {
@@ -701,6 +750,18 @@
         populateShop();
       }
 
+      function clearQuery() {
+        const input = document.getElementById("shop-query");
+        if (!input) {
+          return;
+        }
+
+        input.value = "";
+        shopQuery = "";
+        populateShop();
+        input.focus();
+      }
+
       function updateExtension(circleId, containerId, price) {
         const container = document.getElementById(
           `extension-container${containerId}`,
@@ -752,7 +813,9 @@
         goalContainer.innerHTML = uniqueGoals
           .map((goal) => {
             if (shopItems[goal]) {
-              const amount = goals.filter((item) => Number(item) === goal).length;
+              const amount = goals.filter(
+                (item) => Number(item) === goal,
+              ).length;
               goalAmounts[goal] = amount;
               const item = shopItems[goal];
               const price =
@@ -779,9 +842,20 @@
             </div>
             <button class="goal-delete-button" onclick='deleteGoal(${goal})'><i class="codicon codicon-trash"></i></button>
           </div>`;
+
             }
           })
           .join("");
+      }
+
+      function toggleGoals() {
+        if (goalsHidden) {
+          goalContainer.style.display = "";
+          goalsHidden = !goalsHidden;
+        } else {
+          goalContainer.style.display = "none";
+          goalsHidden = !goalsHidden;
+        }
       }
 
       function handleAddGoal(id) {
@@ -792,19 +866,17 @@
         }
 
         if (goals.includes(goalId)) {
-          goals = goals.filter((goal) => Number(goal) !== goalId);
           document.getElementById(`favourite-${id}`).className = "favourite";
           document.getElementById(`favourite-icon-${id}`).className =
             "codicon codicon-star-empty";
         } else {
-          goals.push(goalId);
           document.getElementById(`favourite-${id}`).className =
             "favourite-active favourite";
           document.getElementById(`favourite-icon-${id}`).className =
             "codicon codicon-star-full";
         }
 
-        vscode.postMessage({ command: "put-goal", value: goals });
+        vscode.postMessage({ command: "put-goal", value:  });
         populateGoals();
       }
 
@@ -919,6 +991,7 @@
           }
           case "user-data": {
             userData = message.value;
+            handleShopLoad();
             break;
           }
           case "goals": {

@@ -760,6 +760,7 @@ button.button-disabled,
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+
   width: auto;
   margin: 0 0 10px;
   text-align: center;
@@ -776,12 +777,40 @@ button.button-disabled,
   min-height: 100px;
 }
 
+.explore-input-box {
+  position: relative;
+}
+
 .explore-input {
   display: block;
   width: 100%;
   max-width: 100%;
   margin: 20px 0 10px;
   box-sizing: border-box;
+  padding-right: 42px;
+}
+
+.explore-clear-query {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.explore-clear-query:hover {
+  background: var(--input-background-hover);
+  color: var(--text);
 }
 
 .cookie-display {
@@ -1107,6 +1136,10 @@ button.button-disabled,
 .goal-delete-button:hover {
   background-color: var(--warning-hover);
   color: var(--warning);
+}
+
+.goal-toggle {
+  margin-bottom: 30px;
 }
 
 @media (max-width: 600px) {
