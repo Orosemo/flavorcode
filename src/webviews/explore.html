@@ -206,30 +206,56 @@
               <i class="codicon codicon-close"></i>
             </button>
           </div>
-          <button type="button" class="explore-search-button" aria-label="search" onclick="">
+          <button
+            type="button"
+            class="explore-search-button"
+            aria-label="search"
+            onclick="searchUser()"
+          >
             search
           </button>
         </div>
       </div>
 
-      <div id="user-container" class="user-item-box user-items-grid">
-        <div class="user-item">
-          <img class="user-item-img" src="" alt="">
-          <div class="user-item-desc">
-            <h3>Joko26</h3>
-            <div>
-              <p>1000 🍪</p>
-              <p>9h 30min 5sec</p>
-            </div>
-          </div>
-          <button>Open</button>
-        </div>
-      </div>
+      <div id="user-container" class="user-item-box user-items-grid"></div>
     </div>
 
     <div id="user" style="display: none"></div>
-    <div id="project-explore" style="display: none">
-      <p>hello (proejcts)</p>
+
+    <div id="project-explore" style="display: none" class="explore-box">
+      <div class="explore-input-box">
+        <div class="explore-query-row">
+          <div class="explore-input-with-clear">
+            <input
+              id="project-query"
+              type="text"
+              placeholder="search project"
+              class="explore-input"
+              oninput="updateProjectQuery(this)"
+            />
+            <button
+              class="explore-clear-query"
+              type="button"
+              aria-label="Clear search"
+              onclick="clearProjectQuery()"
+              id="clear-project-query"
+              style="display: none"
+            >
+              <i class="codicon codicon-close"></i>
+            </button>
+          </div>
+          <button
+            type="button"
+            class="explore-search-button"
+            aria-label="search"
+            onclick="searchProject()"
+          >
+            search
+          </button>
+        </div>
+      </div>
+
+      <div id="project-container" class="user-item-box user-items-grid"></div>
     </div>
     <div id="project" style="display: none"></div>
 
@@ -239,6 +265,7 @@
       // vars
       var userData = {};
       const vscode = acquireVsCodeApi();
+      const FLAVORTOWN_ORIGIN = "https://flavortown.hackclub.com";
 
       // shop
       const shopContainer = document.getElementById("shop-items");
@@ -313,6 +340,27 @@
         }
       }
 
+      function resolveRemoteImageUrl(value, fallback = "") {
+        const raw = String(value ?? "").trim();
+
+        if (
+          !raw ||
+          raw.toLowerCase() === "null" ||
+          raw.toLowerCase() === "undefined"
+        ) {
+          return fallback;
+        }
+
+        try {
+          const resolved = new URL(raw, FLAVORTOWN_ORIGIN);
+          if (resolved.protocol === "http:" || resolved.protocol === "https:") {
+            return resolved.toString();
+          }
+        } catch (_error) {}
+
+        return fallback;
+      }
+
       // cache functions
       function cacheState(state) {
         vscode.setState({ cache: state });
@@ -335,6 +383,21 @@
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#39;");
+      }
+
+      // truncator
+      function truncateByChars(value, maxChars = 160) {
+        const safe = escapeHtml(String(value ?? "").trim());
+
+        if (!safe || maxChars <= 0) {
+          return "";
+        }
+
+        if (safe.length <= maxChars) {
+          return safe;
+        }
+
+        return `${safe.slice(0, maxChars).trimEnd()}...`;
       }
 
       // credit to sabioOfficial
@@ -1048,8 +1111,41 @@
 
       // functions for the user page
 
-      function populateUsers() {
+      function formatDuration(value) {
+        const secondsIn = value;
+        if (secondsIn < 3600) {
+          let minutesOut = Math.floor(secondsIn / 60);
+          let secondsOut = secondsIn % 60;
+          return `${minutesOut} min; ${secondsOut} sec`;
+        } else {
+          let hoursOut = Math.floor(secondsIn / 3600);
+          let secondsInMin = secondsIn % 3600;
+          let minutesOut = Math.floor(secondsInMin / 60);
+          let secondsOut = secondsInMin % 60;
+          return `${hoursOut} h; ${minutesOut} min; ${secondsOut} sec`;
+        }
+      }
 
+      function populateUsers() {
+        const userContainer = document.getElementById("user-container");
+        const usersArray = Object.values(users);
+
+        userContainer.innerHTML = usersArray
+          .map((user) => {
+            return `
+          <div class="user-item">
+          <img class="user-item-img" src="${resolveRemoteImageUrl(user.avatar)}" alt="">
+          <div class="user-item-desc">
+            <h3>${user.display_name}</h3>
+            <div>
+              <p>${user.cookies ?? 0} 🍪</p>
+              <p>${user.project_ids.length} projects</p>
+            </div>
+          </div>
+          <button>Open</button>
+        </div>`;
+          })
+          .join("");
       }
 
       function openUser(id) {
@@ -1061,27 +1157,88 @@
         const inputEl = document.getElementById("user-query");
         inputEl.value = userQuery;
         document.getElementById("clear-user-query").style.display = "none";
+        vscode.postMessage({ command: "search-user", value: userQuery });
       }
 
       function updateUserQuery(inputEl) {
         userQuery = inputEl.value;
 
         if (userQuery !== "") {
-          document.getElementById("clear-user-query").style.display = "inline-flex";
+          document.getElementById("clear-user-query").style.display =
+            "inline-flex";
         } else {
           document.getElementById("clear-user-query").style.display = "none";
         }
       }
 
-      function searchProject() {
-        if (userQuery || userQuery !== "") {
-          vscode.postMessage({command: "search-user", value:userQuery})
-        }
+      function searchUser() {
+        vscode.postMessage({ command: "search-user", value: userQuery });
       }
 
       // functions for the project page
 
-      function populateProjects() {}
+      function formatDuration(value) {
+        const secondsIn = value;
+        if (secondsIn < 3600) {
+          let minutesOut = Math.floor(secondsIn / 60);
+          let secondsOut = secondsIn % 60;
+          return `${minutesOut} min; ${secondsOut} sec`;
+        } else {
+          let hoursOut = Math.floor(secondsIn / 3600);
+          let secondsInMin = secondsIn % 3600;
+          let minutesOut = Math.floor(secondsInMin / 60);
+          let secondsOut = secondsInMin % 60;
+          return `${hoursOut} h; ${minutesOut} min; ${secondsOut} sec`;
+        }
+      }
+
+      function populateProjects() {
+        const projectContainer = document.getElementById("project-container");
+        const projectArray = Object.values(projects);
+        const fallbackBanner =
+          "https://flavortown.hackclub.com/assets/default-banner-3d4e1b67.png";
+
+        projectContainer.innerHTML = projectArray
+          .map((project) => {
+            return `
+          <div class="user-item">
+          <img class="user-item-img" src="${resolveRemoteImageUrl(project.banner_url, fallbackBanner)}" alt="">
+          <div class="user-item-desc">
+            <h3>${project.title}</h3>
+            <div>
+              <p>${truncateByChars(project.description, 180)}</p>
+              <p>${project.devlog_ids.length} devlog(s)</p>
+            </div>
+          </div>
+          <button>Open</button>
+        </div>`;
+          })
+          .join("");
+      }
+
+      function clearProjectQuery() {
+        projectQuery = "";
+        const inputEl = document.getElementById("project-query");
+        inputEl.value = projectQuery;
+        document.getElementById("clear-project-query").style.display = "none";
+        vscode.postMessage({ command: "search-project", value: projectQuery });
+      }
+
+      function updateProjectQuery(inputEl) {
+        projectQuery = inputEl.value;
+
+        if (projectQuery !== "") {
+          document.getElementById("clear-project-query").style.display =
+            "inline-flex";
+        } else {
+          document.getElementById("clear-project-query").style.display = "none";
+        }
+      }
+
+      function searchProject() {
+        vscode.postMessage({ command: "search-project", value: projectQuery });
+        console.log("search project (webview)");
+      }
 
       function openProject(id) {
         switchMode("project");
@@ -1102,10 +1259,13 @@
           }
           case "users": {
             users = message.value;
+            populateUsers();
             break;
           }
           case "projects": {
             projects = message.value;
+            populateProjects();
+            console.log("got project (webview)");
             break;
           }
           case "user-data": {

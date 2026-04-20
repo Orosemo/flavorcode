@@ -1247,6 +1247,13 @@ button.button-disabled,
   margin: 0 auto 8px;
 }
 
+.truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;      /* number of lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 @media (max-width: 600px) {
   .goal-item {
     width: 100%;

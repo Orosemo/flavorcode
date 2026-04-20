@@ -51,6 +51,8 @@ export function activate(context: vscode.ExtensionContext) {
         {},
       ) ?? {};
 
+    console.log("send project (extension)")
+
     currentExploreViewPanel.webview.postMessage({
       command: "projects",
       value: projects,
@@ -388,6 +390,7 @@ export function activate(context: vscode.ExtensionContext) {
             break;
           } case "search-project": {
             sendAllProjects(message.value);
+            console.log("search projects (extension)")
             break;
           }
         }
