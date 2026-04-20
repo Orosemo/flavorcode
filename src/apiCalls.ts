@@ -157,7 +157,7 @@ export async function getUserSelf(givenApiKey: string) {
 }
 
 // get a list of all users
-export async function getAllUsers(givenApiKey: string) {
+export async function getAllUsers(givenApiKey: string, query?:string) {
   const apiKey = resolveApiKey(givenApiKey);
 
   interface UserResponse {
@@ -181,7 +181,12 @@ export async function getAllUsers(givenApiKey: string) {
     next_page: number | null;
   }
 
-  const res = await fetch(`https://flavortown.hackclub.com/api/v1/users`, {
+  var queryString = "";
+  if (query) {
+    queryString = `?query=${query}`;
+  }
+
+  const res = await fetch(`https://flavortown.hackclub.com/api/v1/users${queryString}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -271,7 +276,7 @@ export async function getProject(givenApiKey: string, id: number) {
 }
 
 // get a list of all Projects
-export async function getAllProjects(givenApiKey: string) {
+export async function getAllProjects(givenApiKey: string, query?:string) {
   const apiKey = resolveApiKey(givenApiKey);
 
   interface ProjectsResponse {
@@ -300,7 +305,12 @@ export async function getAllProjects(givenApiKey: string) {
     next_page: number | null;
   }
 
-  const res = await fetch(`https://flavortown.hackclub.com/api/v1/projects`, {
+  var queryString = "";
+  if (query) {
+    queryString = `?query=${query}`;
+  }
+
+  const res = await fetch(`https://flavortown.hackclub.com/api/v1/projects${queryString}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${apiKey}`,

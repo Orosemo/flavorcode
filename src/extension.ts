@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const rawProjects = await getAllProjects("");
+    const rawProjects = await getAllProjects("", query);
     const projects =
       rawProjects?.projects?.reduce(
         (acc: { [key: string]: any }, project: any) => {
@@ -62,7 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const rawUsers = await getAllUsers("");
+    const rawUsers = await getAllUsers("", query);
     const users =
       rawUsers?.users?.reduce((acc: { [key: string]: any }, project: any) => {
         acc[project.id] = project;
@@ -382,6 +382,12 @@ export function activate(context: vscode.ExtensionContext) {
           }
           case "post-goals": {
             putGoalsHandler(message.value);
+            break;
+          } case "search-user": {
+            sendAllUsers(message.value);
+            break;
+          } case "search-project": {
+            sendAllProjects(message.value);
             break;
           }
         }

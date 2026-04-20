@@ -45,21 +45,27 @@
       <div id="goals" class="shop-item-box goals-grid"></div>
       <div>
         <div class="explore-input-box">
-          <input
-            id="shop-query"
-            type="text"
-            placeholder="search shop item"
-            class="explore-input"
-            oninput="updateQuery(this)"
-          />
-          <button
-            class="explore-clear-query"
-            type="button"
-            aria-label="Clear search"
-            onclick="clearQuery()"
-          >
-            <i class="codicon codicon-close"></i>
-          </button>
+          <div class="explore-query-row">
+            <div class="explore-input-with-clear">
+              <input
+                id="shop-query"
+                type="text"
+                placeholder="search shop item"
+                class="explore-input"
+                oninput="updateQuery(this)"
+              />
+              <button
+                class="explore-clear-query"
+                type="button"
+                aria-label="Clear search"
+                onclick="clearQuery()"
+                id="clear-query"
+                style="display: none"
+              >
+                <i class="codicon codicon-close"></i>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="explore-filters">
@@ -161,8 +167,11 @@
             </div>
             <div class="shop-price-summary-box">
               <p id="shop-price" class="opened-shop-item-price"></p>
-              <div class="shop-price-summary-item-box" id="shop-price-summary"></div>
-              <p class="opened-shop-item-price" id="shop-final-price"></p>              
+              <div
+                class="shop-price-summary-item-box"
+                id="shop-price-summary"
+              ></div>
+              <p class="opened-shop-item-price" id="shop-final-price"></p>
             </div>
           </div>
           <a
@@ -174,9 +183,50 @@
         </div>
       </div>
     </div>
-    <div id="user-explore" style="display: none">
-      <p>hello (users)</p>
+
+    <div id="user-explore" style="display: none" class="explore-box">
+      <div class="explore-input-box">
+        <div class="explore-query-row">
+          <div class="explore-input-with-clear">
+            <input
+              id="user-query"
+              type="text"
+              placeholder="search user"
+              class="explore-input"
+              oninput="updateUserQuery(this)"
+            />
+            <button
+              class="explore-clear-query"
+              type="button"
+              aria-label="Clear search"
+              onclick="clearUserQuery()"
+              id="clear-user-query"
+              style="display: none"
+            >
+              <i class="codicon codicon-close"></i>
+            </button>
+          </div>
+          <button type="button" class="explore-search-button" aria-label="search" onclick="">
+            search
+          </button>
+        </div>
+      </div>
+
+      <div id="user-container" class="user-item-box user-items-grid">
+        <div class="user-item">
+          <img class="user-item-img" src="" alt="">
+          <div class="user-item-desc">
+            <h3>Joko26</h3>
+            <div>
+              <p>1000 🍪</p>
+              <p>9h 30min 5sec</p>
+            </div>
+          </div>
+          <button>Open</button>
+        </div>
+      </div>
     </div>
+
     <div id="user" style="display: none"></div>
     <div id="project-explore" style="display: none">
       <p>hello (proejcts)</p>
@@ -208,6 +258,7 @@
 
       // user
       var users = {};
+      var userQuery = "";
 
       // project
       var projects = {};
@@ -641,9 +692,7 @@
           }
         });
 
-        currentPrice = Number(
-          itemPrice,
-        );
+        currentPrice = Number(itemPrice);
 
         if (!Number.isFinite(currentPrice)) {
           currentPrice = 0;
@@ -676,7 +725,7 @@
         document.getElementById("shop-final-price").textContent =
           `Final price: ${currentPrice}🍪`;
         document.getElementById("shop-price").textContent =
-          `Base price for selected region: ${itemPrice}🍪`
+          `Base price for selected region: ${itemPrice}🍪`;
         document.getElementById("open-real-shop").href =
           `https://flavortown.hackclub.com/shop/order?shop_item_id=${shopItem.id}`;
         document.getElementById("open-real-shop").textContent = buyButtonText;
@@ -763,6 +812,11 @@
       function updateQuery(event) {
         shopQuery = event.value;
         populateShop();
+        if (event.value !== "") {
+          document.getElementById("clear-query").style = "display: block;";
+        } else {
+          document.getElementById("clear-query").style = "display: none;";
+        }
       }
 
       function clearQuery() {
@@ -774,7 +828,7 @@
         input.value = "";
         shopQuery = "";
         populateShop();
-        input.focus();
+        document.getElementById("clear-query").style = "display: none;";
       }
 
       function updateExtension(id, price, itemId) {
@@ -994,10 +1048,35 @@
 
       // functions for the user page
 
-      function populateUsers() {}
+      function populateUsers() {
+
+      }
 
       function openUser(id) {
         switchMode("user");
+      }
+
+      function clearUserQuery() {
+        userQuery = "";
+        const inputEl = document.getElementById("user-query");
+        inputEl.value = userQuery;
+        document.getElementById("clear-user-query").style.display = "none";
+      }
+
+      function updateUserQuery(inputEl) {
+        userQuery = inputEl.value;
+
+        if (userQuery !== "") {
+          document.getElementById("clear-user-query").style.display = "inline-flex";
+        } else {
+          document.getElementById("clear-user-query").style.display = "none";
+        }
+      }
+
+      function searchProject() {
+        if (userQuery || userQuery !== "") {
+          vscode.postMessage({command: "search-user", value:userQuery})
+        }
       }
 
       // functions for the project page

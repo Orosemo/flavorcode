@@ -778,14 +778,25 @@ button.button-disabled,
 }
 
 .explore-input-box {
+  margin: 20px 0 10px;
+}
+
+.explore-query-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.explore-input-with-clear {
   position: relative;
+  flex: 1;
 }
 
 .explore-input {
   display: block;
   width: 100%;
   max-width: 100%;
-  margin: 20px 0 10px;
+  margin: 0;
   box-sizing: border-box;
   padding-right: 42px;
 }
@@ -806,11 +817,17 @@ button.button-disabled,
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
 }
 
 .explore-clear-query:hover {
   background: var(--input-background-hover);
   color: var(--text);
+}
+
+.explore-search-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .cookie-display {
@@ -1168,6 +1185,66 @@ button.button-disabled,
 
 .goal-toggle {
   margin-bottom: 30px;
+}
+
+.user-item-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  justify-content: center;
+  justify-items: center;
+  align-items: stretch;
+  gap: 20px;
+  border-radius: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--border-highlight);
+  box-sizing: border-box;
+  padding: 20px;
+  background-color: var(--textbox-background);
+}
+
+.user-items-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 300px));
+}
+
+.user-item {
+  position: relative;
+  z-index: 1;
+  min-height: 220px;
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin: 0 auto;
+  border-radius: 10px;
+  border-width: 3px;
+  border-style: solid;
+  border-color: var(--border);
+  box-sizing: border-box;
+  background-color: var(--background);
+}
+
+.user-item-desc {
+  background-color: var(--border-highlight);
+  border-radius: 10px;
+  border-style: hidden;
+  margin: 8px 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.user-item-img {
+  display: block;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  margin: 0 auto 8px;
 }
 
 @media (max-width: 600px) {
