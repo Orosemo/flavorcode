@@ -32,3 +32,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.0.6]
 
 - added refresh call in `switchDisplayMode`
+
+## [2.0.0]
+
+- added explore page with:
+    - a shop with logpheus goals
+    - a user explore section
+    - a project explore section

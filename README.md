@@ -19,6 +19,7 @@ If those api routes get reintroduced this extension will regain full functionali
   - [Create and update projects](#create-and-update-projects)
   - [Discord rich presence](#discord-rich-presence)
   - [Themes](#themes)
+  - [Explore page](#explore-page)
 - [Requirements](#requirements)
 - [Extension Settings](#extension-settings)
 - [Release Notes](#release-notes)
@@ -31,9 +32,11 @@ If those api routes get reintroduced this extension will regain full functionali
 
 Set the extension up using the UI:
 
-<img src="media/readme/create-choose.gif" alt="Project view" height="460" />
-
 ## Features
+
+![bar](media/readme/bar.png)
+
+(from left to right: refresh, [explore page](#explore-page), [edit current project](#create-and-update-projects), [themes](#themes), open setup, open settings)
 
 - ### View Project stats
   
@@ -106,6 +109,12 @@ Set the extension up using the UI:
     This theme is based on my own color pallete which ive also used in my [website](https://orosemo.de).
 
     <img src="media/readme/orosemo.png" alt="Orosemo theme" height="390" />
+
+- ### Explore page
+
+  Explore users, projects and the shop
+
+  <img src="media/readme/explore-page.gif" alt="Devlog view" width="460" />
 
   <!-- markdownlint-enable MD033 -->
 
