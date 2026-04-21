@@ -99,34 +99,18 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
-  // get goals from logpheus or local
+  // get goals from logpheus
   async function getGoalsHandler() {
     if (!currentExploreViewPanel) {
       return;
     }
 
-    settings = vscode.workspace.getConfiguration("flavorcode");
-    const rawUseLocalGoals = settings.get<boolean | string>(
-      "useLocalGoals",
-      false,
-    );
-    const useLocalGoals =
-      rawUseLocalGoals === true || rawUseLocalGoals === "true";
-
-    if (useLocalGoals) {
-      const rawLocalGoals = settings.get<number[] | unknown>("localGoals", []);
-      const goals = Array.isArray(rawLocalGoals) ? rawLocalGoals : [];
-      currentExploreViewPanel.webview.postMessage({
-        command: "goals",
-        value: goals ?? [],
-      });
-    } else {
-      const goals = await getGoals("");
-      currentExploreViewPanel.webview.postMessage({
-        command: "goals",
-        value: goals?.goals ?? [],
-      });
-    }
+    const rawLocalGoals = settings.get<number[] | unknown>("localGoals", []);
+    const goals = Array.isArray(rawLocalGoals) ? rawLocalGoals : [];
+    currentExploreViewPanel.webview.postMessage({
+      command: "goals",
+      value: goals ?? [],
+    });
   }
 
   // send goals to logpheus or save locally
@@ -135,34 +119,17 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    settings = vscode.workspace.getConfiguration("flavorcode");
-    const rawUseLocalGoals = settings.get<boolean | string>(
-      "useLocalGoals",
-      false,
+    const nextGoals = Array.isArray(giveGoals) ? giveGoals : [];
+    await settings.update(
+      "localGoals",
+      nextGoals,
+      vscode.ConfigurationTarget.Global,
     );
-    const useLocalGoals =
-      rawUseLocalGoals === true || rawUseLocalGoals === "true";
 
-    if (useLocalGoals) {
-      const nextGoals = Array.isArray(giveGoals) ? giveGoals : [];
-      await settings.update(
-        "localGoals",
-        nextGoals,
-        vscode.ConfigurationTarget.Global,
-      );
-
-      currentExploreViewPanel.webview.postMessage({
-        command: "goals",
-        value: nextGoals,
-      });
-    } else {
-      const goals = await postGoals("", giveGoals);
-
-      currentExploreViewPanel.webview.postMessage({
-        command: "goals",
-        value: goals?.goals ?? [],
-      });
-    }
+    currentExploreViewPanel.webview.postMessage({
+      command: "goals",
+      value: nextGoals,
+    });
   }
 
   async function refreshExplore() {

@@ -434,14 +434,6 @@ export class projectInfoProvider implements vscode.WebviewViewProvider {
               vscode.commands.executeCommand("flavorcode.explore");
               break;
             }
-            case "local-goals": {
-              await config.update(
-                "flavorcode.useLocalGoals",
-                message.value,
-                vscode.ConfigurationTarget.Global,
-              );
-              break;
-            }
           }
         }
       } catch (error) {
